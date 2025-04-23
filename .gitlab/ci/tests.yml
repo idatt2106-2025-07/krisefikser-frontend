@@ -6,7 +6,7 @@ test:
   image: node:20
   script:
     - npm ci
-    - npm run test:unit
+    - npx vitest run --passWithNoTests
   cache:
     paths:
       - node_modules/

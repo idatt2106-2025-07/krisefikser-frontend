@@ -2,6 +2,4 @@
 //component for the login form, handle login logic here
 </script>
 
-<template>
-
-</template>
+<template></template>

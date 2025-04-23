@@ -2,6 +2,4 @@
 // Handle logic for the item storage here
 </script>
 
-<template>
-
-</template>
+<template></template>

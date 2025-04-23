@@ -3,7 +3,4 @@
 // Need functions to change password, email, name also implement household managment
 </script>
 
-<template>
-
-
-</template>
+<template></template>

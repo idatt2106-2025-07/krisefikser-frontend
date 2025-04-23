@@ -2,6 +2,4 @@
 // The View for the map page
 </script>
 
-<template>
-
-</template>
+<template></template>

@@ -1,0 +1,12 @@
+stages:
+  - test
+
+test:
+  stage: test
+  image: node:20
+  script:
+    - npm ci
+    - npm run test:unit
+  cache:
+    paths:
+      - node_modules/

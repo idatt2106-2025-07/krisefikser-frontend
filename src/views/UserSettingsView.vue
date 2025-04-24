@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import UserSettings from '../components/UserSettings.vue';
 
 const selectedItem = ref('Name');
 
@@ -27,7 +28,7 @@ const menuItems = [
         </div>
       </div>
       <div class="content">
-        <UserSettings/>
+        <UserSettings :type="selectedItem" />
       </div>
     </div>
   </div>
@@ -35,7 +36,7 @@ const menuItems = [
 
 <style scoped>
 .settings-page {
-  background-color: #fcd88f;
+  background-color: #cfcfcf;
   min-height: 100vh;
   padding: 2rem;
 }

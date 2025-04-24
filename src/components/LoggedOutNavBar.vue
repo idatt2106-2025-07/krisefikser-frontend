@@ -11,6 +11,14 @@ function navigateToLogin() {
 function navigateToSignup() {
   router.push('/register');
 }
+
+function navigateToHome() {
+  router.push('/');
+}
+
+function navigateToSettings() {
+  router.push('/settings');
+}
 </script>
 
 <template>
@@ -21,6 +29,12 @@ function navigateToSignup() {
       </li>
       <li>
         <button @click="navigateToSignup">Signup</button>
+      </li>
+      <li>
+        <button @click="navigateToHome">Home</button>
+      </li>
+      <li>
+        <button @click="navigateToSettings">Settings</button>
       </li>
     </ul>
   </nav>

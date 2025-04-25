@@ -104,14 +104,14 @@ const getExpirationClass = (days: number) => {
 // Function to handle search
 const handleSearch = (value: string) => {
   searchQuery.value = value;
-  // Add your search logic here
+  // Add search logic here
   console.log('Searching for:', value);
 };
 
 // Function to handle sort selection
 const handleSort = (value: string) => {
   selectedSort.value = value;
-  // Add your sorting logic here
+  // Add sorting logic here
   console.log('Sorting by:', value);
 };
 </script>

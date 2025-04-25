@@ -52,7 +52,6 @@ const props = defineProps({
 const emit = defineEmits(['update:checkedCategories', 'clear']);
 
 const updateChecked = (event: Event, value: string) => {
-  // Use proper type casting for the HTML input element
   const target = event.target as HTMLInputElement;
   const checked = target.checked;
 

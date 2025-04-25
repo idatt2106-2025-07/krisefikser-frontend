@@ -44,7 +44,7 @@ const daysPercentage = computed(() => {
   return Math.min(100, Math.max(0, (props.currentDays / props.goalDays) * 100));
 });
 
-const circleCircumference = 100.53; // 2 * PI * r, where r=16
+const circleCircumference = 100.53;
 
 const strokeDasharray = computed(() => {
   return `${daysPercentage.value * circleCircumference / 100} ${circleCircumference}`;

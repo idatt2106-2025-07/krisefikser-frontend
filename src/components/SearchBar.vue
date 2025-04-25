@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits } from 'vue';
-import searchIcon from '../assets/search.svg'; // Import search icon directly in the component
+import searchIcon from '../assets/search.svg';
 
 const props = defineProps({
   placeholder: {

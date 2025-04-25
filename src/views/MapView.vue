@@ -21,10 +21,11 @@ const handleFilterChange = (filters: {}) => {
 
 <style scoped>
 .map-view {
-  margin: 32px 128px;
+  padding: 32px 128px;
   display: flex;
   flex-direction: row;
   gap: 16px;
+  background-color: #ecfbff;
 }
 
 .filter-sidebar {

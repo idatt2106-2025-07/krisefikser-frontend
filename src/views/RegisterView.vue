@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRecaptcha } from 'vue-recaptcha-v3';
 
 const username = ref('');
 const email = ref('');
@@ -7,7 +8,11 @@ const password = ref('');
 const confirmpassword = ref('');
 const agreeToTerms = ref(false);
 
-function handleRegister() {
+const { executeRecaptcha } = useRecaptcha({
+  siteKey: import.meta.env.VUE_APP_RECAPTCHA_SITE_KEY, // Access site key from .env
+});
+
+async function handleRegister() {
   if (password.value !== confirmpassword.value) {
     alert('Passwords do not match!');
     return;
@@ -16,7 +21,18 @@ function handleRegister() {
     alert('You must agree to the terms and conditions!');
     return;
   }
-  alert('Registration successful!');
+
+  try {
+    // Execute reCAPTCHA and get the token
+    const token = await executeRecaptcha('register');
+    console.log('reCAPTCHA token:', token);
+
+    // Simulate registration logic (e.g., API call)
+    alert('Registration successful!');
+  } catch (error) {
+    console.error('reCAPTCHA error:', error);
+    alert('Failed to verify reCAPTCHA. Please try again.');
+  }
 }
 </script>
 
@@ -26,7 +42,13 @@ function handleRegister() {
       <h2>Register</h2>
       <div class="field">
         <label for="username">Username</label>
-        <input id="username" v-model="username" type="text" placeholder="Enter your username" required />
+        <input
+          id="username"
+          v-model="username"
+          type="text"
+          placeholder="Enter your username"
+          required
+        />
       </div>
       <div class="field">
         <label for="email">Email</label>
@@ -34,17 +56,31 @@ function handleRegister() {
       </div>
       <div class="field">
         <label for="password">Password</label>
-        <input id="password" v-model="password" type="password" placeholder="Enter your password" required />
+        <input
+          id="password"
+          v-model="password"
+          type="password"
+          placeholder="Enter your password"
+          required
+        />
       </div>
       <div class="field">
         <label for="confirmpassword">Confirm Password</label>
-        <input id="confirmpassword" v-model="confirmpassword" type="password" placeholder="Confirm your password" required />
+        <input
+          id="confirmpassword"
+          v-model="confirmpassword"
+          type="password"
+          placeholder="Confirm your password"
+          required
+        />
       </div>
       <div class="checkbox-container">
         <input type="checkbox" id="agreeToTerms" v-model="agreeToTerms" />
         <label for="agreeToTerms">I agree to the terms and conditions</label>
       </div>
-      <button @click="handleRegister" :disabled="!agreeToTerms || password !== confirmpassword">Register</button>
+      <button @click="handleRegister" :disabled="!agreeToTerms || password !== confirmpassword">
+        Register
+      </button>
       <p>Already have an account? <a href="/login">Login here</a></p>
     </div>
   </div>

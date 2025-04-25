@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 defineProps<{
-  type: string;
-}>();
+  type: string
+}>()
 
-const firstName = ref('');
-const lastName = ref('');
-const email = ref('');
-const password = ref('');
-const birthday = ref('');
+const firstName = ref('')
+const lastName = ref('')
+const email = ref('')
+const password = ref('')
+const birthday = ref('')
 
 function saveChanges() {
-  alert(`Changes saved for ${type}`);
+  alert(`Changes saved for ${type}`)
 }
 </script>
 

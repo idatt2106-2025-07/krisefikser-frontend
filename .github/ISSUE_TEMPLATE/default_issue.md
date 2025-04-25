@@ -1,10 +1,9 @@
 ---
 name: default_issue
 about: Issue template
-title: "[ISSUE]"
+title: '[ISSUE]'
 labels: ''
 assignees: ''
-
 ---
 
 ## 📝 Description
@@ -15,9 +14,9 @@ assignees: ''
 
 <!-- What needs to be true for this issue to be considered complete? -->
 
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ]
+- [ ]
+- [ ]
 
 ## 🔗 Related
 

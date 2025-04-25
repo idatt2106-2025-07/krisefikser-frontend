@@ -26,7 +26,6 @@ app.use(PrimeVue, {
   },
 })
 
-
 // Register PrimeVue components
 app.component('InputText', InputText)
 app.component('Password', Password)

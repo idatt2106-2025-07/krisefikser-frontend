@@ -5,7 +5,7 @@
 
 ## 📋 Description
 
-<!-- A concise explanation of **what** this PR does and **why**.  
+<!-- A concise explanation of **what** this PR does and **why**.
      If this addresses an open issue, link it with “Fixes #123”. -->
 
 ## 🔗 Related issue(s) / PR(s)
@@ -14,22 +14,22 @@
 
 ## 🧰 Type of change
 
-- [ ] 🐞 Bug fix  
-- [ ] ✨ New feature  
-- [ ] ♻️ Refactor / tech debt  
-- [ ] 📝 Documentation only  
-- [ ] ⚠️ Breaking change  
-- [ ] 🔒 Security fix  
-- [ ] 🚦 CI / tooling  
+- [ ] 🐞 Bug fix
+- [ ] ✨ New feature
+- [ ] ♻️ Refactor / tech debt
+- [ ] 📝 Documentation only
+- [ ] ⚠️ Breaking change
+- [ ] 🔒 Security fix
+- [ ] 🚦 CI / tooling
 
 ## ✅ Acceptance criteria
 
-- [ ] Code compiles & passes existing tests  
-- [ ] New / updated tests added  
-- [ ] Documentation updated (README, comments, wiki)  
-- [ ] Follows project coding style / guidelines  
-- [ ] No new ESLint/TSLint/SwiftLint/etc. warnings  
-- [ ] Tested on all supported browsers / OSs / platforms  
+- [ ] Code compiles & passes existing tests
+- [ ] New / updated tests added
+- [ ] Documentation updated (README, comments, wiki)
+- [ ] Follows project coding style / guidelines
+- [ ] No new ESLint/TSLint/SwiftLint/etc. warnings
+- [ ] Tested on all supported browsers / OSs / platforms
 
 ## 📝 Implementation notes
 

@@ -78,6 +78,11 @@ const router = createRouter({
       name: 'quiz',
       component: QuizCreator,
     },
+    {
+      path: '/map',
+      name: 'map',
+      component: MapView,
+    }
   ],
 })
 

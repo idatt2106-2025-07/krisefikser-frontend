@@ -1,38 +1,44 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRecaptcha } from 'vue-recaptcha-v3';
+import { ref, onMounted, nextTick } from 'vue';
 
 const username = ref('');
 const email = ref('');
 const password = ref('');
 const confirmpassword = ref('');
 const agreeToTerms = ref(false);
+const token = ref('');
+const recaptchaRef = ref<HTMLElement | null>(null);
 
-const { executeRecaptcha } = useRecaptcha({
-  siteKey: import.meta.env.VUE_APP_RECAPTCHA_SITE_KEY, // Access site key from .env
+function renderRecaptcha() {
+  if (window.grecaptcha && recaptchaRef.value) {
+    window.grecaptcha.render(recaptchaRef.value, {
+      sitekey: import.meta.env.VITE_APP_RECAPTCHA_SITE_KEY,
+      callback: (response: string) => {
+        token.value = response;
+        console.log('reCAPTCHA token:', response);
+      }
+    });
+  } else {
+    // Try again if not loaded yet
+    setTimeout(renderRecaptcha, 500);
+  }
+}
+
+onMounted(() => {
+  // Wait until DOM is rendered before rendering reCAPTCHA
+  nextTick(() => {
+    renderRecaptcha();
+  });
 });
 
-async function handleRegister() {
-  if (password.value !== confirmpassword.value) {
-    alert('Passwords do not match!');
-    return;
-  }
-  if (!agreeToTerms.value) {
-    alert('You must agree to the terms and conditions!');
+function handleSubmit() {
+  if (!token.value) {
+    alert('Please complete the reCAPTCHA.');
     return;
   }
 
-  try {
-    // Execute reCAPTCHA and get the token
-    const token = await executeRecaptcha('register');
-    console.log('reCAPTCHA token:', token);
-
-    // Simulate registration logic (e.g., API call)
-    alert('Registration successful!');
-  } catch (error) {
-    console.error('reCAPTCHA error:', error);
-    alert('Failed to verify reCAPTCHA. Please try again.');
-  }
+  // Submit form to backend (you would post the token with form data)
+  alert(`Submitted with token: ${token.value}`);
 }
 </script>
 
@@ -40,47 +46,42 @@ async function handleRegister() {
   <div class="page-wrapper">
     <div class="register-form">
       <h2>Register</h2>
+
       <div class="field">
         <label for="username">Username</label>
-        <input
-          id="username"
-          v-model="username"
-          type="text"
-          placeholder="Enter your username"
-          required
-        />
+        <input id="username" v-model="username" type="text" required />
       </div>
+
       <div class="field">
         <label for="email">Email</label>
-        <input id="email" v-model="email" type="email" placeholder="Enter your email" required />
+        <input id="email" v-model="email" type="email" required />
       </div>
+
       <div class="field">
         <label for="password">Password</label>
-        <input
-          id="password"
-          v-model="password"
-          type="password"
-          placeholder="Enter your password"
-          required
-        />
+        <input id="password" v-model="password" type="password" required />
       </div>
+
       <div class="field">
         <label for="confirmpassword">Confirm Password</label>
-        <input
-          id="confirmpassword"
-          v-model="confirmpassword"
-          type="password"
-          placeholder="Confirm your password"
-          required
-        />
+        <input id="confirmpassword" v-model="confirmpassword" type="password" required />
       </div>
+
       <div class="checkbox-container">
         <input type="checkbox" id="agreeToTerms" v-model="agreeToTerms" />
         <label for="agreeToTerms">I agree to the terms and conditions</label>
       </div>
-      <button @click="handleRegister" :disabled="!agreeToTerms || password !== confirmpassword">
+
+      <!-- 🔐 reCAPTCHA box -->
+      <div ref="recaptchaRef" class="recaptcha-container" />
+
+      <button
+        @click="handleSubmit"
+        :disabled="!agreeToTerms || password !== confirmpassword"
+      >
         Register
       </button>
+
       <p>Already have an account? <a href="/login">Login here</a></p>
     </div>
   </div>
@@ -107,10 +108,6 @@ async function handleRegister() {
   text-align: center;
 }
 
-.register-form h2 {
-  margin-bottom: 1rem;
-}
-
 .field {
   margin-bottom: 1rem;
 }
@@ -119,8 +116,6 @@ async function handleRegister() {
   display: block;
   margin-bottom: 0.5rem;
   font-family: 'Roboto', sans-serif;
-  font-size: 1rem;
-  color: black;
 }
 
 .field input {
@@ -128,7 +123,6 @@ async function handleRegister() {
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 1rem;
 }
 
 .checkbox-container {
@@ -142,6 +136,10 @@ async function handleRegister() {
   margin-left: 0.5rem;
 }
 
+.recaptcha-container {
+  margin: 1rem auto;
+}
+
 button {
   width: 100%;
   padding: 0.5rem 1rem;
@@ -149,8 +147,8 @@ button {
   color: white;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
   font-size: 1rem;
+  cursor: pointer;
 }
 
 button:hover {

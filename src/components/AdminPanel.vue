@@ -13,10 +13,15 @@
 
     <div class="content">
       <h2>{{ selectedItem }}</h2>
-      <div class="actions">
-        <button>Add shelter</button>
-        <button>Remove shelter</button>
-        <button>Save changes</button>
+
+      <!-- Display the map only when "Map icons" is selected -->
+      <div>
+        <!-- Action Buttons -->
+        <div class="actions">
+          <button>Add shelter</button>
+          <button>Remove shelter</button>
+          <button>Save changes</button>
+        </div>
       </div>
     </div>
   </div>
@@ -28,9 +33,9 @@ export default {
     return {
       menuItems: ['Shelters', 'Affected areas', 'Map icons', 'Gamification'],
       selectedItem: 'Shelters',
-    }
+    };
   },
-}
+};
 </script>
 
 <style scoped>
@@ -75,22 +80,6 @@ export default {
 .content {
   flex: 1;
   padding: 20px;
-}
-
-.map-placeholder {
-  margin: 10px auto;
-  width: 300px;
-  height: 300px;
-  border: 1px solid #ccc;
-  background-color: #e0f3f8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.map-placeholder img {
-  width: 100%;
-  height: auto;
 }
 
 .actions {

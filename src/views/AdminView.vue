@@ -6,6 +6,7 @@ import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import Listbox from 'primevue/listbox';
 import Panel from 'primevue/panel';
+import Map from '@/components/TheMap.vue';
 
 // Menu logic
 const menuItems = ['Manage Map', 'Gamification'];
@@ -16,7 +17,7 @@ const showAddIconForm = ref(false);
 const iconType = ref('');
 const selectedIcon = ref(null);
 
-const iconTypes = ['Shelter', 'Affected Area', 'Other'];
+const iconTypes = ['Shelter', 'Affected Area', 'Defibrillator','Water Station', 'Food central','Hospital'];
 
 const icons = {
   Shelter: [
@@ -31,7 +32,11 @@ const icons = {
 };
 
 function handleAddIcon() {
-  alert(`Icon added: Type - ${iconType.value}, Icon - ${selectedIcon.value.name}`);
+  if (!iconType.value) {
+    alert('Please select an icon type.');
+    return;
+  }
+  alert(`Icon added: Type - ${iconType.value}`);
   showAddIconForm.value = false;
 }
 </script>
@@ -60,6 +65,10 @@ function handleAddIcon() {
           <div v-if="selectedItem === 'Manage Map'">
             <p>Manage the map settings and icons here.</p>
 
+            <div>
+              <Map />
+            </div>
+
             <div class="button-group">
               <Button label="Add Map Icon" @click="showAddIconForm = true" />
               <Button label="Remove Map Icon" severity="danger" />
@@ -67,14 +76,7 @@ function handleAddIcon() {
             </div>
 
             <!-- Add Map Icon Form -->
-            <Panel
-              v-if="showAddIconForm"
-              header="Add Map Icon"
-              class="add-icon-form"
-              toggleable
-              collapsed="false"
-            >
-              <!-- Dropdowns -->
+            <div v-if="showAddIconForm" class="add-icon-form">
               <div class="dropdown-container">
                 <!-- Icon Type Dropdown -->
                 <div class="dropdown-item">
@@ -83,51 +85,20 @@ function handleAddIcon() {
                     v-model="iconType"
                     :options="iconTypes"
                     placeholder="-- Select Icon Type --"
-                    class="w-full"
+                    class="smooth-font"
                   />
                 </div>
-
-                <!-- Icon Listbox -->
-                <div class="dropdown-item">
-                  <label for="icon">Select Icon:</label>
-                  <Listbox
-                    v-if="iconType"
-                    :options="icons[iconType]"
-                    optionLabel="name"
-                    v-model="selectedIcon"
-                    filter
-                    listStyle="max-height: 150px"
-                    style="width: 100%"
-                  >
-                    <template #option="slotProps">
-                      <div class="icon-option">
-                        <img
-                          :src="slotProps.option.src"
-                          :alt="slotProps.option.name"
-                          class="icon-preview"
-                        />
-                        <span>{{ slotProps.option.name || 'Unnamed Icon' }}</span>
-                      </div>
-                    </template>
-                  </Listbox>
-                </div>
-              </div>
-
-              <!-- Preview and Submit -->
-              <div v-if="selectedIcon" class="icon-preview-section">
-                <h4>Selected Icon Preview:</h4>
-                <img :src="selectedIcon.src" :alt="selectedIcon.name" class="icon-preview-large" />
               </div>
 
               <div class="form-buttons">
                 <Button
                   label="Submit"
-                  :disabled="!iconType || !selectedIcon"
+                  :disabled="!iconType"
                   @click="handleAddIcon"
                 />
                 <Button label="Cancel" severity="secondary" @click="showAddIconForm = false" />
               </div>
-            </Panel>
+            </div>
           </div>
 
           <div v-else-if="selectedItem === 'Gamification'">
@@ -360,5 +331,4 @@ button:disabled {
   display: flex;
   align-items: center;
 }
-
 </style>

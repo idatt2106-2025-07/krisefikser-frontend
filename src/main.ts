@@ -10,6 +10,7 @@ import Password from 'primevue/password'
 import Checkbox from 'primevue/checkbox'
 import Button from 'primevue/button'
 import ToastService from 'primevue/toastservice'
+import { VueReCaptcha} from 'vue-recaptcha-v3';
 
 const app = createApp(App)
 
@@ -22,7 +23,8 @@ app.use(PrimeVue, {
       darkModeSelector: '.my-app-dark',
     },
   },
-}) // no theme config needed here
+})
+
 
 // Register PrimeVue components
 app.component('InputText', InputText)

@@ -5,6 +5,8 @@ import router from './router'
 import PrimeVue from 'primevue/config'
 import Aura from '@primevue/themes/aura'
 import Lara from '@primevue/themes/lara'
+import Material from '@primevue/themes/material'
+import '@/assets/fonts.css'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Checkbox from 'primevue/checkbox'
@@ -17,7 +19,7 @@ app.use(router)
 app.use(ToastService)
 app.use(PrimeVue, {
   theme: {
-    preset: Aura,
+    preset: Material,
     options: {
       darkModeSelector: '.my-app-dark',
     },

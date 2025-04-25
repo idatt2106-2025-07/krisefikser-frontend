@@ -1,66 +1,63 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import Password from 'primevue/password'
+import { ref, computed } from 'vue'
 import InputText from 'primevue/inputtext'
-import { useForm } from 'vee-validate'
+import Password from 'primevue/password'
 
-const { handleSubmit, errors } = useForm()
 const email = ref('')
 const password = ref('')
-const showPassword = ref(false)
 const emailError = ref(false)
+const touched = ref(false)
 
-function validateEmail() {
+function validateEmail () {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   emailError.value = !emailRegex.test(email.value)
 }
 
-function handleLogin() {
+const formValid = computed(() => email.value && password.value && !emailError.value)
+
+function handleLogin () {
+  touched.value = true
   validateEmail()
-  if (emailError.value) {
-    alert('Please fix the errors before logging in!')
-    return
-  }
-  if (!email.value || !password.value) {
-    alert('Please fill in all fields!')
-    return
-  }
+  if (!formValid.value) return
   alert('Login successful!')
 }
 </script>
 
 <template>
   <div class="page-wrapper">
-    <div class="login-form">
+    <form class="login-form" @submit.prevent="handleLogin">
       <h2>Login</h2>
 
-        <div class="email-input">
-            <InputText
-              id="email"
-              v-model="email"
-              type="text"
-              placeholder="Email"
-              @input="validateEmail"
-            />
-            <p v-if="emailError" class="error-text">Email invalid</p>
-        </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <InputText
+          id="email"
+          v-model="email"
+          placeholder="Email"
+          @blur="validateEmail"
+          :class="{ 'p-invalid': emailError }"
+        />
+        <small v-if="emailError" class="p-error">Email invalid</small>
+      </div>
 
+      <div class="field">
+        <label for="password">Password</label>
+        <Password
+          id="password"
+          v-model="password"
+          toggleMask
+          :feedback="false"
+          placeholder="Password"
+          :invalid="touched && !password"
+        />
+      </div>
 
+      <button type="submit" :disabled="!formValid">Login</button>
 
-        <div class="password-input">
-            <Password
-              id="password"
-              v-model="password"
-              toggleMask
-              :feedback="false"
-              placeholder="Password"
-              :inputStyle="{ fontFamily: 'Arial, sans-serif', fontSize: '16px', color: '#333' }"
-            />
-        </div>
-
-      <button @click="handleLogin" :disabled="!email || !password">Login</button>
-      <p>Don't have an account? <a href="/register">Register here</a></p>
-    </div>
+      <p class="register-link">
+        Don't have an account? <router-link to="/register">Register here</router-link>
+      </p>
+    </form>
   </div>
 </template>
 
@@ -69,7 +66,7 @@ function handleLogin() {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   padding: 2rem;
   box-sizing: border-box;
 }
@@ -80,51 +77,40 @@ function handleLogin() {
   padding: 2rem;
   border: 1px solid #ccc;
   border-radius: 8px;
-  background-color: white;
+  background-color: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.login-form h2 {
-  margin-bottom: 1rem;
 }
 
 .field {
   margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
-.email-input {
-  margin-bottom: 1rem;
-}
-
-.email-input .p-inputtext {
-  font-family: 'Arial', sans-serif;
-  font-size: 16px;
-  color: #333;
-}
-
-.password-input {
-  margin-bottom: 1rem;
-}
-
-.password-input :deep(.p-password-input > input) {
-  font-family: 'Arial', sans-serif;
-  font-size: 16px;
-  color: #333;
+/* make PrimeVue inputs 100% wide */
+.field :deep(.p-inputtext),
+.field :deep(.p-password-input) {
+  width: 100%;
 }
 
 button {
   width: 100%;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem;
   background-color: #007bff;
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
   font-size: 1rem;
+  cursor: pointer;
 }
 
-button:hover {
+.p-error {
+  color: #d9534f;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+button:hover:not(:disabled) {
   background-color: #0056b3;
 }
 
@@ -134,14 +120,9 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.login-form p {
+.register-link {
   margin-top: 1rem;
   font-size: 0.9rem;
-}
-
-.error-text {
-  color: red;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
+  text-align: center;
 }
 </style>

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import SearchBar from '../components/SearchBar.vue';
+import SortDropdown from '../components/SortDropdown.vue';
+import DaysCircle from '../components/DaysCircle.vue';
+import FilterSidebar from '../components/FilterSidebar.vue';
 import threeDots from '../assets/three-dots-horizontal.svg';
-import selectArrow from '../assets/select-arrow.svg';
-import searchIcon from '../assets/search.svg';
 
 interface StorageItem {
   id: number;
@@ -29,7 +31,7 @@ const sortOptions = [
   { value: 'quantity', label: 'Quantity' }
 ];
 
-const SUSTAIN_DAYS_GOAL = 14;
+const SUSTAIN_DAYS_GOAL = 21;
 
 const items = ref<StorageItem[]>([
   {
@@ -80,14 +82,17 @@ const items = ref<StorageItem[]>([
 ]);
 
 const selectedSort = ref('');
-const isDropdownOpen = ref(false);
+const searchQuery = ref('');
 const checkedCategories = ref<string[]>([]);
 
-const clearFilters = () => {
-  checkedCategories.value = [];
+// Handler for filter clear event
+const handleFilterClear = () => {
+  console.log('Filters cleared');
+  // Add any additional logic here
 };
 
-const daysLeft = ref(13); // Placeholder value, will be calculated by API later
+// Placeholder value, will be calculated by API later
+const daysLeft = ref(13);
 
 const getExpirationClass = (days: number) => {
   if (days === Infinity) return 'status-good';
@@ -96,16 +101,18 @@ const getExpirationClass = (days: number) => {
   return 'status-danger';
 };
 
-const addNewItem = () => {
-  console.log('Add new item clicked');
+// Function to handle search
+const handleSearch = (value: string) => {
+  searchQuery.value = value;
+  // Add your search logic here
+  console.log('Searching for:', value);
 };
 
-const getDaysPercentage = () => {
-  return Math.min(100, Math.max(0, (daysLeft.value / SUSTAIN_DAYS_GOAL) * 100));
-};
-
-const toggleDropdown = () => {
-  isDropdownOpen.value = !isDropdownOpen.value;
+// Function to handle sort selection
+const handleSort = (value: string) => {
+  selectedSort.value = value;
+  // Add your sorting logic here
+  console.log('Sorting by:', value);
 };
 </script>
 
@@ -114,80 +121,46 @@ const toggleDropdown = () => {
     <h1 class="storage-title">Emergency Storage</h1>
 
     <div class="content-wrapper">
-      <div class="filter-sidebar">
-        <div class="filter-header">
-          <h2>Categories</h2>
-          <button class="clear-filters" @click="clearFilters">Clear</button>
-        </div>
+      <FilterSidebar
+        :categories="categories"
+        v-model:checked-categories="checkedCategories"
+        title="Categories"
+        @clear="handleFilterClear"
+        sidebar-class="my-filter-sidebar"
+        header-class="my-filter-header"
+        title-class="my-filter-title"
+      />
 
-        <div class="category-list">
-          <label v-for="category in categories" :key="category.id" class="category-item">
-            <input
-              type="checkbox"
-              :value="category.id"
-              v-model="checkedCategories"
-            >
-            <span>{{ category.name }}</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Main content -->
       <div class="main-content">
         <div class="actions-container">
           <div class="sort-section">
-            <div class="search-container">
-              <div class="search-input-wrapper">
-                <img :src="searchIcon" alt="Search" class="search-icon" />
-                <input
-                  type="text"
-                  placeholder="Search items..."
-                  class="search-input"
-                />
-              </div>
-            </div>
-            <div class="select-container">
-              <select
-                v-model="selectedSort"
-                class="sort-select"
-                @click="toggleDropdown()"
-                @blur="isDropdownOpen = false">
-                <option v-for="option in sortOptions" :key="option.value" :value="option.value">
-                  {{ option.label }}
-                </option>
-              </select>
-              <div class="select-arrow" :class="{ 'arrow-open': isDropdownOpen }">
-                <img :src="selectArrow" alt="Select Arrow" />
-              </div>
-            </div>
+            <SearchBar
+              placeholder="Search items..."
+              v-model:value="searchQuery"
+              @search="handleSearch"
+              custom-class="my-search-container"
+              input-class="my-custom-input"
+            />
+            <SortDropdown
+              :options="sortOptions"
+              v-model:value="selectedSort"
+              @sort="handleSort"
+              container-class="my-dropdown-container"
+              select-class="my-dropdown-select"
+            />
           </div>
 
           <div class="days-container">
-            <div class="days-circle">
-              <svg class="days-progress" viewBox="0 0 36 36">
-                <circle class="circle-bg"
-                        cx="18" cy="18" r="16"
-                        fill="none"
-                        stroke="#e0e0e0"
-                        stroke-width="3.8" />
-
-                <circle class="circle-progress"
-                        cx="18" cy="18" r="16"
-                        fill="none"
-                        stroke="#4CC790"
-                        stroke-width="3.8"
-                        stroke-linecap="round"
-                        :stroke-dasharray="`${getDaysPercentage() * 100.53 / 100} 100.53`"
-                        transform="rotate(-90 18 18)" />
-              </svg>
-              <div class="days-content">
-                <div class="days-number">{{ daysLeft }}/{{ SUSTAIN_DAYS_GOAL }}</div>
-                <div class="days-label">days</div>
-              </div>
-            </div>
+            <DaysCircle
+              :current-days="daysLeft"
+              :goal-days="SUSTAIN_DAYS_GOAL"
+              container-class="my-days-container"
+              circle-class="my-days-circle"
+              content-class="my-days-content"
+            />
           </div>
 
-          <button @click="addNewItem" class="add-button">
+          <button class="add-button">
             Add item
           </button>
         </div>
@@ -255,58 +228,9 @@ const toggleDropdown = () => {
   gap: 2rem;
 }
 
-.filter-sidebar {
-  width: 250px;
-  background-color: white;
-  border-radius: 10px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: fit-content;
-  position: sticky;
-  top: 2rem;
-}
-
 .main-content {
   flex: 1;
   min-width: 0;
-}
-
-.filter-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.filter-header h2 {
-  font-size: 1.5rem;
-  margin: 0;
-}
-
-.clear-filters {
-  background: transparent;
-  border: none;
-  color: #007bff;
-  cursor: pointer;
-  font-size: 0.9rem;
-  padding: 0;
-}
-
-.clear-filters:hover {
-  text-decoration: underline;
-}
-
-.category-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.category-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
 }
 
 .actions-container {
@@ -325,157 +249,10 @@ const toggleDropdown = () => {
   width: 300px;
 }
 
-.search-container {
-  position: relative;
-  width: 100%;
-}
-
-.search-input-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1.2rem;
-  height: 1.2em;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.5;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.5rem 1rem 0.5rem 2.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid #e0e0e0;
-  font-size: 1rem;
-  background-color: white;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.2s, border-color 0.2s;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #18DAFF;
-  box-shadow: 0 0 0 3px rgba(76, 199, 144, 0.2);
-}
-
-.search-input:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.search-input::placeholder {
-  color: #aaa;
-}
-
-.select-container {
-  position: relative;
-  width: 150px;
-}
-
-.sort-select {
-  appearance: none;
-  background-color: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  padding-right: 2rem;
-  width: 100%;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: box-shadow 0.2s, border-color 0.2s;
-}
-
-.sort-select:focus {
-  outline: none;
-  border-color: #18DAFF;
-  box-shadow: 0 0 0 3px rgba(76, 199, 144, 0.2);
-}
-
-.sort-select:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.select-arrow {
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  right: 0.5rem;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  transition: transform 0.2s ease;
-  transform-origin: 50% 50%;
-}
-
-.select-arrow.arrow-open {
-  transform: rotate(180deg);
-}
-
-.select-arrow img {
-  height: 2.5rem;
-  width: 2.5rem;
-  display: block;
-}
-
 .days-container {
   position: relative;
   display: flex;
   align-items: center;
-}
-
-.days-circle {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: visible;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  z-index: 1;
-  position: relative;
-}
-
-.days-content {
-  text-align: center;
-  position: absolute;
-  z-index: 2;
-}
-
-.days-number {
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-.days-label {
-  font-size: 0.75rem;
-}
-
-.days-progress {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.circle-bg {
-  fill: none;
-  stroke: #e0e0e0;
-  stroke-width: 3.8;
-}
-
-.circle-progress {
-  fill: none;
-  stroke: #4CC790;
-  stroke-width: 3.8;
-  stroke-linecap: round;
-  transition: stroke-dasharray 0.3s ease;
 }
 
 .add-button {

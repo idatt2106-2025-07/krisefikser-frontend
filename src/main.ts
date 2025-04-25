@@ -10,7 +10,6 @@ import Password from 'primevue/password'
 import Checkbox from 'primevue/checkbox'
 import Button from 'primevue/button'
 import ToastService from 'primevue/toastservice'
-import { VueReCaptcha} from 'vue-recaptcha-v3';
 
 const app = createApp(App)
 
@@ -18,7 +17,7 @@ app.use(router)
 app.use(ToastService)
 app.use(PrimeVue, {
   theme: {
-    preset: Lara,
+    preset: Aura,
     options: {
       darkModeSelector: '.my-app-dark',
     },

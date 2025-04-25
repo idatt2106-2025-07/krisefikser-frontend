@@ -33,9 +33,9 @@ export default {
     return {
       menuItems: ['Shelters', 'Affected areas', 'Map icons', 'Gamification'],
       selectedItem: 'Shelters',
-    };
+    }
   },
-};
+}
 </script>
 
 <style scoped>

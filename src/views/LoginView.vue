@@ -1,10 +1,26 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import Password from 'primevue/password'
+import InputText from 'primevue/inputtext'
+import { useForm } from 'vee-validate'
 
+const { handleSubmit, errors } = useForm()
 const email = ref('')
 const password = ref('')
+const showPassword = ref(false)
+const emailError = ref(false)
+
+function validateEmail() {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  emailError.value = !emailRegex.test(email.value)
+}
 
 function handleLogin() {
+  validateEmail()
+  if (emailError.value) {
+    alert('Please fix the errors before logging in!')
+    return
+  }
   if (!email.value || !password.value) {
     alert('Please fill in all fields!')
     return
@@ -17,20 +33,31 @@ function handleLogin() {
   <div class="page-wrapper">
     <div class="login-form">
       <h2>Login</h2>
-      <div class="field">
-        <label for="email">Email</label>
-        <input id="email" v-model="email" type="email" placeholder="Enter your email" required />
-      </div>
-      <div class="field">
-        <label for="password">Password</label>
-        <input
-          id="password"
-          v-model="password"
-          type="password"
-          placeholder="Enter your password"
-          required
-        />
-      </div>
+
+        <div class="email-input">
+            <InputText
+              id="email"
+              v-model="email"
+              type="text"
+              placeholder="Email"
+              @input="validateEmail"
+            />
+            <p v-if="emailError" class="error-text">Email invalid</p>
+        </div>
+
+
+
+        <div class="password-input">
+            <Password
+              id="password"
+              v-model="password"
+              toggleMask
+              :feedback="false"
+              placeholder="Password"
+              :inputStyle="{ fontFamily: 'Arial, sans-serif', fontSize: '16px', color: '#333' }"
+            />
+        </div>
+
       <button @click="handleLogin" :disabled="!email || !password">Login</button>
       <p>Don't have an account? <a href="/register">Register here</a></p>
     </div>
@@ -66,20 +93,24 @@ function handleLogin() {
   margin-bottom: 1rem;
 }
 
-.field label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-family: 'Roboto', sans-serif;
-  font-size: 1rem;
-  color: black;
+.email-input {
+  margin-bottom: 1rem;
 }
 
-.field input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
+.email-input .p-inputtext {
+  font-family: 'Arial', sans-serif;
+  font-size: 16px;
+  color: #333;
+}
+
+.password-input {
+  margin-bottom: 1rem;
+}
+
+.password-input :deep(.p-password-input > input) {
+  font-family: 'Arial', sans-serif;
+  font-size: 16px;
+  color: #333;
 }
 
 button {
@@ -106,5 +137,11 @@ button:disabled {
 .login-form p {
   margin-top: 1rem;
   font-size: 0.9rem;
+}
+
+.error-text {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
 }
 </style>

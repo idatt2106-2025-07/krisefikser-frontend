@@ -1,44 +1,44 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick } from 'vue'
 
-const username = ref('');
-const email = ref('');
-const password = ref('');
-const confirmpassword = ref('');
-const agreeToTerms = ref(false);
-const token = ref('');
-const recaptchaRef = ref<HTMLElement | null>(null);
+const username = ref('')
+const email = ref('')
+const password = ref('')
+const confirmpassword = ref('')
+const agreeToTerms = ref(false)
+const token = ref('')
+const recaptchaRef = ref<HTMLElement | null>(null)
 
 function renderRecaptcha() {
   if (window.grecaptcha && recaptchaRef.value) {
     window.grecaptcha.render(recaptchaRef.value, {
       sitekey: import.meta.env.VITE_APP_RECAPTCHA_SITE_KEY,
       callback: (response: string) => {
-        token.value = response;
-        console.log('reCAPTCHA token:', response);
-      }
-    });
+        token.value = response
+        console.log('reCAPTCHA token:', response)
+      },
+    })
   } else {
     // Try again if not loaded yet
-    setTimeout(renderRecaptcha, 500);
+    setTimeout(renderRecaptcha, 500)
   }
 }
 
 onMounted(() => {
   // Wait until DOM is rendered before rendering reCAPTCHA
   nextTick(() => {
-    renderRecaptcha();
-  });
-});
+    renderRecaptcha()
+  })
+})
 
 function handleSubmit() {
   if (!token.value) {
-    alert('Please complete the reCAPTCHA.');
-    return;
+    alert('Please complete the reCAPTCHA.')
+    return
   }
 
   // Submit form to backend (you would post the token with form data)
-  alert(`Submitted with token: ${token.value}`);
+  alert(`Submitted with token: ${token.value}`)
 }
 </script>
 
@@ -75,10 +75,7 @@ function handleSubmit() {
       <!-- 🔐 reCAPTCHA box -->
       <div ref="recaptchaRef" class="recaptcha-container" />
 
-      <button
-        @click="handleSubmit"
-        :disabled="!agreeToTerms || password !== confirmpassword"
-      >
+      <button @click="handleSubmit" :disabled="!agreeToTerms || password !== confirmpassword">
         Register
       </button>
 

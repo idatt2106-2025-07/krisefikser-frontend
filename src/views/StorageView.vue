@@ -327,7 +327,7 @@ const handleSort = (value: string) => {
 }
 
 .status-good {
-  background-color: #4CC790;
+  background-color: #5ADF7B;
 }
 
 .status-warning {
@@ -335,7 +335,7 @@ const handleSort = (value: string) => {
 }
 
 .status-danger {
-  background-color: #FF6B6B;
+  background-color: #FF5C5F;
 }
 
 .status-pill {

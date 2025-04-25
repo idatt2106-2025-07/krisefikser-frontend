@@ -1,83 +1,58 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import UserSettings from '../components/UserSettings.vue';
+import { ref } from 'vue'
+import Tabs from 'primevue/tabs'
+import TabList from 'primevue/tablist'
+import Tab from 'primevue/tab'
+import TabPanels from 'primevue/tabpanels'
+import TabPanel from 'primevue/tabpanel'
+import UserSettings from '@/components/UserSettings.vue'
 
-const selectedItem = ref('Name');
+// The currently selected tab value – default "0" opens the Name tab
+const value = ref('0')
 
-const menuItems = [
-  { label: 'Name' },
-  { label: 'Mail' },
-  { label: 'Password' },
-  { label: 'Birthday' }
-];
+const tabs = [
+  { label: 'Name', type: 'Name' },
+  { label: 'Email', type: 'Email' },
+  { label: 'Password', type: 'Password' },
+  { label: 'Birthday', type: 'Birthday' }
+] as const
 </script>
 
 <template>
-  <div class="settings-page">
-    <h1 class="title">Profile Settings</h1>
-    <div class="settings-container">
-      <div class="sidebar">
-        <div
-          v-for="item in menuItems"
-          :key="item.label"
-          class="sidebar-item"
-          :class="{ active: selectedItem === item.label }"
-          @click="selectedItem = item.label"
+  <div class="settings-view">
+    <Tabs v-model:value="value" class="w-full">
+      <TabList class ="tab-list">
+        <Tab
+          v-for="(tab, index) in tabs"
+          :key="index"
+          :value="index.toString()"
         >
-          {{ item.label }}
-        </div>
-      </div>
-      <div class="content">
-        <UserSettings :type="selectedItem" />
-      </div>
-    </div>
+          {{ tab.label }}
+        </Tab>
+      </TabList>
+
+      <TabPanels>
+        <TabPanel
+          v-for="(tab, index) in tabs"
+          :key="index"
+          :value="index.toString()"
+        >
+          <UserSettings :type="tab.type" />
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
   </div>
 </template>
 
 <style scoped>
-.settings-page {
-  background-color: #cfcfcf;
-  min-height: 100vh;
-  padding: 2rem;
+.settings-view {
+  max-width: 500px;
+  margin: 2rem auto;
 }
 
-.title {
-  text-align: center;
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 2rem;
-}
-
-.settings-container {
-  display: flex;
-  max-width: 900px;
-  margin: 0 auto;
-  background-color: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar {
-  width: 200px;
+.tab-list {
   display: flex;
   flex-direction: column;
-  border-right: 2px solid black;
-}
-
-.sidebar-item {
-  padding: 1rem;
-  border-bottom: 1px solid black;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.sidebar-item.active {
-  background-color: gold;
-}
-
-.content {
-  flex: 1;
-  padding: 2rem;
+  gap: 1rem;
 }
 </style>

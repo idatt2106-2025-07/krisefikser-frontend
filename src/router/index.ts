@@ -4,6 +4,7 @@ import RegisterView from '@/views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
 import UserSettingsView from '@/views/UserSettingsView.vue'
 import StorageView from '@/views/StorageView.vue'
+import AdminView from '@/views/AdminView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,10 @@ const router = createRouter({
       path: '/storage',
       name: 'storage',
       component: StorageView,
+    },
+      path: '/admin',
+      name: 'admin',
+      component: AdminView,
     }
   ],
 })

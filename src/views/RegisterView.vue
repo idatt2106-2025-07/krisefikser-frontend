@@ -1,52 +1,127 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue'
+import InputText from 'primevue/inputtext'
+import Password from 'primevue/password'
 
-const username = ref('');
-const email = ref('');
-const password = ref('');
-const confirmpassword = ref('');
-const agreeToTerms = ref(false);
+// reactive state
+const username = ref('')
+const email = ref('')
+const password = ref('')
+const confirmpassword = ref('')
+const agreeToTerms = ref(false)
+const emailError = ref(false)
+const confirmTouched = ref(false)
 
-function handleRegister() {
-  if (password.value !== confirmpassword.value) {
-    alert('Passwords do not match!');
-    return;
-  }
-  if (!agreeToTerms.value) {
-    alert('You must agree to the terms and conditions!');
-    return;
-  }
-  alert('Registration successful!');
+// Google reCAPTCHA
+const token = ref('')
+const recaptchaRef = ref<HTMLElement | null>(null)
+
+/** e‑mail syntax check */
+function validateEmail () {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  emailError.value = !emailRegex.test(email.value)
 }
+
+/** true if the two password boxes match */
+const passwordsMatch = computed(() => password.value === confirmpassword.value)
+
+/** only allow submit if everything is valid */
+const formValid = computed(() =>
+  username.value &&
+  email.value &&
+  password.value &&
+  confirmpassword.value &&
+  agreeToTerms.value &&
+  passwordsMatch.value &&
+  !emailError.value &&
+  !!token.value
+)
+
+function handleSubmit () {
+  validateEmail()
+  confirmTouched.value = true
+
+  if (!formValid.value) {
+    return
+  }
+
+  alert(`Submitted with token: ${token.value}`)
+}
+
+function renderRecaptcha () {
+  if (window.grecaptcha && recaptchaRef.value) {
+    window.grecaptcha.render(recaptchaRef.value, {
+      sitekey: import.meta.env.VITE_APP_RECAPTCHA_SITE_KEY,
+      callback: (response: string) => {
+        token.value = response
+      }
+    })
+  } else {
+    setTimeout(renderRecaptcha, 500)
+  }
+}
+
+onMounted(() => {
+  nextTick(renderRecaptcha)
+})
 </script>
 
 <template>
   <div class="page-wrapper">
-    <div class="register-form">
+    <form class="register-form" @submit.prevent="handleSubmit">
       <h2>Register</h2>
+
       <div class="field">
         <label for="username">Username</label>
-        <input id="username" v-model="username" type="text" placeholder="Enter your username" required />
+        <InputText id="username" v-model="username" placeholder="Username" />
       </div>
+
       <div class="field">
         <label for="email">Email</label>
-        <input id="email" v-model="email" type="email" placeholder="Enter your email" required />
+        <InputText
+          id="email"
+          v-model="email"
+          placeholder="Email"
+          @blur="validateEmail"
+          :class="{ 'p-invalid': emailError }"
+        />
+        <small v-if="emailError" class="p-error">Email invalid</small>
       </div>
+
       <div class="field">
         <label for="password">Password</label>
-        <input id="password" v-model="password" type="password" placeholder="Enter your password" required />
+        <Password id="password" v-model="password" toggleMask placeholder="Password" />
       </div>
+
       <div class="field">
-        <label for="confirmpassword">Confirm Password</label>
-        <input id="confirmpassword" v-model="confirmpassword" type="password" placeholder="Confirm your password" required />
+        <label for="confirmPassword">Confirm Password</label>
+        <Password
+          id="confirmPassword"
+          v-model="confirmpassword"
+          toggleMask
+          :feedback="false"
+          placeholder="Confirm Password"
+          :class="{ 'p-invalid': confirmTouched && !passwordsMatch }"
+          @blur="confirmTouched = true"
+        />
+        <small v-if="confirmTouched && !passwordsMatch" class="p-error">Passwords don’t match</small>
       </div>
+
       <div class="checkbox-container">
         <input type="checkbox" id="agreeToTerms" v-model="agreeToTerms" />
         <label for="agreeToTerms">I agree to the terms and conditions</label>
       </div>
-      <button @click="handleRegister" :disabled="!agreeToTerms || password !== confirmpassword">Register</button>
-      <p>Already have an account? <a href="/login">Login here</a></p>
-    </div>
+
+      <!-- 🔐 reCAPTCHA -->
+      <div ref="recaptchaRef" class="recaptcha-container" />
+
+      <button type="submit" :disabled="!formValid">Register</button>
+
+      <p class="login-link">
+        Already have an account?
+        <router-link to="/login">Login here</router-link>
+      </p>
+    </form>
   </div>
 </template>
 
@@ -55,7 +130,7 @@ function handleRegister() {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   padding: 2rem;
   box-sizing: border-box;
 }
@@ -66,58 +141,51 @@ function handleRegister() {
   padding: 2rem;
   border: 1px solid #ccc;
   border-radius: 8px;
-  background-color: white;
+  background-color: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.register-form h2 {
-  margin-bottom: 1rem;
 }
 
 .field {
   margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
-.field label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-family: 'Roboto', sans-serif;
-  font-size: 1rem;
-  color: black;
+.p-error {
+  color: #d9534f;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
 }
 
-.field input {
+/* make PrimeVue inputs 100% wide */
+.field :deep(.p-inputtext),
+.field :deep(.p-password-input) {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
 }
 
 .checkbox-container {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 1rem;
+  gap: 0.5rem;
+  margin: 1rem 0;
 }
 
-.checkbox-container label {
-  margin-left: 0.5rem;
+.recaptcha-container {
+  margin: 1rem 0;
 }
 
 button {
   width: 100%;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem;
   background-color: #007bff;
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
   font-size: 1rem;
+  cursor: pointer;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background-color: #0056b3;
 }
 
@@ -127,8 +195,9 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.register-form p {
+.login-link {
   margin-top: 1rem;
   font-size: 0.9rem;
+  text-align: center;
 }
 </style>

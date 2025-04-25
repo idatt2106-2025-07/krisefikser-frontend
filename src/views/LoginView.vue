@@ -1,33 +1,63 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue'
+import InputText from 'primevue/inputtext'
+import Password from 'primevue/password'
 
-const email = ref('');
-const password = ref('');
+const email = ref('')
+const password = ref('')
+const emailError = ref(false)
+const touched = ref(false)
 
-function handleLogin() {
-  if (!email.value || !password.value) {
-    alert('Please fill in all fields!');
-    return;
-  }
-  alert('Login successful!');
+function validateEmail () {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  emailError.value = !emailRegex.test(email.value)
+}
+
+const formValid = computed(() => email.value && password.value && !emailError.value)
+
+function handleLogin () {
+  touched.value = true
+  validateEmail()
+  if (!formValid.value) return
+  alert('Login successful!')
 }
 </script>
 
 <template>
   <div class="page-wrapper">
-    <div class="login-form">
+    <form class="login-form" @submit.prevent="handleLogin">
       <h2>Login</h2>
+
       <div class="field">
         <label for="email">Email</label>
-        <input id="email" v-model="email" type="email" placeholder="Enter your email" required />
+        <InputText
+          id="email"
+          v-model="email"
+          placeholder="Email"
+          @blur="validateEmail"
+          :class="{ 'p-invalid': emailError }"
+        />
+        <small v-if="emailError" class="p-error">Email invalid</small>
       </div>
+
       <div class="field">
         <label for="password">Password</label>
-        <input id="password" v-model="password" type="password" placeholder="Enter your password" required />
+        <Password
+          id="password"
+          v-model="password"
+          toggleMask
+          :feedback="false"
+          placeholder="Password"
+          :invalid="touched && !password"
+        />
       </div>
-      <button @click="handleLogin" :disabled="!email || !password">Login</button>
-      <p>Don't have an account? <a href="/register">Register here</a></p>
-    </div>
+
+      <button type="submit" :disabled="!formValid">Login</button>
+
+      <p class="register-link">
+        Don't have an account? <router-link to="/register">Register here</router-link>
+      </p>
+    </form>
   </div>
 </template>
 
@@ -36,7 +66,7 @@ function handleLogin() {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   padding: 2rem;
   box-sizing: border-box;
 }
@@ -47,47 +77,40 @@ function handleLogin() {
   padding: 2rem;
   border: 1px solid #ccc;
   border-radius: 8px;
-  background-color: white;
+  background-color: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.login-form h2 {
-  margin-bottom: 1rem;
 }
 
 .field {
   margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
-.field label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-family: 'Roboto', sans-serif;
-  font-size: 1rem;
-  color: black;
-}
-
-.field input {
+/* make PrimeVue inputs 100% wide */
+.field :deep(.p-inputtext),
+.field :deep(.p-password-input) {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
 }
 
 button {
   width: 100%;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem;
   background-color: #007bff;
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
   font-size: 1rem;
+  cursor: pointer;
 }
 
-button:hover {
+.p-error {
+  color: #d9534f;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+button:hover:not(:disabled) {
   background-color: #0056b3;
 }
 
@@ -97,8 +120,9 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.login-form p {
+.register-link {
   margin-top: 1rem;
   font-size: 0.9rem;
+  text-align: center;
 }
 </style>

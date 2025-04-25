@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 
-const email = ref('');
-const password = ref('');
+const email = ref('')
+const password = ref('')
 
 function handleLogin() {
   if (!email.value || !password.value) {
-    alert('Please fill in all fields!');
-    return;
+    alert('Please fill in all fields!')
+    return
   }
-  alert('Login successful!');
+  alert('Login successful!')
 }
 </script>
 
@@ -23,7 +23,13 @@ function handleLogin() {
       </div>
       <div class="field">
         <label for="password">Password</label>
-        <input id="password" v-model="password" type="password" placeholder="Enter your password" required />
+        <input
+          id="password"
+          v-model="password"
+          type="password"
+          placeholder="Enter your password"
+          required
+        />
       </div>
       <button @click="handleLogin" :disabled="!email || !password">Login</button>
       <p>Don't have an account? <a href="/register">Register here</a></p>

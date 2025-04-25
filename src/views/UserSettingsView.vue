@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import UserSettings from '../components/UserSettings.vue';
+import { ref } from 'vue'
+import UserSettings from '../components/UserSettings.vue'
 
-const selectedItem = ref('Name');
+const selectedItem = ref('Name')
 
 const menuItems = [
   { label: 'Name' },
   { label: 'Mail' },
   { label: 'Password' },
-  { label: 'Birthday' }
-];
+  { label: 'Birthday' },
+]
 </script>
 
 <template>

@@ -1,23 +1,27 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import ColorToggleButton from '@/Buttons/ColorToggleButton.vue';
+import { useRouter } from 'vue-router'
+import ColorToggleButton from '@/Buttons/ColorToggleButton.vue'
 
-const router = useRouter();
+const router = useRouter()
 
 function navigateToLogin() {
-  router.push('/login');
+  router.push('/login')
 }
 
 function navigateToSignup() {
-  router.push('/register');
+  router.push('/register')
 }
 
 function navigateToHome() {
-  router.push('/');
+  router.push('/')
 }
 
 function navigateToSettings() {
-  router.push('/settings');
+  router.push('/settings')
+}
+
+function navigateToAdminPanel() {
+  router.push('/admin')
 }
 </script>
 
@@ -35,6 +39,9 @@ function navigateToSettings() {
       </li>
       <li>
         <button @click="navigateToSettings">Settings</button>
+      </li>
+      <li>
+        <button @click="navigateToAdminPanel">Admin Panel</button>
       </li>
     </ul>
   </nav>

@@ -1,46 +1,52 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 // PrimeVue components
-import Button from 'primevue/button';
-import Dropdown from 'primevue/dropdown';
-import Listbox from 'primevue/listbox';
-import Panel from 'primevue/panel';
-import Map from '@/components/TheMap.vue';
+import Button from 'primevue/button'
+import Dropdown from 'primevue/dropdown'
+import Listbox from 'primevue/listbox'
+import Panel from 'primevue/panel'
+import Map from '@/components/TheMap.vue'
 
 // Menu logic
-const menuItems = ['Manage Map', 'Gamification'];
-const selectedItem = ref(menuItems[0]);
+const menuItems = ['Manage Map', 'Gamification']
+const selectedItem = ref(menuItems[0])
 
 // Add Icon Form state
-const showAddIconForm = ref(false);
-const iconType = ref('');
-const selectedIcon = ref(null);
+const showAddIconForm = ref(false)
+const iconType = ref('')
+const selectedIcon = ref(null)
 
-const iconTypes = ['Shelter', 'Affected Area', 'Defibrillator','Water Station', 'Food central','Hospital'];
+const iconTypes = [
+  'Shelter',
+  'Affected Area',
+  'Defibrillator',
+  'Water Station',
+  'Food central',
+  'Hospital',
+]
 
 const icons = {
   Shelter: [
-    { name: 'Home Icon', src: new URL('@/assets/icons/home_icon.svg', import.meta.url).href }
+    { name: 'Home Icon', src: new URL('@/assets/icons/home_icon.svg', import.meta.url).href },
   ],
   'Affected Area': [
-    { name: 'Bolt Icon', src: new URL('@/assets/icons/bolt_icon.svg', import.meta.url).href }
+    { name: 'Bolt Icon', src: new URL('@/assets/icons/bolt_icon.svg', import.meta.url).href },
   ],
   Other: [
-    { name: 'Heart Icon', src: new URL('@/assets/icons/heart_icon.svg', import.meta.url).href }
-  ]
-};
+    { name: 'Heart Icon', src: new URL('@/assets/icons/heart_icon.svg', import.meta.url).href },
+  ],
+}
 
 function handleAddIcon() {
   if (!iconType.value) {
-    alert('Please select an icon type.');
-    return;
+    alert('Please select an icon type.')
+    return
   }
-  alert(`Icon added: Type - ${iconType.value}`);
-  showAddIconForm.value = false;
+  alert(`Icon added: Type - ${iconType.value}`)
+  showAddIconForm.value = false
 }
 </script>
-
 
 <template>
   <div class="admin-page">
@@ -91,11 +97,7 @@ function handleAddIcon() {
               </div>
 
               <div class="form-buttons">
-                <Button
-                  label="Submit"
-                  :disabled="!iconType"
-                  @click="handleAddIcon"
-                />
+                <Button label="Submit" :disabled="!iconType" @click="handleAddIcon" />
                 <Button label="Cancel" severity="secondary" @click="showAddIconForm = false" />
               </div>
             </div>
@@ -111,7 +113,6 @@ function handleAddIcon() {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .admin-page {
@@ -234,7 +235,6 @@ button:disabled {
 }
 
 .add-icon-form select,
-
 .custom-dropdown {
   position: relative;
   cursor: pointer;

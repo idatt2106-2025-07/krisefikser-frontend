@@ -45,7 +45,7 @@ const navigateTo = (path: string) => {
         <span class="menu-text">Menu</span>
       </div>
       <ul v-if="isMenuOpen" class="dropdown-menu">
-        <li class="dropdown-item" @click="navigateTo('/home')">Home</li>
+        <li class="dropdown-item" @click="navigateTo('/')">Home</li>
         <li class="dropdown-item" @click="navigateTo('/storage')">Emergency storage</li>
         <li class="dropdown-item" @click="navigateTo('/info')">General info</li>
         <li class="dropdown-item" @click="navigateTo('/quiz')">Quiz</li>

@@ -1,39 +1,45 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import Button from 'primevue/button';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import Button from 'primevue/button'
 
-const router = useRouter();
+const router = useRouter()
 
-const isMenuOpen = ref(false);
+const isMenuOpen = ref(false)
 
 const navigateToProfile = () => {
-  router.push('/profile');
-};
+  router.push('/profile')
+}
 
 const logout = () => {
-  router.push('/login');
-};
+  router.push('/login')
+}
 
 const navigateToHome = () => {
-  router.push('/');
-};
+  router.push('/')
+}
 
 const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value;
-};
+  isMenuOpen.value = !isMenuOpen.value
+}
 
 const navigateTo = (path: string) => {
-  router.push(path);
-  isMenuOpen.value = false;
-};
+  router.push(path)
+  isMenuOpen.value = false
+}
 </script>
 
 <template>
   <div class="navbar p-d-flex p-ai-center p-jc-between p-p-2">
     <!-- Left side: Logo + Hamburger Menu -->
     <div class="p-d-flex p-ai-center gap-2 relative">
-      <img src="@/assets/logo.svg" alt="Logo" class="h-10 w-auto" @click="navigateToHome" style="cursor: pointer;" />
+      <img
+        src="@/assets/logo.svg"
+        alt="Logo"
+        class="h-10 w-auto"
+        @click="navigateToHome"
+        style="cursor: pointer"
+      />
 
       <!-- Custom Hamburger Icon and Menu Text -->
       <div class="custom-button hamburger-menu p-d-flex p-ai-center gap-2" @click="toggleMenu">

@@ -1,28 +1,27 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import Button from 'primevue/button';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import Button from 'primevue/button'
 
+const router = useRouter()
 
-const router = useRouter();
-
-const isMenuOpen = ref(false);
+const isMenuOpen = ref(false)
 
 function navigateToLogin() {
-  router.push('/login');
+  router.push('/login')
 }
 
 function navigateToHome() {
-  router.push('/');
+  router.push('/')
 }
 
 function toggleMenu() {
-  isMenuOpen.value = !isMenuOpen.value;
+  isMenuOpen.value = !isMenuOpen.value
 }
 
 function navigateTo(path: string) {
-  router.push(path);
-  isMenuOpen.value = false;
+  router.push(path)
+  isMenuOpen.value = false
 }
 </script>
 
@@ -30,12 +29,7 @@ function navigateTo(path: string) {
   <div class="navbar p-d-flex p-ai-center p-jc-between p-p-2">
     <!-- Left side: Logo + Hamburger -->
     <div class="p-d-flex p-ai-center gap-2 relative">
-      <img
-        src="@/assets/logo.svg"
-        alt="Logo"
-        class="h-10 w-auto"
-        @click="navigateToHome"
-      />
+      <img src="@/assets/logo.svg" alt="Logo" class="h-10 w-auto" @click="navigateToHome" />
 
       <div class="custom-button hamburger-menu p-d-flex p-ai-center gap-2" @click="toggleMenu">
         <div class="hamburger-icon">

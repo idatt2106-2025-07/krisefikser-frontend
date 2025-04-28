@@ -21,7 +21,9 @@ const birthday = ref<Date | null>(null)
 // regex for basic e‑mail validation
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-const emailError = computed(() => props.type === 'Email' && !!email.value && !emailRegex.test(email.value))
+const emailError = computed(
+  () => props.type === 'Email' && !!email.value && !emailRegex.test(email.value),
+)
 
 const formValid = computed(() => {
   switch (props.type) {
@@ -48,7 +50,7 @@ watch(
     password.value = ''
     birthday.value = null
   },
-  { immediate: true } // Ensure fields are reset when the component is initialized
+  { immediate: true }, // Ensure fields are reset when the component is initialized
 )
 
 function save() {
@@ -74,7 +76,12 @@ function save() {
     <template v-else-if="props.type === 'Email'">
       <div class="field">
         <label for="email">Email</label>
-        <InputText id="email" v-model="email" placeholder="Enter email" :class="{ 'p-invalid': emailError }" />
+        <InputText
+          id="email"
+          v-model="email"
+          placeholder="Enter email"
+          :class="{ 'p-invalid': emailError }"
+        />
         <small v-if="emailError" class="p-error">Email invalid</small>
       </div>
     </template>

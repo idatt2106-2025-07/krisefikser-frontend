@@ -51,8 +51,6 @@ button {
   cursor: pointer;
 }
 
-
-
 button:disabled {
   background-color: #ccc; /* Disabled button background */
   color: #666; /* Disabled button text color */
@@ -65,5 +63,3 @@ button:disabled {
   font-size: 1rem;
   margin-top: 0.5rem; /* Add spacing above the error message */
 }
-
-

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 
 const filters = ref({
   affectedAreas: true,
@@ -16,6 +16,10 @@ const emit = defineEmits(['filter-change']);
 watch(filters, (newValue) => {
   emit('filter-change', { ...newValue });
 }, { deep: true });
+
+onMounted(() => {
+  emit('filter-change', { ...filters.value });
+});
 </script>
 
 <template>

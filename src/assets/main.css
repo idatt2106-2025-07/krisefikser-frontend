@@ -41,53 +41,52 @@ p{
 input::placeholder {
   font-family: 'Roboto', sans-serif;
   font-size: 1rem;
-  color: #888; /* Light gray color for placeholder text */
-  font-style: italic; /* Optional: Make placeholder text italic */
+  color: #888;
+  font-style: italic;
 }
 
 label {
   font-family: 'Roboto', sans-serif;
   font-size: 1rem;
-  color: black; /* Default label color */
-  margin-bottom: 0.5rem; /* Add spacing below the label */
-  display: block; /* Ensure labels are on their own line */
+  color: black;
+  margin-bottom: 0.5rem;
+  display: block;
 }
 
 span{
   font-family: 'Roboto', sans-serif;
   font-size: 1rem;
-  color: black; /* Default label color */
-  display: block; /* Ensure labels are on their own line */
+  color: black;
+  display: block;
 }
 
-/* Style for button text */
 button {
   font-family: 'Roboto', sans-serif;
   font-size: 1rem;
-  color: white; /* Default text color for buttons */
-  background-color: #007bff; /* Default button background color */
+  color: white;
+  background-color: #007bff;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add shadow */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: box-shadow 0.2s ease, background-color 0.2s;
 }
 
 button:hover {
-  background-color: #0056b3; /* Darker background on hover */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+  background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 button:disabled {
-  background-color: #ccc; /* Disabled button background */
-  color: #666; /* Disabled button text color */
+  background-color: #ccc;
+  color: #666;
   cursor: not-allowed;
 }
 
 .p-error {
-  color: red; /* Error message color */
+  color: red;
   font-family: 'Roboto', sans-serif;
   font-size: 1rem;
-  margin-top: 0.5rem; /* Add spacing above the error message */
+  margin-top: 0.5rem;
 }

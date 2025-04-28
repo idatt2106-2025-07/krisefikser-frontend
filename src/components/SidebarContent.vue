@@ -224,13 +224,13 @@ onMounted(() => {
   flex-grow: 1;
   padding: 32px;
   background-color: white;
-  overflow-y: auto; /* Add scrolling when content exceeds height */
+  overflow-y: auto;
 }
 
 .content-wrapper {
   height: 100%;
 }
-/* Mobile menu button */
+
 .mobile-menu-button {
   display: none;
   flex-direction: column;
@@ -263,7 +263,6 @@ onMounted(() => {
   align-self: flex-end;
 }
 
-/* Media queries for responsiveness */
 @media (max-width: 768px) {
   .close-mobile-menu {
     display: flex;
@@ -304,7 +303,6 @@ onMounted(() => {
   }
 }
 
-/* Additional responsive adjustments */
 @media (max-width: 480px) {
   h3 {
     font-size: 1.2rem;

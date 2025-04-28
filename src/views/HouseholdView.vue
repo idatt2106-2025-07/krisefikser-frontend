@@ -341,7 +341,6 @@ h3{
   border-bottom: none;
 }
 
-/* Media queries for responsiveness */
 @media (max-width: 768px) {
 
   .member-popup {
@@ -351,7 +350,6 @@ h3{
     margin-right: 0;
   }
 
-  /* Adjust other elements for mobile */
   .member-card {
     padding: 12px 8px;
   }
@@ -363,7 +361,6 @@ h3{
   }
 }
 
-/* Additional responsive adjustments */
 @media (max-width: 480px) {
   .content-container {
     padding: 8px;

@@ -1,16 +1,28 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 
-// Define the interface for sidebar items
+/**
+ * Interface defining the structure of a sidebar item.
+ * @interface SidebarItem
+ * @property {string} id - Unique identifier for the sidebar item.
+ * @property {string} title - Display title of the sidebar item.
+ */
 interface SidebarItem {
   id: string;
   title: string;
 }
 
+/**
+ * Reactive state to track whether the mobile menu is open.
+ * @type {Ref<boolean>}
+ */
 const isMobileMenuOpen = ref(false);
 
-
-// Define props with TypeScript types
+/**
+ * Props passed to the component.
+ * @property {string} [sidebarTitle='Dashboard'] - Title displayed in the sidebar header.
+ * @property {SidebarItem[]} sidebarItems - Array of sidebar items to display.
+ */
 const props = withDefaults(defineProps<{
   sidebarTitle?: string;
   sidebarItems: SidebarItem[];
@@ -18,36 +30,56 @@ const props = withDefaults(defineProps<{
   sidebarTitle: 'Dashboard'
 });
 
-// Define emits with TypeScript types
+/**
+ * Emits events from the component.
+ * @event item-selected - Emitted when a sidebar item is selected.
+ * @param {SidebarItem} item - The selected sidebar item.
+ * @param {number} index - The index of the selected item.
+ */
 const emit = defineEmits<{
   (e: 'item-selected', item: SidebarItem, index: number): void;
 }>();
 
-// Reactive state
+/**
+ * Reactive state to track the index of the currently active sidebar item.
+ * @type {Ref<number|null>}
+ */
 const activeItemIndex = ref<number | null>(null);
 
-// Computed properties
+/**
+ * Computed property to get the currently active sidebar item.
+ * @returns {SidebarItem|null} The active sidebar item or null if none is selected.
+ */
 const activeItem = computed<SidebarItem | null>(() => {
   return activeItemIndex.value !== null ? props.sidebarItems[activeItemIndex.value] : null;
 });
 
-// Methods
+/**
+ * Sets the active sidebar item and emits the `item-selected` event.
+ * @param {number} index - The index of the item to activate.
+ */
 const setActiveItem = (index: number): void => {
   activeItemIndex.value = index;
-  // Emit an event so parent components can react to the selection
   emit('item-selected', props.sidebarItems[index], index);
+
+  // Close the mobile menu if the screen width is less than 768px.
   if (window.innerWidth < 768) {
     toggleMobileMenu();
   }
 };
 
-const toggleMobileMenu = () => {
+/**
+ * Toggles the visibility of the mobile menu.
+ */
+const toggleMobileMenu = (): void => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
 };
 
-// Lifecycle hooks
+/**
+ * Lifecycle hook that runs when the component is mounted.
+ * - Sets the first sidebar item as active by default if items are available.
+ */
 onMounted(() => {
-  // Select the first item by default if available
   if (props.sidebarItems.length > 0) {
     setActiveItem(0);
   }

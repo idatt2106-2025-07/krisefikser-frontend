@@ -8,6 +8,7 @@
 /* Fallback for very old themes */
 html,
 body,
-.p-component {                /* master utility class on every PrimeVue node */
+.p-component {
+  /* master utility class on every PrimeVue node */
   font-family: var(--font-family) !important;
 }

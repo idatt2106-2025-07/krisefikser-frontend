@@ -14,29 +14,21 @@ const tabs = [
   { label: 'Name', type: 'Name' },
   { label: 'Email', type: 'Email' },
   { label: 'Password', type: 'Password' },
-  { label: 'Birthday', type: 'Birthday' }
+  { label: 'Birthday', type: 'Birthday' },
 ] as const
 </script>
 
 <template>
   <div class="settings-view">
     <Tabs v-model:value="value" class="w-full">
-      <TabList class ="tab-list">
-        <Tab
-          v-for="(tab, index) in tabs"
-          :key="index"
-          :value="index.toString()"
-        >
+      <TabList class="tab-list">
+        <Tab v-for="(tab, index) in tabs" :key="index" :value="index.toString()">
           {{ tab.label }}
         </Tab>
       </TabList>
 
       <TabPanels>
-        <TabPanel
-          v-for="(tab, index) in tabs"
-          :key="index"
-          :value="index.toString()"
-        >
+        <TabPanel v-for="(tab, index) in tabs" :key="index" :value="index.toString()">
           <UserSettings :type="tab.type" />
         </TabPanel>
       </TabPanels>

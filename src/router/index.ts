@@ -3,7 +3,10 @@ import HomeView from '../views/HomeView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
 import UserSettingsView from '@/views/UserSettingsView.vue'
+import HouseholdView from '@/views/HouseholdView.vue'
+import StorageView from '@/views/StorageView.vue'
 import AdminView from '@/views/AdminView.vue'
+import QuizCreator from '@/views/QuizCreator.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,9 +32,24 @@ const router = createRouter({
       component: UserSettingsView,
     },
     {
+      path: '/household',
+      name: 'household',
+      component: HouseholdView,
+    },
+    {
+      path: '/storage',
+      name: 'storage',
+      component: StorageView,
+    },
+    {
       path: '/admin',
       name: 'admin',
       component: AdminView,
+    },
+    {
+      path: '/quiz-creator',
+      name: 'quiz-creator',
+      component: QuizCreator,
     },
   ],
 })

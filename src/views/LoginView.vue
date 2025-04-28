@@ -8,14 +8,14 @@ const password = ref('')
 const emailError = ref(false)
 const touched = ref(false)
 
-function validateEmail () {
+function validateEmail() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   emailError.value = !emailRegex.test(email.value)
 }
 
 const formValid = computed(() => email.value && password.value && !emailError.value)
 
-function handleLogin () {
+function handleLogin() {
   touched.value = true
   validateEmail()
   if (!formValid.value) return

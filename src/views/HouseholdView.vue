@@ -2,15 +2,30 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import SidebarContent from '../components/SidebarContent.vue';
 
+/**
+ * Interface representing a sidebar item.
+ * @interface
+ * @property {string} id - Unique identifier for the sidebar item.
+ * @property {string} title - Display title of the sidebar item.
+ */
 interface SidebarItem {
   id: string;
   title: string;
 }
 
+/**
+ * Interface representing a household member.
+ * @interface
+ * @property {string} name - Name of the household member.
+ */
 interface Member {
   name: string;
 }
 
+/**
+ * Reactive array of sidebar menu items.
+ * @type {Ref<SidebarItem[]>}
+ */
 const menuItems = ref<SidebarItem[]>([
   {
     id: 'household',
@@ -22,41 +37,78 @@ const menuItems = ref<SidebarItem[]>([
   }
 ]);
 
+/**
+ * Reactive state to track the currently active popup member.
+ * @type {Ref<string | null>}
+ */
 const activePopupMember = ref<string | null>(null);
 
+/**
+ * Handles the selection of a sidebar item.
+ * @param {SidebarItem} item - The selected sidebar item.
+ * @param {number} index - The index of the selected item.
+ */
 const handleItemSelected = (item: SidebarItem, index: number) => {
   console.log('Selected item:', item.title, 'at index:', index);
 };
 
-const members = ref<Member[]>([])
+/**
+ * Reactive array of household members.
+ * @type {Ref<Member[]>}
+ */
+const members = ref<Member[]>([]);
+
+/**
+ * Reactive state to track the loading status.
+ * @type {Ref<boolean>}
+ */
 const isLoading = ref(true);
+
+/**
+ * Reactive state to store error messages.
+ * @type {Ref<string | null>}
+ */
 const error = ref<string | null>(null);
 
+/**
+ * Fetches the list of household members.
+ * Simulates an API call with a delay.
+ * @async
+ */
 const fetchMembers = async () => {
   isLoading.value = true;
   error.value = null;
 
   try {
     //TODO: fix to use endpoint later
-    await new Promise(resolve => setTimeout(resolve,  2000));
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
+    // Populate members with mock data
     members.value = [
-      {name: 'Anders Lundemo'},
-      {name: 'Lukas'},
-      {name: 'Johan'},
-      {name: 'john doe'},
-      {name: 'Vetle'},
-      {name: "Florian"}
-    ]
+      { name: 'Anders Lundemo' },
+      { name: 'Lukas' },
+      { name: 'Johan' },
+      { name: 'john doe' },
+      { name: 'Vetle' },
+      { name: 'Florian' }
+    ];
   } catch (e) {
+    // Handle errors and set error message
     error.value = 'Failed to load household members';
-    console.log(e)
+    console.log(e);
   } finally {
+    // Set loading state to false
     isLoading.value = false;
   }
-}
+};
 
-const editMember = (member : Member, event: Event) => {
+/**
+ * Handles the edit action for a household member.
+ * Toggles the popup for the selected member.
+ * @param {Member} member - The member to be edited.
+ * @param {Event} event - The click event.
+ */
+const editMember = (member: Member, event: Event) => {
   // Stop event propagation to prevent immediate closing
   event.stopPropagation();
 
@@ -66,22 +118,32 @@ const editMember = (member : Member, event: Event) => {
   } else {
     activePopupMember.value = member.name;
   }
-}
+};
 
+/**
+ * Closes all active popups.
+ */
 const closePopups = () => {
   activePopupMember.value = null;
-}
+};
 
-
+/**
+ * Lifecycle hook that runs when the component is mounted.
+ * - Fetches the list of members.
+ * - Adds a click event listener to close popups.
+ */
 onMounted(() => {
   fetchMembers();
-
   document.addEventListener('click', closePopups);
 });
 
+/**
+ * Lifecycle hook that runs before the component is unmounted.
+ * - Removes the click event listener to close popups.
+ */
 onBeforeUnmount(() => {
-  document.removeEventListener('click', closePopups)
-})
+  document.removeEventListener('click', closePopups);
+});
 </script>
 
 <template>

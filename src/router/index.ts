@@ -34,7 +34,8 @@ const router = createRouter({
       path: '/household',
       name: 'household',
       component: HouseholdView,
-    }
+    },
+    {
       path: '/admin',
       name: 'admin',
       component: AdminView,

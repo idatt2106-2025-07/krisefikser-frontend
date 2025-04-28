@@ -1,5 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Jersey+20+Charted&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
+:root{
+  font-family: 'Roboto', sans-serif;
+  --background-color: #DBF5FA;
+    --danger-color: #FF0000;
+}
+
 h1{
     font-family: 'Roboto', sans-serif;
     font-size: 2.5rem;
@@ -14,6 +20,14 @@ h2{
     color: black;
     text-align: center;
     margin-top: 1rem;
+}
+
+h3{
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.5rem;
+  color: black;
+  text-align: left;
+  margin-top: 1rem;
 }
 
 p{
@@ -39,6 +53,13 @@ label {
   display: block; /* Ensure labels are on their own line */
 }
 
+span{
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  color: black; /* Default label color */
+  display: block; /* Ensure labels are on their own line */
+}
+
 /* Style for button text */
 button {
   font-family: 'Roboto', sans-serif;
@@ -49,10 +70,15 @@ button {
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add shadow */
+  transition: box-shadow 0.2s ease, background-color 0.2s;
+
 }
 
 button:hover {
   background-color: #0056b3; /* Darker background on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+
 }
 
 button:disabled {

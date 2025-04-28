@@ -41,6 +41,7 @@ export default defineConfigWithVueTs(
       '@typescript-eslint/no-unused-vars': 'off', // Turn off base rule because TS handles it
       'vue/multi-word-component-names': 'off', // Turn off base rule because TS handles it
       'vue/no-reserved-component-names': 'off', // Turn off base rule because TS handles itq
+      '@typescript-eslint/no-explicit-any': 'off', // Turn off base rule because TS handles it
     },
   },
 )

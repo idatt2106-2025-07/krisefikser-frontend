@@ -51,7 +51,7 @@ const iconTypes = [
   'Hospital',
 ]
 
-const userType: 'User' = 'User' // instead of "Users"
+const userType = 'User' as const
 
 function handleAddIcon() {
   if (!iconType.value) {

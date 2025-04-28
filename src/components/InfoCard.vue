@@ -37,10 +37,10 @@ const handleClick = () => {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  padding: 0.3rem 1rem 0.3rem 1rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   text-align: center;
   aspect-ratio: 1/1;

@@ -17,7 +17,7 @@ const token = ref('')
 const recaptchaRef = ref<HTMLElement | null>(null)
 
 /** e‑mail syntax check */
-function validateEmail () {
+function validateEmail() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   emailError.value = !emailRegex.test(email.value)
 }
@@ -26,18 +26,19 @@ function validateEmail () {
 const passwordsMatch = computed(() => password.value === confirmpassword.value)
 
 /** only allow submit if everything is valid */
-const formValid = computed(() =>
-  username.value &&
-  email.value &&
-  password.value &&
-  confirmpassword.value &&
-  agreeToTerms.value &&
-  passwordsMatch.value &&
-  !emailError.value &&
-  !!token.value
+const formValid = computed(
+  () =>
+    username.value &&
+    email.value &&
+    password.value &&
+    confirmpassword.value &&
+    agreeToTerms.value &&
+    passwordsMatch.value &&
+    !emailError.value &&
+    !!token.value,
 )
 
-function handleSubmit () {
+function handleSubmit() {
   validateEmail()
   confirmTouched.value = true
 
@@ -48,13 +49,13 @@ function handleSubmit () {
   alert(`Submitted with token: ${token.value}`)
 }
 
-function renderRecaptcha () {
+function renderRecaptcha() {
   if (window.grecaptcha && recaptchaRef.value) {
     window.grecaptcha.render(recaptchaRef.value, {
       sitekey: import.meta.env.VITE_APP_RECAPTCHA_SITE_KEY,
       callback: (response: string) => {
         token.value = response
-      }
+      },
     })
   } else {
     setTimeout(renderRecaptcha, 500)
@@ -104,7 +105,9 @@ onMounted(() => {
           :class="{ 'p-invalid': confirmTouched && !passwordsMatch }"
           @blur="confirmTouched = true"
         />
-        <small v-if="confirmTouched && !passwordsMatch" class="p-error">Passwords don’t match</small>
+        <small v-if="confirmTouched && !passwordsMatch" class="p-error"
+          >Passwords don’t match</small
+        >
       </div>
 
       <div class="checkbox-container">

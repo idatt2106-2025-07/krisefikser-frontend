@@ -1,97 +1,130 @@
+<!-- AdminPanel.vue  -->
 <template>
   <div class="admin-panel">
-    <div class="sidebar">
-      <button
-        v-for="item in menuItems"
-        :key="item"
-        :class="{ active: item === selectedItem }"
-        @click="selectedItem = item"
-      >
-        {{ item }}
-      </button>
+    <div v-if="props.type === 'Map'" class="map-panel">
+      <TheMap />
+      <div class="buttons">
+        <Button label="Add Icon" @click="showAddIconForm = true" />
+        <Button label="Save Changes" @click="save" class="mt-2" />
+      </div>
+      <div v-if="showAddIconForm" class="add-icon-form">
+        <h3>Add Icon</h3>
+        <Dropdown v-model="iconType" :options="iconTypes" placeholder="Select Icon Type" />
+        <Button label="Add" @click="handleAddIcon" class="mt-2" />
+      </div>
     </div>
 
-    <div class="content">
-      <h2>{{ selectedItem }}</h2>
+    <div v-else-if="props.type === 'Gameification'" class="gameification-panel">
+      <GameificationSettings />
+      <Button label="Save Changes" @click="save" class="mt-2" />
+    </div>
 
-      <!-- Display the map only when "Map icons" is selected -->
-      <div>
-        <!-- Action Buttons -->
-        <div class="actions">
-          <button>Add shelter</button>
-          <button>Remove shelter</button>
-          <button>Save changes</button>
-        </div>
-      </div>
+    <div v-else-if="props.type === 'Users'" class="user-panel">
+      <h2>Manage Users</h2>
+      <p>Manage user accounts and permissions here.</p>
+      <Button label="Save Changes" @click="save" class="mt-2" />
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      menuItems: ['Shelters', 'Affected areas', 'Map icons', 'Gamification'],
-      selectedItem: 'Shelters',
-    }
-  },
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from 'primevue/button'
+import Dropdown from 'primevue/dropdown'
+import TheMap from '@/components/TheMap.vue'
+import UserSettings from '@/components/UserSettings.vue'
+import GameificationSettings from '@/components/CRUDActivities.vue'
+
+interface Props {
+  type: 'Map' | 'User' | 'Gameification'
+}
+
+const props = defineProps<Props>()
+
+const showAddIconForm = ref(false)
+const iconType = ref('')
+const iconTypes = [
+  'Shelter',
+  'Affected Area',
+  'Defibrillator',
+  'Water Station',
+  'Food Central',
+  'Hospital',
+]
+
+function handleAddIcon() {
+  if (!iconType.value) {
+    alert('Please select an icon type.')
+    return
+  }
+  alert(`Icon added: Type – ${iconType.value}`)
+  showAddIconForm.value = false
+}
+
+function save() {
+  alert(`${props.type} settings saved!`)
 }
 </script>
 
 <style scoped>
 .admin-panel {
+  padding: 2rem;
+}
+
+.map-panel,
+.gameification-panel,
+.user-panel {
+  text-align: center;
+}
+
+.buttons {
+  margin-top: 1rem;
+}
+
+.add-icon-form {
+  margin-top: 1rem;
+}
+
+.add-icon-form h3 {
+  margin-bottom: 1rem;
+}
+
+/* container */
+.admin-container {
+  max-width: 900px;
+  margin: 0 auto;
   display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  background-color: white;
-  border-radius: 15px;
   border: 2px solid #000;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
+  border-radius: 12px;
+  background: #fff;
 }
 
-.sidebar {
-  width: 180px;
-  border-right: 2px solid #000;
+/* reach into PrimeVue’s generated markup */
+:deep(.sidebar) {
+  width: 200px;
   display: flex;
-  flex-direction: column;
-  background-color: white;
-  border-top-left-radius: 15px;
-  border-bottom-left-radius: 15px;
-  overflow: hidden;
+  flex-direction: column; /* <<< makes the headers vertical */
+  border-right: 2px solid #000;
 }
-
-.sidebar button {
-  padding: 10px;
-  border: none;
-  background-color: white;
+:deep(.sidebar-item) {
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
   cursor: pointer;
-  text-align: left;
-  font-weight: bold;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #000;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+:deep(.sidebar-item[aria-selected='true']) {
+  background: #18daff80;
+  color: #fff;
 }
 
-.sidebar button.active {
-  background-color: orange;
-  color: white;
-}
-
-.content {
+:deep(.content-wrapper) {
   flex: 1;
-  padding: 20px;
 }
-
-.actions {
-  margin-top: 15px;
-}
-
-.actions button {
-  margin: 5px;
-  padding: 8px 12px;
-  background-color: #60d394;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
+:deep(.p-tabpanel) {
+  padding: 2rem;
 }
 </style>

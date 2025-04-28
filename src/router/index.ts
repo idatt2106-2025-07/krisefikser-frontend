@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
 import UserSettingsView from '@/views/UserSettingsView.vue'
+import HouseholdView from '@/views/HouseholdView.vue'
 import StorageView from '@/views/StorageView.vue'
 import AdminView from '@/views/AdminView.vue'
 import QuizCreator from '@/views/QuizCreator.vue'
@@ -29,6 +30,11 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: UserSettingsView,
+    },
+    {
+      path: '/household',
+      name: 'household',
+      component: HouseholdView,
     },
     {
       path: '/storage',

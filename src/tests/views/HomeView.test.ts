@@ -21,14 +21,9 @@ describe('HomeView.vue', () => {
 
   it('renders four InfoCards with proper labels', () => {
     const wrapper = mount(HomeView)
-    const expectedHeadings = [
-      'Emergency Storage',
-      'General Info',
-      'Quiz',
-      'News'
-    ]
+    const expectedHeadings = ['Emergency Storage', 'General Info', 'Quiz', 'News']
     // Find all InfoCard components by searching for the expected heading text
-    expectedHeadings.forEach(text => {
+    expectedHeadings.forEach((text) => {
       expect(wrapper.html()).toContain(text)
     })
   })
@@ -46,9 +41,9 @@ describe('HomeView.vue', () => {
           navigateToStorage,
           navigateToInfo,
           navigateToQuiz,
-          navigateToNews
-        }
-      }
+          navigateToNews,
+        },
+      },
     })
 
     const buttonContainers = wrapper.findAll('.button-container')

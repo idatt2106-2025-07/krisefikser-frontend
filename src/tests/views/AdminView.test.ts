@@ -19,10 +19,10 @@ vi.mock('primevue/tabs', () => ({
     template: `<div class="tabs-stub"><slot /></div>`,
   }),
 }))
-vi.mock('primevue/tablist',   () => ({ default: simpleStub('tablist') }))
-vi.mock('primevue/tab',       () => ({ default: simpleStub('tab') }))
+vi.mock('primevue/tablist', () => ({ default: simpleStub('tablist') }))
+vi.mock('primevue/tab', () => ({ default: simpleStub('tab') }))
 vi.mock('primevue/tabpanels', () => ({ default: simpleStub('tabpanels') }))
-vi.mock('primevue/tabpanel',  () => ({ default: simpleStub('tabpanel') }))
+vi.mock('primevue/tabpanel', () => ({ default: simpleStub('tabpanel') }))
 
 vi.mock('@/components/AdminPanel.vue', () => ({
   default: defineComponent({
@@ -55,14 +55,13 @@ describe('AdminView.vue', () => {
   })
 
   it('renders three AdminPanel stubs with correct type props', () => {
-    const types = wrapper.findAll('.admin-panel-stub')
-                       .map((n) => n.attributes('data-type'))
+    const types = wrapper.findAll('.admin-panel-stub').map((n) => n.attributes('data-type'))
     expect(types).toEqual(['Map', 'Gameification', 'User'])
   })
 
   it('handleAddIcon(): success path closes the form', () => {
     const vm: any = wrapper.vm
-    vm.iconType = 'Shelter'      // plain assignment (auto-unwrapped ref)
+    vm.iconType = 'Shelter' // plain assignment (auto-unwrapped ref)
     vm.showAddIconForm = true
 
     const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
@@ -76,7 +75,7 @@ describe('AdminView.vue', () => {
 
   it('handleAddIcon(): validation path keeps the form open', () => {
     const vm: any = wrapper.vm
-    vm.iconType = ''             // no icon chosen
+    vm.iconType = '' // no icon chosen
     vm.showAddIconForm = true
 
     const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})

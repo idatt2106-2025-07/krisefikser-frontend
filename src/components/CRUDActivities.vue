@@ -15,7 +15,7 @@ interface Activity {
 // Fixed activity types
 const activityTypes = ['information', 'quiz']
 
-const router = useRouter()  // Import router to allow navigation
+const router = useRouter() // Import router to allow navigation
 
 const activities = ref<Activity[]>([]) // List of activities
 const newActivity = ref<Activity>({ id: 0, name: '', group: '' }) // For creating/updating
@@ -84,19 +84,22 @@ function resetForm() {
           id="group"
           v-model="newActivity.group"
           :options="activityTypes"
-          placeholder="Select activity type" />
+          placeholder="Select activity type"
+        />
       </div>
       <div class="button-group">
         <Button
           type="submit"
           :label="isEditing ? 'Update Activity' : 'Add Activity'"
-          class="p-mr-2" />
+          class="p-mr-2"
+        />
         <Button
           v-if="isEditing"
           type="button"
           label="Cancel"
           class="p-button-secondary"
-          @click="resetForm" />
+          @click="resetForm"
+        />
       </div>
     </form>
 
@@ -104,10 +107,7 @@ function resetForm() {
     <div v-if="activities.length" class="activities-list">
       <h3>Existing Activities</h3>
       <div class="p-grid">
-        <Card
-          v-for="activity in activities"
-          :key="activity.id"
-          class="p-col-12 p-md-6 p-lg-4">
+        <Card v-for="activity in activities" :key="activity.id" class="p-col-12 p-md-6 p-lg-4">
           <h4>{{ activity.name }}</h4>
           <p>Type: {{ activity.group }}</p>
           <div class="card-buttons">
@@ -115,12 +115,14 @@ function resetForm() {
               label="Edit"
               icon="pi pi-pencil"
               class="p-button-sm p-button-text"
-              @click="editActivity(activity)" />
+              @click="editActivity(activity)"
+            />
             <Button
               label="Delete"
               icon="pi pi-trash"
               class="p-button-sm p-button-text p-button-danger"
-              @click="deleteActivity(activity.id)" />
+              @click="deleteActivity(activity.id)"
+            />
           </div>
         </Card>
       </div>

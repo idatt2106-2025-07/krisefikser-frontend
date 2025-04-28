@@ -14,7 +14,8 @@
           <InputText
             id="questionText"
             v-model="newQuestion.text"
-            placeholder="Enter question text" />
+            placeholder="Enter question text"
+          />
         </div>
 
         <!-- Add option -->
@@ -24,20 +25,15 @@
             id="newOption"
             v-model="newOption"
             placeholder="Enter option text"
-            class="flex-1" />
-          <Button
-            icon="pi pi-plus"
-            label="Add"
-            class="ml-2"
-            @click="addOption" />
+            class="flex-1"
+          />
+          <Button icon="pi pi-plus" label="Add" class="ml-2" @click="addOption" />
         </div>
 
         <!-- Current options -->
         <div v-if="newQuestion.options.length" class="options-list">
           <ul>
-            <li v-for="(opt, idx) in newQuestion.options" :key="idx">
-              {{ idx + 1 }}. {{ opt }}
-            </li>
+            <li v-for="(opt, idx) in newQuestion.options" :key="idx">{{ idx + 1 }}. {{ opt }}</li>
           </ul>
         </div>
 
@@ -48,17 +44,14 @@
             id="correctAnswer"
             v-model="newQuestion.correctAnswerIndex"
             :options="answerOptions"
-            placeholder="Select correct answer" />
+            placeholder="Select correct answer"
+          />
         </div>
 
         <!-- Action buttons -->
         <div class="btn-group">
           <Button label="Add Question" @click="addQuestion" />
-          <Button
-            label="Reset"
-            severity="secondary"
-            class="ml-2"
-            @click="resetNewQuestion" />
+          <Button label="Reset" severity="secondary" class="ml-2" @click="resetNewQuestion" />
         </div>
       </template>
     </Card>
@@ -71,15 +64,8 @@
           <template #content>
             <h4>{{ q.text }}</h4>
             <ul>
-              <li
-                v-for="(opt, idx) in q.options"
-                :key="idx">
-                <span
-                  v-if="q.correctAnswerIndex === idx"
-                  class="correct-icon"
-                >
-                  ✔
-                </span>
+              <li v-for="(opt, idx) in q.options" :key="idx">
+                <span v-if="q.correctAnswerIndex === idx" class="correct-icon"> ✔ </span>
                 {{ idx + 1 }}. {{ opt }}
               </li>
             </ul>
@@ -113,7 +99,7 @@ const newQuestion = ref<Question>({
   id: 0,
   text: '',
   options: [],
-  correctAnswerIndex: null
+  correctAnswerIndex: null,
 })
 const newOption = ref('')
 
@@ -121,8 +107,8 @@ const newOption = ref('')
 const answerOptions = computed(() =>
   newQuestion.value.options.map((opt, idx) => ({
     label: opt,
-    value: idx
-  }))
+    value: idx,
+  })),
 )
 
 /* ───── Methods ───── */
@@ -177,11 +163,17 @@ function resetNewQuestion() {
 .correct-icon {
   color: var(--green-600);
   font-weight: 700;
-  margin-right: .25rem;
+  margin-right: 0.25rem;
 }
 
 /* Small utility margins (PrimeFlex v3 classes) */
-.mt-4 { margin-top: 1rem; }
-.mb-3 { margin-bottom: .75rem; }
-.ml-2 { margin-left: .5rem; }
+.mt-4 {
+  margin-top: 1rem;
+}
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+.ml-2 {
+  margin-left: 0.5rem;
+}
 </style>

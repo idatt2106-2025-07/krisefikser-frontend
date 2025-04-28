@@ -1,17 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Jersey+20+Charted&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
-:root{
+:root {
   font-family: 'Roboto', sans-serif;
-  --background-color: #DBF5FA;
-    --danger-color: #FF0000;
+  --background-color: #dbf5fa;
+  --danger-color: #ff0000;
 }
 
-h1{
-    font-family: 'Roboto', sans-serif;
-    font-size: 2.5rem;
-    color: black;
-    text-align: center;
-    margin-top: 1rem;
+h1 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 2.5rem;
+  color: black;
+  text-align: center;
+  margin-top: 1rem;
 }
 
 h2 {
@@ -22,7 +22,7 @@ h2 {
   margin-top: 1rem;
 }
 
-h3{
+h3 {
   font-family: 'Roboto', sans-serif;
   font-size: 1.5rem;
   color: black;
@@ -30,12 +30,12 @@ h3{
   margin-top: 1rem;
 }
 
-p{
-    font-family: 'Roboto', sans-serif;
-    font-size: 1.2rem;
-    color: black;
-    text-align: center;
-    margin-top: 1rem;
+p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.2rem;
+  color: black;
+  text-align: center;
+  margin-top: 1rem;
 }
 
 input::placeholder {
@@ -53,7 +53,7 @@ label {
   display: block;
 }
 
-span{
+span {
   font-family: 'Roboto', sans-serif;
   font-size: 1rem;
   color: black;
@@ -70,7 +70,9 @@ button {
   border-radius: 4px;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: box-shadow 0.2s ease, background-color 0.2s;
+  transition:
+    box-shadow 0.2s ease,
+    background-color 0.2s;
 }
 
 button:hover {

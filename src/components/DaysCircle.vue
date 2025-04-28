@@ -1,74 +1,82 @@
 <script setup lang="ts">
-import { computed, defineProps } from 'vue';
+import { computed, defineProps } from 'vue'
 
 const props = defineProps({
   currentDays: {
     type: Number,
-    required: true
+    required: true,
   },
   goalDays: {
     type: Number,
-    default: 14
+    default: 14,
   },
   containerClass: {
     type: String,
-    default: ''
+    default: '',
   },
   circleClass: {
     type: String,
-    default: ''
+    default: '',
   },
   contentClass: {
     type: String,
-    default: ''
+    default: '',
   },
   numberClass: {
     type: String,
-    default: ''
+    default: '',
   },
   labelClass: {
     type: String,
-    default: ''
+    default: '',
   },
   progressColor: {
     type: String,
-    default: '#5ADF7B'
+    default: '#5ADF7B',
   },
   bgColor: {
     type: String,
-    default: '#FF5C5F'
-  }
-});
+    default: '#FF5C5F',
+  },
+})
 
 const daysPercentage = computed(() => {
-  return Math.min(100, Math.max(0, (props.currentDays / props.goalDays) * 100));
-});
+  return Math.min(100, Math.max(0, (props.currentDays / props.goalDays) * 100))
+})
 
-const circleCircumference = 100.53;
+const circleCircumference = 100.53
 
 const strokeDasharray = computed(() => {
-  return `${daysPercentage.value * circleCircumference / 100} ${circleCircumference}`;
-});
+  return `${(daysPercentage.value * circleCircumference) / 100} ${circleCircumference}`
+})
 </script>
 
 <template>
   <div :class="['days-container', containerClass]">
     <div :class="['days-circle', circleClass]">
       <svg class="days-progress" viewBox="0 0 36 36">
-        <circle class="circle-bg"
-                cx="18" cy="18" r="16"
-                fill="none"
-                :stroke="bgColor"
-                stroke-width="3.8" />
+        <circle
+          class="circle-bg"
+          cx="18"
+          cy="18"
+          r="16"
+          fill="none"
+          :stroke="bgColor"
+          stroke-width="3.8"
+        />
 
-        <circle class="circle-progress"
-                cx="18" cy="18" r="16"
-                fill="none"
-                :stroke="progressColor"
-                stroke-width="3.8"
-                stroke-linecap="round"
-                :stroke-dasharray="strokeDasharray"
-                transform="rotate(-90 18 18)" />
+        <circle
+          class="circle-progress"
+          cx="18"
+          cy="18"
+          r="16"
+          fill="none"
+          :stroke="progressColor"
+          stroke-width="3.8"
+          stroke-linecap="round"
+          :stroke-dasharray="strokeDasharray"
+          transform="rotate(-90 18 18)"
+        />
       </svg>
       <div :class="['days-content', contentClass]">
         <div :class="['days-number', numberClass]">{{ currentDays }}/{{ goalDays }}</div>

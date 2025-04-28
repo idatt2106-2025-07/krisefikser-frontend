@@ -1,54 +1,57 @@
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, watch } from 'vue';
-import selectArrow from '../assets/select-arrow.svg';
+import { ref, defineProps, defineEmits, watch } from 'vue'
+import selectArrow from '../assets/select-arrow.svg'
 
 const props = defineProps({
   options: {
-    type: Array as () => { value: string, label: string }[],
-    required: true
+    type: Array as () => { value: string; label: string }[],
+    required: true,
   },
   value: {
     type: String,
-    default: ''
+    default: '',
   },
   customClass: {
     type: String,
-    default: ''
+    default: '',
   },
   selectClass: {
     type: String,
-    default: ''
+    default: '',
   },
   containerClass: {
     type: String,
-    default: ''
-  }
-});
+    default: '',
+  },
+})
 
-const emit = defineEmits(['update:value', 'sort']);
+const emit = defineEmits(['update:value', 'sort'])
 
-const selectedValue = ref(props.value);
-const isDropdownOpen = ref(false);
+const selectedValue = ref(props.value)
+const isDropdownOpen = ref(false)
 
 // Watch for external value changes
-watch(() => props.value, (newValue) => {
-  selectedValue.value = newValue;
-});
+watch(
+  () => props.value,
+  (newValue) => {
+    selectedValue.value = newValue
+  },
+)
 
 const toggleDropdown = () => {
-  isDropdownOpen.value = !isDropdownOpen.value;
-};
+  isDropdownOpen.value = !isDropdownOpen.value
+}
 
 const updateSort = (event: Event) => {
-  const target = event.target as HTMLSelectElement;
-  selectedValue.value = target.value;
-  emit('update:value', selectedValue.value);
-  emit('sort', selectedValue.value);
-};
+  const target = event.target as HTMLSelectElement
+  selectedValue.value = target.value
+  emit('update:value', selectedValue.value)
+  emit('sort', selectedValue.value)
+}
 
 const closeDropdown = () => {
-  isDropdownOpen.value = false;
-};
+  isDropdownOpen.value = false
+}
 </script>
 
 <template>
@@ -58,7 +61,8 @@ const closeDropdown = () => {
       :class="['sort-select', selectClass]"
       @change="updateSort"
       @click="toggleDropdown()"
-      @blur="closeDropdown()">
+      @blur="closeDropdown()"
+    >
       <option v-for="option in options" :key="option.value" :value="option.value">
         {{ option.label }}
       </option>
@@ -84,12 +88,14 @@ const closeDropdown = () => {
   width: 100%;
   font-size: 1rem;
   cursor: pointer;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
 }
 
 .sort-select:focus {
   outline: none;
-  border-color: #18DAFF;
+  border-color: #18daff;
   box-shadow: 0 0 0 3px rgba(76, 199, 144, 0.2);
 }
 

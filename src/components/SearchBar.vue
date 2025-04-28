@@ -1,54 +1,50 @@
 <script setup lang="ts">
-import { ref, defineProps, defineEmits } from 'vue';
-import searchIcon from '../assets/search.svg';
+import { ref, defineProps, defineEmits } from 'vue'
+import searchIcon from '../assets/search.svg'
 
 const props = defineProps({
   placeholder: {
     type: String,
-    default: 'Search...'
+    default: 'Search...',
   },
   value: {
     type: String,
-    default: ''
+    default: '',
   },
   customClass: {
     type: String,
-    default: ''
+    default: '',
   },
   inputClass: {
     type: String,
-    default: ''
+    default: '',
   },
   wrapperClass: {
     type: String,
-    default: ''
+    default: '',
   },
   iconClass: {
     type: String,
-    default: ''
-  }
-});
+    default: '',
+  },
+})
 
-const emit = defineEmits(['update:value', 'search']);
+const emit = defineEmits(['update:value', 'search'])
 
-const searchValue = ref(props.value);
+const searchValue = ref(props.value)
 
 const updateSearch = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  searchValue.value = target.value;
-  emit('update:value', searchValue.value);
-  emit('search', searchValue.value);
-};
+  const target = event.target as HTMLInputElement
+  searchValue.value = target.value
+  emit('update:value', searchValue.value)
+  emit('search', searchValue.value)
+}
 </script>
 
 <template>
   <div :class="['search-container', customClass]">
     <div :class="['search-input-wrapper', wrapperClass]">
-      <img
-        :src="searchIcon"
-        alt="Search"
-        :class="['search-icon', iconClass]"
-      />
+      <img :src="searchIcon" alt="Search" :class="['search-icon', iconClass]" />
       <input
         type="text"
         :placeholder="placeholder"
@@ -91,12 +87,14 @@ const updateSearch = (event: Event) => {
   font-size: 1rem;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #18DAFF;
+  border-color: #18daff;
   box-shadow: 0 0 0 3px rgba(76, 199, 144, 0.2);
 }
 

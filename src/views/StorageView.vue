@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import SearchBar from '../components/SearchBar.vue';
-import SortDropdown from '../components/SortDropdown.vue';
-import DaysCircle from '../components/DaysCircle.vue';
-import FilterSidebar from '../components/FilterSidebar.vue';
-import threeDots from '../assets/three-dots-horizontal.svg';
+import { ref } from 'vue'
+import SearchBar from '../components/SearchBar.vue'
+import SortDropdown from '../components/SortDropdown.vue'
+import DaysCircle from '../components/DaysCircle.vue'
+import FilterSidebar from '../components/FilterSidebar.vue'
+import threeDots from '../assets/three-dots-horizontal.svg'
 
 interface StorageItem {
-  id: number;
-  name: string;
-  expirationDays: number;
-  quantity: number;
-  unit: string;
-  calories?: number;
-  category: string;
+  id: number
+  name: string
+  expirationDays: number
+  quantity: number
+  unit: string
+  calories?: number
+  category: string
 }
 
 const categories = [
@@ -21,17 +21,17 @@ const categories = [
   { id: 'food', name: 'Food' },
   { id: 'tools', name: 'Tools' },
   { id: 'medicine', name: 'Medicine' },
-  { id: 'other', name: 'Other' }
-];
+  { id: 'other', name: 'Other' },
+]
 
 const sortOptions = [
   { value: '', label: 'Sort by...' },
   { value: 'name', label: 'Name' },
   { value: 'expiration', label: 'Expiration date' },
-  { value: 'quantity', label: 'Quantity' }
-];
+  { value: 'quantity', label: 'Quantity' },
+]
 
-const SUSTAIN_DAYS_GOAL = 21;
+const SUSTAIN_DAYS_GOAL = 21
 
 const items = ref<StorageItem[]>([
   {
@@ -41,7 +41,7 @@ const items = ref<StorageItem[]>([
     quantity: 35,
     unit: 'liters',
     calories: 0,
-    category: 'liquid'
+    category: 'liquid',
   },
   {
     id: 2,
@@ -50,7 +50,7 @@ const items = ref<StorageItem[]>([
     quantity: 6,
     unit: 'pcs',
     calories: 1000,
-    category: 'food'
+    category: 'food',
   },
   {
     id: 3,
@@ -59,7 +59,7 @@ const items = ref<StorageItem[]>([
     quantity: 2,
     unit: 'kg',
     calories: 1500,
-    category: 'food'
+    category: 'food',
   },
   {
     id: 4,
@@ -68,7 +68,7 @@ const items = ref<StorageItem[]>([
     quantity: 5,
     unit: 'pcs',
     calories: 2000,
-    category: 'food'
+    category: 'food',
   },
   {
     id: 5,
@@ -77,43 +77,43 @@ const items = ref<StorageItem[]>([
     quantity: 1,
     unit: 'box',
     calories: 0,
-    category: 'tools'
+    category: 'tools',
   },
-]);
+])
 
-const selectedSort = ref('');
-const searchQuery = ref('');
-const checkedCategories = ref<string[]>([]);
+const selectedSort = ref('')
+const searchQuery = ref('')
+const checkedCategories = ref<string[]>([])
 
 // Handler for filter clear event
 const handleFilterClear = () => {
-  console.log('Filters cleared');
+  console.log('Filters cleared')
   // Add any additional logic here
-};
+}
 
 // Placeholder value, will be calculated by API later
-const daysLeft = ref(13);
+const daysLeft = ref(13)
 
 const getExpirationClass = (days: number) => {
-  if (days === Infinity) return 'status-good';
-  if (days > 61) return 'status-good';
-  if (days > 14) return 'status-warning';
-  return 'status-danger';
-};
+  if (days === Infinity) return 'status-good'
+  if (days > 61) return 'status-good'
+  if (days > 14) return 'status-warning'
+  return 'status-danger'
+}
 
 // Function to handle search
 const handleSearch = (value: string) => {
-  searchQuery.value = value;
+  searchQuery.value = value
   // Add search logic here
-  console.log('Searching for:', value);
-};
+  console.log('Searching for:', value)
+}
 
 // Function to handle sort selection
 const handleSort = (value: string) => {
-  selectedSort.value = value;
+  selectedSort.value = value
   // Add sorting logic here
-  console.log('Sorting by:', value);
-};
+  console.log('Sorting by:', value)
+}
 </script>
 
 <template>
@@ -160,9 +160,7 @@ const handleSort = (value: string) => {
             />
           </div>
 
-          <button class="add-button">
-            Add item
-          </button>
+          <button class="add-button">Add item</button>
         </div>
 
         <div class="items-container">
@@ -181,14 +179,14 @@ const handleSort = (value: string) => {
 
               <div class="item-expiration">
                 <div :class="['status-pill', getExpirationClass(item.expirationDays)]">
-                  {{ item.expirationDays === Infinity ? 'Infinite' : `${item.expirationDays} days` }}
+                  {{
+                    item.expirationDays === Infinity ? 'Infinite' : `${item.expirationDays} days`
+                  }}
                 </div>
               </div>
 
               <div class="item-quantity">
-                <div :class="['status-pill']">
-                  {{ item.quantity }} {{ item.unit }}
-                </div>
+                <div :class="['status-pill']">{{ item.quantity }} {{ item.unit }}</div>
               </div>
 
               <div class="item-actions">
@@ -207,7 +205,7 @@ const handleSort = (value: string) => {
 <style scoped>
 .storage-container {
   min-height: 100vh;
-  background-color: #DBF5FA;
+  background-color: #dbf5fa;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -288,7 +286,8 @@ const handleSort = (value: string) => {
   flex-grow: 1;
 }
 
-.item-expiration-header, .item-quantity-header {
+.item-expiration-header,
+.item-quantity-header {
   width: 8rem;
   text-align: center;
 }
@@ -321,21 +320,22 @@ const handleSort = (value: string) => {
   font-weight: 500;
 }
 
-.item-expiration, .item-quantity {
+.item-expiration,
+.item-quantity {
   width: 8rem;
   padding: 0 0.5rem;
 }
 
 .status-good {
-  background-color: #5ADF7B;
+  background-color: #5adf7b;
 }
 
 .status-warning {
-  background-color: #FFD700;
+  background-color: #ffd700;
 }
 
 .status-danger {
-  background-color: #FF5C5F;
+  background-color: #ff5c5f;
 }
 
 .status-pill {

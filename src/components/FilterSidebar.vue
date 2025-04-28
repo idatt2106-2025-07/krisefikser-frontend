@@ -1,76 +1,76 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits } from 'vue'
 
 interface Category {
-  id: string;
-  name: string;
+  id: string
+  name: string
 }
 
 const props = defineProps({
   categories: {
     type: Array as () => Category[],
-    required: true
+    required: true,
   },
   checkedCategories: {
     type: Array as () => string[],
-    required: true
+    required: true,
   },
   title: {
     type: String,
-    default: 'Categories'
+    default: 'Categories',
   },
   sidebarClass: {
     type: String,
-    default: ''
+    default: '',
   },
   headerClass: {
     type: String,
-    default: ''
+    default: '',
   },
   titleClass: {
     type: String,
-    default: ''
+    default: '',
   },
   clearButtonClass: {
     type: String,
-    default: ''
+    default: '',
   },
   listClass: {
     type: String,
-    default: ''
+    default: '',
   },
   itemClass: {
     type: String,
-    default: ''
+    default: '',
   },
   labelClass: {
     type: String,
-    default: ''
-  }
-});
+    default: '',
+  },
+})
 
-const emit = defineEmits(['update:checkedCategories', 'clear']);
+const emit = defineEmits(['update:checkedCategories', 'clear'])
 
 const updateChecked = (event: Event, value: string) => {
-  const target = event.target as HTMLInputElement;
-  const checked = target.checked;
+  const target = event.target as HTMLInputElement
+  const checked = target.checked
 
-  const newChecked = [...props.checkedCategories];
+  const newChecked = [...props.checkedCategories]
 
   if (checked && !newChecked.includes(value)) {
-    newChecked.push(value);
+    newChecked.push(value)
   } else if (!checked && newChecked.includes(value)) {
-    const index = newChecked.indexOf(value);
-    newChecked.splice(index, 1);
+    const index = newChecked.indexOf(value)
+    newChecked.splice(index, 1)
   }
 
-  emit('update:checkedCategories', newChecked);
-};
+  emit('update:checkedCategories', newChecked)
+}
 
 const clearFilters = () => {
-  emit('update:checkedCategories', []);
-  emit('clear');
-};
+  emit('update:checkedCategories', [])
+  emit('clear')
+}
 </script>
 
 <template>
@@ -91,7 +91,7 @@ const clearFilters = () => {
           :value="category.id"
           :checked="checkedCategories.includes(category.id)"
           @change="(event) => updateChecked(event, category.id)"
-        >
+        />
         <span :class="labelClass">{{ category.name }}</span>
       </label>
     </div>

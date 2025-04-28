@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue'
 
 /**
  * Interface defining the structure of a sidebar item.
@@ -8,27 +8,30 @@ import { ref, computed, onMounted } from 'vue';
  * @property {string} title - Display title of the sidebar item.
  */
 interface SidebarItem {
-  id: string;
-  title: string;
+  id: string
+  title: string
 }
 
 /**
  * Reactive state to track whether the mobile menu is open.
  * @type {Ref<boolean>}
  */
-const isMobileMenuOpen = ref(false);
+const isMobileMenuOpen = ref(false)
 
 /**
  * Props passed to the component.
  * @property {string} [sidebarTitle='Dashboard'] - Title displayed in the sidebar header.
  * @property {SidebarItem[]} sidebarItems - Array of sidebar items to display.
  */
-const props = withDefaults(defineProps<{
-  sidebarTitle?: string;
-  sidebarItems: SidebarItem[];
-}>(), {
-  sidebarTitle: 'Dashboard'
-});
+const props = withDefaults(
+  defineProps<{
+    sidebarTitle?: string
+    sidebarItems: SidebarItem[]
+  }>(),
+  {
+    sidebarTitle: 'Dashboard',
+  },
+)
 
 /**
  * Emits events from the component.
@@ -37,43 +40,43 @@ const props = withDefaults(defineProps<{
  * @param {number} index - The index of the selected item.
  */
 const emit = defineEmits<{
-  (e: 'item-selected', item: SidebarItem, index: number): void;
-}>();
+  (e: 'item-selected', item: SidebarItem, index: number): void
+}>()
 
 /**
  * Reactive state to track the index of the currently active sidebar item.
  * @type {Ref<number|null>}
  */
-const activeItemIndex = ref<number | null>(null);
+const activeItemIndex = ref<number | null>(null)
 
 /**
  * Computed property to get the currently active sidebar item.
  * @returns {SidebarItem|null} The active sidebar item or null if none is selected.
  */
 const activeItem = computed<SidebarItem | null>(() => {
-  return activeItemIndex.value !== null ? props.sidebarItems[activeItemIndex.value] : null;
-});
+  return activeItemIndex.value !== null ? props.sidebarItems[activeItemIndex.value] : null
+})
 
 /**
  * Sets the active sidebar item and emits the `item-selected` event.
  * @param {number} index - The index of the item to activate.
  */
 const setActiveItem = (index: number): void => {
-  activeItemIndex.value = index;
-  emit('item-selected', props.sidebarItems[index], index);
+  activeItemIndex.value = index
+  emit('item-selected', props.sidebarItems[index], index)
 
   // Close the mobile menu if the screen width is less than 768px.
   if (window.innerWidth < 768) {
-    toggleMobileMenu();
+    toggleMobileMenu()
   }
-};
+}
 
 /**
  * Toggles the visibility of the mobile menu.
  */
 const toggleMobileMenu = (): void => {
-  isMobileMenuOpen.value = !isMobileMenuOpen.value;
-};
+  isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
 
 /**
  * Lifecycle hook that runs when the component is mounted.
@@ -81,9 +84,9 @@ const toggleMobileMenu = (): void => {
  */
 onMounted(() => {
   if (props.sidebarItems.length > 0) {
-    setActiveItem(0);
+    setActiveItem(0)
   }
-});
+})
 </script>
 
 <template>
@@ -101,16 +104,14 @@ onMounted(() => {
       <!-- Mobile header with close button -->
       <!-- Sidebar Items -->
       <div class="sidebar-items">
-        <button
-          class="close-mobile-menu"
-          @click="toggleMobileMenu"
-          aria-label="Toggle mobile menu"
-        > <</button>
+        <button class="close-mobile-menu" @click="toggleMobileMenu" aria-label="Toggle mobile menu">
+          <
+        </button>
         <div
           v-for="(item, index) in sidebarItems"
           :key="item.id"
           class="sidebar-item"
-          :class="{ 'active': activeItemIndex === index }"
+          :class="{ active: activeItemIndex === index }"
           @click="setActiveItem(index)"
         >
           <span>{{ item.title }}</span>
@@ -126,9 +127,7 @@ onMounted(() => {
           <slot :name="activeItem.id" :item="activeItem"></slot>
         </div>
       </div>
-      <div v-else class="empty-content">
-        Select an item from the sidebar
-      </div>
+      <div v-else class="empty-content">Select an item from the sidebar</div>
     </div>
   </div>
 </template>
@@ -259,7 +258,7 @@ onMounted(() => {
   border: 1px solid #e5e7eb;
   padding: 0;
   margin: 16px 16px 16px auto;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   align-self: flex-end;
 }
 
@@ -281,7 +280,7 @@ onMounted(() => {
     width: 80%;
     height: 100vh;
     transition: left 0.3s ease;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
   }
 
   .sidebar.mobile-open {

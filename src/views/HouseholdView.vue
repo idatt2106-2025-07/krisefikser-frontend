@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import SidebarContent from '../components/SidebarContent.vue';
+import SidebarContent from '../components/SidebarContent.vue'
 
 /**
  * Interface representing a sidebar item.
@@ -9,8 +9,8 @@ import SidebarContent from '../components/SidebarContent.vue';
  * @property {string} title - Display title of the sidebar item.
  */
 interface SidebarItem {
-  id: string;
-  title: string;
+  id: string
+  title: string
 }
 
 /**
@@ -19,7 +19,7 @@ interface SidebarItem {
  * @property {string} name - Name of the household member.
  */
 interface Member {
-  name: string;
+  name: string
 }
 
 /**
@@ -29,19 +29,19 @@ interface Member {
 const menuItems = ref<SidebarItem[]>([
   {
     id: 'household',
-    title: 'Household'
+    title: 'Household',
   },
   {
     id: 'group',
-    title: 'Group'
-  }
-]);
+    title: 'Group',
+  },
+])
 
 /**
  * Reactive state to track the currently active popup member.
  * @type {Ref<string | null>}
  */
-const activePopupMember = ref<string | null>(null);
+const activePopupMember = ref<string | null>(null)
 
 /**
  * Handles the selection of a sidebar item.
@@ -49,26 +49,26 @@ const activePopupMember = ref<string | null>(null);
  * @param {number} index - The index of the selected item.
  */
 const handleItemSelected = (item: SidebarItem, index: number) => {
-  console.log('Selected item:', item.title, 'at index:', index);
-};
+  console.log('Selected item:', item.title, 'at index:', index)
+}
 
 /**
  * Reactive array of household members.
  * @type {Ref<Member[]>}
  */
-const members = ref<Member[]>([]);
+const members = ref<Member[]>([])
 
 /**
  * Reactive state to track the loading status.
  * @type {Ref<boolean>}
  */
-const isLoading = ref(true);
+const isLoading = ref(true)
 
 /**
  * Reactive state to store error messages.
  * @type {Ref<string | null>}
  */
-const error = ref<string | null>(null);
+const error = ref<string | null>(null)
 
 /**
  * Fetches the list of household members.
@@ -76,12 +76,12 @@ const error = ref<string | null>(null);
  * @async
  */
 const fetchMembers = async () => {
-  isLoading.value = true;
-  error.value = null;
+  isLoading.value = true
+  error.value = null
 
   try {
     //TODO: fix to use endpoint later
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000))
 
     // Populate members with mock data
     members.value = [
@@ -90,17 +90,17 @@ const fetchMembers = async () => {
       { name: 'Johan' },
       { name: 'john doe' },
       { name: 'Vetle' },
-      { name: 'Florian' }
-    ];
+      { name: 'Florian' },
+    ]
   } catch (e) {
     // Handle errors and set error message
-    error.value = 'Failed to load household members';
-    console.log(e);
+    error.value = 'Failed to load household members'
+    console.log(e)
   } finally {
     // Set loading state to false
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 /**
  * Handles the edit action for a household member.
@@ -110,22 +110,22 @@ const fetchMembers = async () => {
  */
 const editMember = (member: Member, event: Event) => {
   // Stop event propagation to prevent immediate closing
-  event.stopPropagation();
+  event.stopPropagation()
 
   // Toggle popup for this member
   if (activePopupMember.value === member.name) {
-    activePopupMember.value = null;
+    activePopupMember.value = null
   } else {
-    activePopupMember.value = member.name;
+    activePopupMember.value = member.name
   }
-};
+}
 
 /**
  * Closes all active popups.
  */
 const closePopups = () => {
-  activePopupMember.value = null;
-};
+  activePopupMember.value = null
+}
 
 /**
  * Lifecycle hook that runs when the component is mounted.
@@ -133,17 +133,17 @@ const closePopups = () => {
  * - Adds a click event listener to close popups.
  */
 onMounted(() => {
-  fetchMembers();
-  document.addEventListener('click', closePopups);
-});
+  fetchMembers()
+  document.addEventListener('click', closePopups)
+})
 
 /**
  * Lifecycle hook that runs before the component is unmounted.
  * - Removes the click event listener to close popups.
  */
 onBeforeUnmount(() => {
-  document.removeEventListener('click', closePopups);
-});
+  document.removeEventListener('click', closePopups)
+})
 </script>
 
 <template>
@@ -162,8 +162,8 @@ onBeforeUnmount(() => {
             <h1></h1>
             <button>Add member without user</button>
             <div class="household-content">
-              <h3>Members ⋅ {{ members.length  }}</h3>
-              <hr>
+              <h3>Members ⋅ {{ members.length }}</h3>
+              <hr />
               <div v-if="isLoading" class="loading-container">
                 <div class="loading-spinner"></div>
                 <p>Loading members...</p>
@@ -176,15 +176,13 @@ onBeforeUnmount(() => {
 
               <div v-else class="members-list">
                 <div v-for="member in members" :key="member.name" class="member-card">
-                  <span>{{  member.name  }}</span>
+                  <span>{{ member.name }}</span>
                   <div class="edit-container">
-                  <button class="edit-button" @click="editMember(member, $event)">
-                    •••
-                  </button>
-                  <div v-if="activePopupMember === member.name" class="member-popup">
-                    <div class="popup-option">Delete member</div>
-                    <div class="popup-option">Show position</div>
-                  </div>
+                    <button class="edit-button" @click="editMember(member, $event)">•••</button>
+                    <div v-if="activePopupMember === member.name" class="member-popup">
+                      <div class="popup-option">Delete member</div>
+                      <div class="popup-option">Show position</div>
+                    </div>
                   </div>
                 </div>
                 <button class="leave-household">leave household</button>
@@ -204,7 +202,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-
 .page-container {
   min-height: 100vh;
   background-color: var(--background-color);
@@ -236,16 +233,16 @@ onBeforeUnmount(() => {
   margin-bottom: 8px;
 }
 
-.leave-household{
+.leave-household {
   background-color: var(--danger-color);
   margin-bottom: 20px;
 }
 
-.leave-household:hover{
+.leave-household:hover {
   background-color: rgb(186, 0, 0);
 }
 
-h3{
+h3 {
   margin-bottom: 0;
 }
 
@@ -296,8 +293,12 @@ h3{
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .mobile-menu-button span {
@@ -342,7 +343,6 @@ h3{
 }
 
 @media (max-width: 768px) {
-
   .member-popup {
     right: 0;
     top: 100%;

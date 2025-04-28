@@ -258,12 +258,9 @@ onMounted(() => {
   font-size: 20px;
   border: 1px solid #e5e7eb;
   padding: 0;
-  margin-left: auto; /* Push to the right */
-  margin-right: 16px; /* Add right margin */
-  margin-top: 16px; /* Add top margin */
-  margin-bottom: 16px; /* Add bottom margin */
+  margin: 16px 16px 16px auto;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  align-self: flex-end; /* Align to the end (right) of the flex container */
+  align-self: flex-end;
 }
 
 /* Media queries for responsiveness */

@@ -12,10 +12,6 @@ export function useMapLayers(
   const circleLayers = ref<string[]>([]);
 
   const initializeLayers = () => {
-    console.log('Initializing layers, map ready:', !!map.value);
-    console.log('Affected areas data:', affectedAreas);
-    console.log('Current filters:', filters.value);
-
     if (!map.value) return;
 
     affectedAreas.forEach((area, index) => {

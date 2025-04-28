@@ -60,7 +60,6 @@ onMounted(() => {
   height: 500px;
   position: relative; /* Required for Mapbox */
   border: 1px solid slategrey;
-  margin-top: 20px;
   overflow: hidden;
 }
 </style>

@@ -2,33 +2,30 @@
 /**
  * A reusable card component for displaying information content
  */
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits } from 'vue'
 
 interface InfoCard {
-  cardClass?: string;
-  to?: string;
-  clickable?: boolean;
+  cardClass?: string
+  to?: string
+  clickable?: boolean
 }
 
-const props = defineProps<InfoCard>();
+const props = defineProps<InfoCard>()
 
-const emit = defineEmits(['click']);
+const emit = defineEmits(['click'])
 
 /**
  * Handles click on the card
  */
 const handleClick = () => {
   if (props.clickable) {
-    emit('click');
+    emit('click')
   }
-};
+}
 </script>
 
 <template>
-  <div
-    :class="['info-card', cardClass, { 'clickable': clickable }]"
-    @click="handleClick"
-  >
+  <div :class="['info-card', cardClass, { clickable: clickable }]" @click="handleClick">
     <div class="card-content">
       <slot></slot>
     </div>
@@ -48,7 +45,9 @@ const handleClick = () => {
   text-align: center;
   aspect-ratio: 1/1;
   width: 85%;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .clickable {

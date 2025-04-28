@@ -1,42 +1,39 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import InfoCard from '../components/InfoCard.vue';
-import NotificationBar from '../components/NotificationBar.vue';
+import { ref } from 'vue'
+import InfoCard from '../components/InfoCard.vue'
+import NotificationBar from '../components/NotificationBar.vue'
 
 interface Notification {
-  type: 'danger' | 'warning' | 'info';
-  message: string;
+  type: 'danger' | 'warning' | 'info'
+  message: string
 }
 
 const notifications = ref<Notification[]>([
   {
     type: 'danger',
-    message: 'Nuclear accident near Alta - Citizens close by is recommended to stay inside or evacuate the area'
+    message:
+      'Nuclear accident near Alta - Citizens close by is recommended to stay inside or evacuate the area',
   },
   {
     type: 'warning',
-    message: 'Water needs to be changed in 1 day'
+    message: 'Water needs to be changed in 1 day',
   },
   {
     type: 'info',
-    message: 'You have 3 days of food left'
-  }
-]);
+    message: 'You have 3 days of food left',
+  },
+])
 
 /**
  * Navigation functions for different sections of the app
  */
-const navigateToStorage = () => {
-};
+const navigateToStorage = () => {}
 
-const navigateToInfo = () => {
-};
+const navigateToInfo = () => {}
 
-const navigateToQuiz = () => {
-};
+const navigateToQuiz = () => {}
 
-const navigateToNews = () => {
-};
+const navigateToNews = () => {}
 </script>
 
 <template>
@@ -50,8 +47,7 @@ const navigateToNews = () => {
 
       <div class="main-content">
         <div class="content-column map-column">
-          <div class="map-view">
-          </div>
+          <div class="map-view"></div>
         </div>
 
         <div class="content-column buttons-column">
@@ -94,7 +90,7 @@ const navigateToNews = () => {
 
 <style scoped>
 .home-page {
-  background-color: #DBF5FA;
+  background-color: #dbf5fa;
   min-height: 100vh;
   width: 100%;
 }
@@ -107,7 +103,7 @@ const navigateToNews = () => {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
-  background-color: #DBF5FA;
+  background-color: #dbf5fa;
 }
 
 .header {
@@ -136,12 +132,13 @@ const navigateToNews = () => {
   flex-direction: column;
 }
 
-.map-column, .buttons-column {
+.map-column,
+.buttons-column {
   width: 50%;
 }
 
 .map-view {
-  background-color: #90D7E3;
+  background-color: #90d7e3;
   border-radius: 10px;
   overflow: hidden;
   width: 100%;
@@ -192,7 +189,8 @@ p {
     width: 100%;
   }
 
-  .map-column, .buttons-column {
+  .map-column,
+  .buttons-column {
     width: 100%;
   }
 

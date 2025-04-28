@@ -2,11 +2,11 @@
 /**
  * Reusable notification bar component for displaying alerts and warnings
  */
-import { defineProps } from 'vue';
+import { defineProps } from 'vue'
 
 interface Notification {
-  type: 'danger' | 'warning' | 'info';
-  message: string;
+  type: 'danger' | 'warning' | 'info'
+  message: string
 }
 
 defineProps({
@@ -15,23 +15,23 @@ defineProps({
    */
   notifications: {
     type: Array as () => Notification[],
-    default: () => []
-  }
-});
+    default: () => [],
+  },
+})
 
 /**
  * Gets the appropriate CSS class based on notification type
  */
 const getNotificationClass = (type: string) => {
-  return `notification-${type}`;
-};
+  return `notification-${type}`
+}
 
 /**
  * Gets the appropriate icon class based on notification type
  */
 const getIconClass = (type: string) => {
-  return `notification-${type}-icon`;
-};
+  return `notification-${type}-icon`
+}
 </script>
 
 <template>
@@ -99,7 +99,7 @@ const getIconClass = (type: string) => {
 }
 
 .notification-danger-icon:before {
-  content: "!";
+  content: '!';
   color: white;
   font-weight: bold;
   position: absolute;
@@ -113,7 +113,7 @@ const getIconClass = (type: string) => {
 }
 
 .notification-warning-icon:before {
-  content: "!";
+  content: '!';
   color: white;
   font-weight: bold;
   position: absolute;
@@ -127,7 +127,7 @@ const getIconClass = (type: string) => {
 }
 
 .notification-info-icon:before {
-  content: "i";
+  content: 'i';
   color: white;
   font-weight: bold;
   font-style: italic;

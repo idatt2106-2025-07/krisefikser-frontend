@@ -30,7 +30,6 @@ const notifications = ref<Notification[]>([
 const router = useRouter()
 const currentStorageDays = ref(10)
 
-
 /**
  * Navigation functions for different sections of the app
  */
@@ -61,7 +60,7 @@ const navigateToNews = () => {
       <NotificationBar :notifications="notifications" />
 
       <div class="main-content">
-        <TheMap class = "map-area"/>
+        <TheMap class="map-area" />
 
         <div class="content-column buttons-column">
           <div class="page-buttons">

@@ -15,8 +15,7 @@
     </div>
 
     <div v-else-if="props.type === 'Gameification'" class="gameification-panel">
-      <h2>Gamification Settings</h2>
-      <p>Manage gamification settings here.</p>
+      <GameificationSettings />
       <Button label="Save Changes" @click="save" class="mt-2" />
     </div>
 
@@ -33,7 +32,8 @@ import { ref } from 'vue'
 import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
 import TheMap from '@/components/TheMap.vue'
-import UserSettings from '@/components/UserSettings.vue' // Adjust the path as needed
+import UserSettings from '@/components/UserSettings.vue'
+import GameificationSettings from '@/components/CRUDActivities.vue'
 
 interface Props {
   type: 'Map' | 'User' | 'Gameification'

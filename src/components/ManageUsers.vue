@@ -1,5 +1,5 @@
 <script setup lang="ts"></script>
 
-<template></template>
+<template>temp child element</template>
 
 <style scoped></style>

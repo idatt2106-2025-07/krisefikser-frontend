@@ -32,7 +32,6 @@ import { ref } from 'vue'
 import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
 import TheMap from '@/components/TheMap.vue'
-import UserSettings from '@/components/UserSettings.vue'
 import GameificationSettings from '@/components/CRUDActivities.vue'
 
 interface Props {

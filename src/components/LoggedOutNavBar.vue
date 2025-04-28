@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import ColorToggleButton from '@/Buttons/ColorToggleButton.vue'
 
 const router = useRouter()
 

@@ -104,9 +104,11 @@ onMounted(() => {
       <!-- Mobile header with close button -->
       <!-- Sidebar Items -->
       <div class="sidebar-items">
-        <button class="close-mobile-menu" @click="toggleMobileMenu" aria-label="Toggle mobile menu">
-          <
-        </button>
+        <button
+          class="close-mobile-menu"
+          @click="toggleMobileMenu"
+          aria-label="Toggle mobile menu"
+        ></button>
         <div
           v-for="(item, index) in sidebarItems"
           :key="item.id"

@@ -2,4 +2,4 @@
 // The RegisterForm component is used to register a new user.
 </script>
 
-<template></template>
+<template>temp child element</template>

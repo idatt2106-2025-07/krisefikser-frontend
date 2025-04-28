@@ -28,11 +28,6 @@ import TabList from 'primevue/tablist'
 import Tab from 'primevue/tab'
 import TabPanels from 'primevue/tabpanels'
 import TabPanel from 'primevue/tabpanel'
-import Panel from 'primevue/panel'
-import Button from 'primevue/button'
-import Dropdown from 'primevue/dropdown'
-
-import Map from '@/components/TheMap.vue'
 
 const tabs = [
   { label: 'Manage Map', type: 'Map' },

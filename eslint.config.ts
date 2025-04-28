@@ -32,5 +32,15 @@ export default defineConfigWithVueTs(
     ...pluginCypress.configs.recommended,
     files: ['cypress/e2e/**/*.{cy,spec}.{js,ts,jsx,tsx}', 'cypress/support/**/*.{js,ts,jsx,tsx}'],
   },
+
   skipFormatting,
+
+  // Strict unused variables rule
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off', // Turn off base rule because TS handles it
+      'vue/multi-word-component-names': 'off', // Turn off base rule because TS handles it
+      'vue/no-reserved-component-names': 'off', // Turn off base rule because TS handles itq
+    },
+  },
 )

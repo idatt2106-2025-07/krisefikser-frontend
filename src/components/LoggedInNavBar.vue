@@ -2,4 +2,6 @@
 //navbar that is shown when the user is logged in
 </script>
 
-<template></template>
+<template>
+  <div>temp child Element</div>
+</template>

@@ -14,12 +14,12 @@ h1{
     margin-top: 1rem;
 }
 
-h2{
-    font-family: 'Roboto', sans-serif;
-    font-size: 2rem;
-    color: black;
-    text-align: center;
-    margin-top: 1rem;
+h2 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 2rem;
+  color: black;
+  text-align: center;
+  margin-top: 1rem;
 }
 
 h3{
@@ -72,17 +72,22 @@ button {
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add shadow */
   transition: box-shadow 0.2s ease, background-color 0.2s;
-
 }
 
 button:hover {
   background-color: #0056b3; /* Darker background on hover */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
-
 }
 
 button:disabled {
   background-color: #ccc; /* Disabled button background */
   color: #666; /* Disabled button text color */
   cursor: not-allowed;
+}
+
+.p-error {
+  color: red; /* Error message color */
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  margin-top: 0.5rem; /* Add spacing above the error message */
 }

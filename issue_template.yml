@@ -35,7 +35,7 @@ body:
     attributes:
       label: Related
       description: Link to related issues, PRs, or discussions
-      placeholder: "#123, #456"
+      placeholder: '#123, #456'
     validations:
       required: false
   - type: markdown

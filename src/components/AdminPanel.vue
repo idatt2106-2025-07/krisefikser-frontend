@@ -19,7 +19,7 @@
       <Button label="Save Changes" @click="save" class="mt-2" />
     </div>
 
-    <div v-else-if="props.type === 'Users'" class="user-panel">
+    <div v-else-if="props.type === 'User'" class="user-panel">
       <h2>Manage Users</h2>
       <p>Manage user accounts and permissions here.</p>
       <Button label="Save Changes" @click="save" class="mt-2" />
@@ -50,6 +50,8 @@ const iconTypes = [
   'Food Central',
   'Hospital',
 ]
+
+const userType: 'User' = 'User' // instead of "Users"
 
 function handleAddIcon() {
   if (!iconType.value) {

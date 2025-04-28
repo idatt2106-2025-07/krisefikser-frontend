@@ -11,7 +11,7 @@
 
       <TabPanels>
         <TabPanel v-for="(tab, index) in tabs" :key="index" :value="index.toString()">
-          <AdminPanel :type="tab.type" />
+          <AdminPanel :type="tab.type === 'Users' ? 'User' : tab.type" />
         </TabPanel>
       </TabPanels>
     </Tabs>

@@ -9,6 +9,8 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 const mapContainer = ref<HTMLElement | null>(null)
 let map: mapboxgl.Map | null = null
 
+const mapboxglCasted = mapboxgl as unknown as typeof import('mapbox-gl')
+
 onMounted(() => {
   try {
     if (!mapContainer.value) {
@@ -21,20 +23,20 @@ onMounted(() => {
       return
     }
 
-    mapboxgl.accessToken = mapboxConfig.accessToken
+    ;(mapboxglCasted as any).accessToken = mapboxConfig.accessToken
 
-    map = new mapboxgl.Map({
+    map = new mapboxglCasted.Map({
       container: mapContainer.value,
       style: mapboxConfig.defaultStyle,
       center: mapboxConfig.defaultCenter as [number, number],
       zoom: mapboxConfig.defaultZoom,
     })
 
-    map.addControl(new mapboxgl.NavigationControl())
+    map.addControl(new mapboxglCasted.NavigationControl())
 
     const geocoder = new MapboxGeocoder({
       accessToken: mapboxConfig.accessToken,
-      mapboxgl: mapboxgl,
+      mapboxgl: mapboxglCasted,
       marker: true,
       placeholder: 'Search for location',
     })

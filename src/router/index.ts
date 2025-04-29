@@ -6,7 +6,7 @@ import UserSettingsView from '@/views/UserSettingsView.vue'
 import HouseholdView from '@/views/HouseholdView.vue'
 import StorageView from '@/views/StorageView.vue'
 import AdminView from '@/views/AdminView.vue'
-import QuizCreator from '@/views/QuizCreator.vue'
+import QuizCreator from '@/components/QuizCreator.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

@@ -19,6 +19,10 @@ function navigateToHome() {
 function navigateToSettings() {
   router.push('/settings');
 }
+
+function navigateToMap() {
+  router.push('/map');
+}
 </script>
 
 <template>
@@ -35,6 +39,9 @@ function navigateToSettings() {
       </li>
       <li>
         <button @click="navigateToSettings">Settings</button>
+      </li>
+      <li>
+        <button @click="navigateToMap">Map</button>
       </li>
     </ul>
   </nav>

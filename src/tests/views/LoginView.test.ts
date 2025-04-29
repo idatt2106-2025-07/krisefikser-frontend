@@ -14,9 +14,9 @@ describe('LoginView.vue', () => {
         plugins: [PrimeVue],
         components: {
           InputText,
-          Password
-        }
-      }
+          Password,
+        },
+      },
     })
   })
 

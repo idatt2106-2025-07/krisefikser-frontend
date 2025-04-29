@@ -10,16 +10,18 @@ import Card from 'primevue/card'
 import Dropdown from 'primevue/dropdown'
 
 beforeAll(() => {
-  window.matchMedia = window.matchMedia || (() => ({
-    matches: false,
-    media: '',
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  }))
+  window.matchMedia =
+    window.matchMedia ||
+    (() => ({
+      matches: false,
+      media: '',
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }))
 })
 
 describe('QuizCreator.vue', () => {
@@ -50,7 +52,7 @@ describe('QuizCreator.vue', () => {
     await optionInput.setValue('Option A')
     await nextTick()
 
-    const addButton = wrapper.findAllComponents(Button).find(btn => btn.props().label === 'Add')
+    const addButton = wrapper.findAllComponents(Button).find((btn) => btn.props().label === 'Add')
     expect(addButton).toBeTruthy()
     await addButton!.trigger('click')
     await nextTick()
@@ -59,7 +61,7 @@ describe('QuizCreator.vue', () => {
   })
 
   it('does not add empty option', async () => {
-    const addButton = wrapper.findAllComponents(Button).find(btn => btn.props().label === 'Add')
+    const addButton = wrapper.findAllComponents(Button).find((btn) => btn.props().label === 'Add')
     await addButton!.trigger('click')
     await nextTick()
 
@@ -73,7 +75,7 @@ describe('QuizCreator.vue', () => {
     await questionInput.setValue('What is 2 + 2?')
 
     const optionInput = wrapper.find('input#newOption')
-    const addButton = wrapper.findAllComponents(Button).find(btn => btn.props().label === 'Add')
+    const addButton = wrapper.findAllComponents(Button).find((btn) => btn.props().label === 'Add')
 
     await optionInput.setValue('3')
     await addButton!.trigger('click')
@@ -85,7 +87,9 @@ describe('QuizCreator.vue', () => {
     await dropdown.vm.$emit('update:modelValue', 1)
     await nextTick()
 
-    const addQuestionButton = wrapper.findAllComponents(Button).find(btn => btn.props().label === 'Add Question')
+    const addQuestionButton = wrapper
+      .findAllComponents(Button)
+      .find((btn) => btn.props().label === 'Add Question')
     await addQuestionButton!.trigger('click')
     await nextTick()
 
@@ -101,7 +105,9 @@ describe('QuizCreator.vue', () => {
     await questionInput.setValue('Incomplete')
     await nextTick()
 
-    const addQuestionButton = wrapper.findAllComponents(Button).find(btn => btn.props().label === 'Add Question')
+    const addQuestionButton = wrapper
+      .findAllComponents(Button)
+      .find((btn) => btn.props().label === 'Add Question')
     await addQuestionButton!.trigger('click')
     await nextTick()
 
@@ -115,7 +121,7 @@ describe('QuizCreator.vue', () => {
     await questionInput.setValue('To be reset')
     await nextTick()
 
-    const resetBtn = wrapper.findAllComponents(Button).find(btn => btn.props().label === 'Reset')
+    const resetBtn = wrapper.findAllComponents(Button).find((btn) => btn.props().label === 'Reset')
     await resetBtn!.trigger('click')
     await nextTick()
 

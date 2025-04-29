@@ -74,7 +74,7 @@ const router = createRouter({
       path: '/register-admin',
       name: 'register-admin',
       component: RegisterAdmin,
-    }
+    },
   ],
 })
 

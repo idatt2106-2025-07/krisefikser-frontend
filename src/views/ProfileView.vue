@@ -2,4 +2,4 @@
 // View for the users profile page
 </script>
 
-<template></template>
+<template>temp child for lint</template>

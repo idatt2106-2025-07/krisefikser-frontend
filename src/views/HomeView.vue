@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import InfoCard from '../components/InfoCard.vue'
 import NotificationBar from '../components/NotificationBar.vue'
+import TheMap from '@/components/TheMap.vue'
+import DaysCircle from '@/components/DaysCircle.vue'
 
 interface Notification {
   type: 'danger' | 'warning' | 'info'
@@ -24,16 +27,27 @@ const notifications = ref<Notification[]>([
   },
 ])
 
+const router = useRouter()
+const currentStorageDays = ref(10)
+
 /**
  * Navigation functions for different sections of the app
  */
-const navigateToStorage = () => {}
+const navigateToStorage = () => {
+  router.push('/storage')
+}
 
-const navigateToInfo = () => {}
+const navigateToInfo = () => {
+  router.push('/general-info')
+}
 
-const navigateToQuiz = () => {}
+const navigateToQuiz = () => {
+  router.push('/quiz')
+}
 
-const navigateToNews = () => {}
+const navigateToNews = () => {
+  router.push('/news')
+}
 </script>
 
 <template>
@@ -46,9 +60,7 @@ const navigateToNews = () => {}
       <NotificationBar :notifications="notifications" />
 
       <div class="main-content">
-        <div class="content-column map-column">
-          <div class="map-view"></div>
-        </div>
+        <TheMap class="map-area" />
 
         <div class="content-column buttons-column">
           <div class="page-buttons">
@@ -56,7 +68,10 @@ const navigateToNews = () => {}
               <div class="button-container" @click="navigateToStorage">
                 <InfoCard clickable>
                   <h2>Emergency Storage</h2>
-                  <p>Your household can sustain itself in 10 days</p>
+                  <div class="days-circle-wrapper">
+                    <DaysCircle :current-days="currentStorageDays" :goal-days="14" />
+                  </div>
+                  <p>View Emergency Storage -></p>
                 </InfoCard>
               </div>
 
@@ -90,7 +105,7 @@ const navigateToNews = () => {}
 
 <style scoped>
 .home-page {
-  background-color: #dbf5fa;
+  background-color: var(--background-color);
   min-height: 100vh;
   width: 100%;
 }
@@ -103,7 +118,7 @@ const navigateToNews = () => {}
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
-  background-color: #dbf5fa;
+  background-color: var(--background-color);
 }
 
 .header {
@@ -126,24 +141,20 @@ const navigateToNews = () => {}
   margin-bottom: 2rem;
 }
 
+.map-area {
+  display: flex;
+  width: 50%;
+  height: 500px;
+}
+
 .content-column {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.map-column,
 .buttons-column {
   width: 50%;
-}
-
-.map-view {
-  background-color: #90d7e3;
-  border-radius: 10px;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  min-height: 500px;
 }
 
 .page-buttons {
@@ -167,17 +178,24 @@ const navigateToNews = () => {}
   align-items: center;
 }
 
-h2 {
-  font-size: 1.5rem;
-  margin-top: 0;
+.button-container h2 {
+  text-align: center;
   margin-bottom: 0.5rem;
-  font-weight: 600;
+  font-size: 1.5rem;
 }
 
-p {
+.button-container p {
+  text-align: center;
   margin: 0;
   font-size: 1rem;
   line-height: 1.4;
+}
+
+.days-circle-wrapper {
+  display: flex;
+  justify-content: center;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 @media (max-width: 992px) {
@@ -187,15 +205,6 @@ p {
 
   .content-column {
     width: 100%;
-  }
-
-  .map-column,
-  .buttons-column {
-    width: 100%;
-  }
-
-  .map-view {
-    min-height: 350px;
   }
 
   .buttons-grid {

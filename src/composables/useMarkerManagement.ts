@@ -1,7 +1,7 @@
 import { ref, watch } from 'vue';
 import type { Ref } from 'vue';
 import mapboxgl from 'mapbox-gl';
-import { createCustomMarker } from '@/utils/mapUtils';
+import { createCustomMarker, getTypeDisplayName } from '@/utils/mapUtils';
 import type { LocationData, Filters, PointOfInterest } from '@/types/mapTypes';
 
 export function useMarkerManagement(
@@ -44,10 +44,12 @@ export function useMarkerManagement(
         const marker = new mapboxgl.Marker({ element: el })
           .setLngLat([poi.longitude, poi.latitude])
           .setPopup(new mapboxgl.Popup().setHTML(`
-            <h3>${poi.type}</h3>
-            <h4>${poi.description}</h4>
-            ${poi.opensAt ? `<h4>Open: ${poi.opensAt} - ${poi.closesAt}</h4>` : ''}
-            ${poi.contactNumber ? `<h4>Contact: ${poi.contactNumber}</h4>` : ''}
+            <div class="popup-content">
+              <h3>${getTypeDisplayName(poi.type)}</h3>
+              <h4>${poi.description}</h4>
+              ${poi.opensAt ? `<h4>Open: ${poi.opensAt} - ${poi.closesAt}</h4>` : ''}
+              ${poi.contactNumber ? `<h4>Contact: ${poi.contactNumber}</h4>` : ''}
+            </div>
           `));
 
         marker.addTo(map.value);

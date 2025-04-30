@@ -70,8 +70,7 @@ export function createSearchableGeoJSON(locationData: LocationData) {
   };
 }
 
-// Helper function to get display name for POI types
-function getTypeDisplayName(type: string): string {
+export function getTypeDisplayName(type: string): string {
   const names = {
     'HOSPITAL': 'Hospital',
     'SHELTER': 'Shelter',

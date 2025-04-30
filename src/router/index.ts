@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+<<<<<<< HEAD
 import HomeView from '../views/HomeView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
@@ -11,6 +12,22 @@ import GeneralInfo from '@/views/GeneralInfoView.vue'
 import News from '@/views/NewsView.vue'
 import Quiz from '@/views/QuizView.vue'
 import RegisterAdmin from '@/views/RegisterAdmin.vue'
+=======
+
+// Views
+import HomeView from '@/views/home/HomeView.vue'
+import RegisterView from '@/views/auth/RegisterView.vue'
+import LoginView from '@/views/auth/LoginView.vue'
+import UserSettingsView from '@/views/user/UserSettingsView.vue'
+import HouseholdView from '@/views/household/HouseholdView.vue'
+import StorageView from '@/views/storage/StorageView.vue'
+import AdminView from '@/views/admin/AdminView.vue'
+import GeneralInfo from '@/views/general/GeneralInfoView.vue'
+import News from '@/views/home/NewsView.vue'
+
+// Components
+import QuizCreator from '@/views/admin/QuizCreator.vue'
+>>>>>>> 80cb168 (organized the codebase)
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,7 +85,7 @@ const router = createRouter({
     {
       path: '/quiz',
       name: 'quiz',
-      component: Quiz,
+      component: QuizCreator,
     },
     {
       path: '/register-admin',

@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import AdminPanel from '@/components/AdminPanel.vue' // Adjust the path as needed
+import AdminPanel from '@/components/admin/AdminPanel.vue' // Adjust the path as needed
 
 /* PrimeVue v4 components */
 import Tabs from 'primevue/tabs'

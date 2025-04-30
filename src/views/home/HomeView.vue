@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import InfoCard from '../components/InfoCard.vue'
-import NotificationBar from '../components/NotificationBar.vue'
-import TheMap from '@/components/TheMap.vue'
-import DaysCircle from '@/components/DaysCircle.vue'
+import InfoCard from '@/components/common/InfoCard.vue'
+import NotificationBar from '@/components/admin/NotificationBar.vue'
+import TheMap from '@/components/map/TheMap.vue'
+import DaysCircle from '@/components/common/DaysCircle.vue'
 
 interface Notification {
   type: 'danger' | 'warning' | 'info'

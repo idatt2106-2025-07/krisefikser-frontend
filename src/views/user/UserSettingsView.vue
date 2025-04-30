@@ -5,7 +5,7 @@ import TabList from 'primevue/tablist'
 import Tab from 'primevue/tab'
 import TabPanels from 'primevue/tabpanels'
 import TabPanel from 'primevue/tabpanel'
-import UserSettings from '@/components/UserSettings.vue'
+import UserSettings from '@/components/user/UserSettings.vue'
 
 // The currently selected tab value – default "0" opens the Name tab
 const value = ref('0')

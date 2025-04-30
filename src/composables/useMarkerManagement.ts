@@ -2,155 +2,88 @@ import { ref, watch } from 'vue';
 import type { Ref } from 'vue';
 import mapboxgl from 'mapbox-gl';
 import { createCustomMarker } from '@/utils/mapUtils';
-import type { LocationData, MarkerCollections, Filters } from '@/types/mapTypes';
+import type { LocationData, Filters, PointOfInterest } from '@/types/mapTypes';
 
 export function useMarkerManagement(
   map: Ref<mapboxgl.Map | null>,
-  locationData: LocationData,
+  locationData: Ref<LocationData>,
   filters: Ref<Filters>
 ) {
-  const markers = ref<MarkerCollections>({
-    hospitals: [],
-    shelters: [],
-    defibrillators: [],
-    water_stations: [],
-    food_centrals: []
-  });
+  const markers = ref<mapboxgl.Marker[]>([]);
+
+  const typeToFilterKey = {
+    'HOSPITAL': 'hospital',
+    'SHELTER': 'shelter',
+    'DEFIBRILLATOR': 'defibrillator',
+    'WATER_STATION': 'water_station',
+    'FOOD_CENTRAL': 'food_central'
+  };
+
+  const getMarkerType = (poiType: string): string => {
+    return poiType.toLowerCase();
+  };
 
   const initializeMarkers = () => {
     if (!map.value) return;
 
-    // Add hospital markers
-    locationData.hospitals.forEach(hospital => {
-      const el = createCustomMarker('hospital');
-      el.setAttribute('data-id', hospital.id);
-      const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat(hospital.coordinates as [number, number])
-        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${hospital.name}</h3>`));
+    // Clear existing markers
+    removeAllMarkers();
 
-      markers.value.hospitals.push(marker);
+    // Add markers for each point of interest
+    locationData.value.pointsOfInterest.forEach(poi => {
+      // Get filter key for this type
+      const filterKey = typeToFilterKey[poi.type];
 
-      if (filters.value.hospital !== false) {
-        marker.addTo(map.value!);
-      }
-    });
+      // Check if this type is enabled in filters
+      if (filters.value[filterKey] !== false) {
+        const markerType = getMarkerType(poi.type);
+        const el = createCustomMarker(markerType);
+        el.setAttribute('data-id', poi.id.toString());
+        el.setAttribute('data-type', poi.type);
 
-    // Add shelter markers
-    locationData.shelters.forEach(shelter => {
-      const el = createCustomMarker('shelter');
-      el.setAttribute('data-id', shelter.id);
-      const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat(shelter.coordinates as [number, number])
-        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${shelter.name}</h3>`));
+        const marker = new mapboxgl.Marker({ element: el })
+          .setLngLat([poi.longitude, poi.latitude])
+          .setPopup(new mapboxgl.Popup().setHTML(`
+            <h3>${poi.type}</h3>
+            <h4>${poi.description}</h4>
+            ${poi.opensAt ? `<h4>Open: ${poi.opensAt} - ${poi.closesAt}</h4>` : ''}
+            ${poi.contactNumber ? `<h4>Contact: ${poi.contactNumber}</h4>` : ''}
+          `));
 
-      markers.value.shelters.push(marker);
-
-      if (filters.value.shelter !== false) {
-        marker.addTo(map.value!);
-      }
-    });
-
-    // Add defibrillator markers
-    locationData.defibrillators.forEach(defibrillator => {
-      const el = createCustomMarker('defibrillator');
-      el.setAttribute('data-id', defibrillator.id);
-      const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat(defibrillator.coordinates as [number, number])
-        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${defibrillator.name}</h3>`));
-
-      markers.value.defibrillators.push(marker);
-
-      if (filters.value.defibrillator !== false) {
-        marker.addTo(map.value!);
-      }
-    });
-
-    // Add water station markers
-    locationData.water_stations.forEach(water_station => {
-      const el = createCustomMarker('waterStation');
-      el.setAttribute('data-id', water_station.id);
-      const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat(water_station.coordinates as [number, number])
-        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${water_station.name}</h3>`));
-
-      markers.value.water_stations.push(marker);
-
-      if (filters.value.water_station !== false) {
-        marker.addTo(map.value!);
-      }
-    });
-
-    // Add food central markers
-    locationData.food_centrals.forEach(food_central => {
-      const el = createCustomMarker('foodCentral');
-      el.setAttribute('data-id', food_central.id);
-      const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat(food_central.coordinates as [number, number])
-        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${food_central.name}</h3>`));
-
-      markers.value.food_centrals.push(marker);
-
-      if (filters.value.food_central !== false) {
-        marker.addTo(map.value!);
+        marker.addTo(map.value);
+        markers.value.push(marker);
       }
     });
   };
 
-  const applyFilters = (newFilters: Filters) => {
+  const updateMarkers = () => {
+    if (!map.value) return;
+    initializeMarkers();
+  };
+
+  const removeAllMarkers = () => {
+    markers.value.forEach(marker => marker.remove());
+    markers.value = [];
+  };
+
+  // Apply filters when they change
+  watch(() => filters.value, (newFilters) => {
     if (!map.value) return;
 
-    // Show/hide hospital markers
-    markers.value.hospitals.forEach(marker => {
-      if (newFilters.hospital !== false) {
-        marker.addTo(map.value!);
-      } else {
-        marker.remove();
-      }
-    });
+    // Remove all markers and re-add them based on current filters
+    updateMarkers();
+  }, { deep: true });
 
-    // Show/hide shelter markers
-    markers.value.shelters.forEach(marker => {
-      if (newFilters.shelter !== false) {
-        marker.addTo(map.value!);
-      } else {
-        marker.remove();
-      }
-    });
-
-    // Show/hide defibrillator markers
-    markers.value.defibrillators.forEach(marker => {
-      if (newFilters.defibrillator !== false) {
-        marker.addTo(map.value!);
-      } else {
-        marker.remove();
-      }
-    });
-
-    // Show/hide water station markers
-    markers.value.water_stations.forEach(marker => {
-      if (newFilters.water_station !== false) {
-        marker.addTo(map.value!);
-      } else {
-        marker.remove();
-      }
-    });
-
-    // Show/hide food central markers
-    markers.value.food_centrals.forEach(marker => {
-      if (newFilters.food_central !== false) {
-        marker.addTo(map.value!);
-      } else {
-        marker.remove();
-      }
-    });
-  };
-
-  // Watch for filter changes
-  watch(() => filters.value, applyFilters, { deep: true });
+  // Update markers when data changes
+  watch(() => locationData.value, () => {
+    if (map.value) {
+      updateMarkers();
+    }
+  }, { deep: true });
 
   return {
     markers,
     initializeMarkers,
-    applyFilters
+    updateMarkers
   };
 }

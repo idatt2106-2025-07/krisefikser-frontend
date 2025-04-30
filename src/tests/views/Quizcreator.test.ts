@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, beforeAll, beforeEach, vi } from 'vitest'
 import { nextTick } from 'vue'
-import QuizCreator from '@/components/QuizCreator.vue'
+import QuizCreator from '@/views/admin/QuizCreator.vue'
 
 import PrimeVue from 'primevue/config'
 import InputText from 'primevue/inputtext'

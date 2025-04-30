@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
-import LoginView from '@/views/LoginView.vue'
+import LoginView from '@/views/auth/LoginView.vue'
 
 describe('LoginView.vue', () => {
   let wrapper: ReturnType<typeof mount>

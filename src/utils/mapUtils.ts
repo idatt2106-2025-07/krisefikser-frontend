@@ -21,31 +21,48 @@ export function createCustomMarker(type: string): HTMLDivElement {
 }
 
 
-//TODO: FIX
 export function createSearchableGeoJSON(locationData: LocationData) {
   const features = [];
 
-  // Process each location type
-  Object.entries(locationData).forEach(([category, items]) => {
-    if (Array.isArray(items)) {
-      items.forEach((item: PointOfInterest | AffectedArea) => {
-        features.push({
-          type: 'Feature',
-          properties: {
-            title: item.name,
-            description: getCategoryDisplayName(category),
-            category: category.replace(/s$/, ''), // Remove plural 's'
-            id: item.id,
-            ...(('radius' in item) && { radius: item.radius })
-          },
-          geometry: {
-            type: 'Point',
-            coordinates: item.coordinates
-          }
-        });
+  // Process points of interest
+  if (locationData.pointsOfInterest && Array.isArray(locationData.pointsOfInterest)) {
+    locationData.pointsOfInterest.forEach((poi: PointOfInterest) => {
+      features.push({
+        type: 'Feature',
+        properties: {
+          title: getTypeDisplayName(poi.type),
+          description: poi.description,
+          category: poi.type,
+          id: poi.id,
+          poiType: poi.type
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [poi.longitude, poi.latitude]
+        }
       });
-    }
-  });
+    });
+  }
+
+  // Process affected areas
+  if (locationData.affectedAreas && Array.isArray(locationData.affectedAreas)) {
+    locationData.affectedAreas.forEach((area: AffectedArea) => {
+      features.push({
+        type: 'Feature',
+        properties: {
+          title: area.name,
+          description: 'Affected Area',
+          category: 'affected_area',
+          id: area.id,
+          radius: area.radius
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [area.longitude, area.latitude]
+        }
+      });
+    });
+  }
 
   return {
     type: 'FeatureCollection',
@@ -53,15 +70,15 @@ export function createSearchableGeoJSON(locationData: LocationData) {
   };
 }
 
-function getCategoryDisplayName(category: string): string {
+// Helper function to get display name for POI types
+function getTypeDisplayName(type: string): string {
   const names = {
-    hospitals: 'Hospital',
-    shelters: 'Shelter',
-    defibrillators: 'Defibrillator',
-    waterStations: 'Water Station',
-    foodCentrals: 'Food Central',
-    affectedAreas: 'Affected Area'
+    'HOSPITAL': 'Hospital',
+    'SHELTER': 'Shelter',
+    'DEFIBRILLATOR': 'Defibrillator',
+    'WATER_STATION': 'Water Station',
+    'FOOD_CENTRAL': 'Food Central'
   };
 
-  return names[category] || category;
+  return names[type] || type;
 }

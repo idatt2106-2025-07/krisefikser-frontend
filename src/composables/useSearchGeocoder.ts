@@ -1,159 +1,106 @@
+import { ref, watch } from 'vue';
 import type { Ref } from 'vue';
-import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import mapboxgl from 'mapbox-gl';
-import { mapboxConfig } from '@/config/mapboxConfig';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { createSearchableGeoJSON } from '@/utils/mapUtils';
-import type { LocationData, MarkerCollections } from '@/types/mapTypes';
+import type { LocationData } from '@/types/mapTypes';
 
 export function useSearchGeocoder(
   map: Ref<mapboxgl.Map | null>,
-  locationData: LocationData,
-  markers: Ref<MarkerCollections>
+  locationData: Ref<LocationData>,
+  markers: Ref<mapboxgl.Marker[]>
 ) {
+  const geocoder = ref<MapboxGeocoder | null>(null);
+
   const initializeSearch = () => {
     if (!map.value) return;
 
-    // Create searchable data
-    const customSearchData = createSearchableGeoJSON(locationData);
-
-    // Configure the geocoder with custom data
-    const geocoder = new MapboxGeocoder({
-      accessToken: mapboxConfig.accessToken,
+    // Create custom geocoder
+    geocoder.value = new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken,
       mapboxgl: mapboxgl,
-      marker: false,
-      placeholder: 'Search for location or facility',
-      localGeocoder: (query) => {
-        const matches = [];
-        if (!query || query.length < 3) return matches;
+      placeholder: 'Search locations...',
+      localGeocoder: (query) => customGeocoder(query, locationData.value),
+      render: (item) => {
+        if (item.properties && item.properties.title) {
+          // Custom POI result
+          const name = item.properties.title;
+          const category = item.properties.description || '';
+          return `<div class="geocoder-result">
+            <strong>${name}</strong>
+            <span>${category}</span>
+          </div>`;
+        } else {
+          const name = item.text || '';
+          const placeName = item.place_name || '';
 
-        const lowerQuery = query.toLowerCase();
+          // Show more details for global results
+          return `<div class="geocoder-result global-location">
+            <strong>${name}</strong>
+            <span class="location-details">${placeName}</span>
+          </div>`;
+        }
+      },
+      localGeocoderOnly: false
+    });
 
-        customSearchData.features.forEach(feature => {
-          if (
-            feature.properties.title.toLowerCase().includes(lowerQuery) ||
-            feature.properties.description.toLowerCase().includes(lowerQuery)
-          ) {
-            // Format the result for display
-            const match = {
-              ...feature,
-              place_name: `${feature.properties.title} (${feature.properties.description})`,
-              center: feature.geometry.coordinates,
-              place_type: ['poi'],
-              isCustomResult: true,
-              customCategory: feature.properties.category
-            };
-            matches.push(match);
+    // Add geocoder to map
+    map.value.addControl(geocoder.value, 'top-left');
+
+    // Handle selection of a point of interest
+    geocoder.value.on('result', (event) => {
+      // If it's our custom result, zoom to it
+      if (event.result && event.result.properties && event.result.properties.id) {
+        const id = event.result.properties.id.toString();
+        const coordinates = event.result.geometry.coordinates;
+
+        // Find and open popup for this marker
+        markers.value.forEach(marker => {
+          const element = marker.getElement();
+          if (element.getAttribute('data-id') === id) {
+            marker.togglePopup();
           }
         });
 
-        return matches;
-      },
-      localGeocoderOnly: false,
-      zoom: 15,
-      types: 'poi,address,place'
-    });
-
-    // Handle selection in search results
-    geocoder.on('result', (event) => {
-      const selectedResult = event.result;
-
-      // If it's one of our custom features
-      if (selectedResult.properties && selectedResult.properties.category) {
-        const { category, id } = selectedResult.properties;
-
         // Fly to the location
-        map.value!.flyTo({
-          center: selectedResult.center,
+        map.value.flyTo({
+          center: coordinates,
           zoom: 15,
           essential: true
         });
-
-        // Find the matching marker
-        let selectedMarker;
-
-        switch (category) {
-          case 'hospital':
-            selectedMarker = markers.value.hospitals.find(
-              m => m._element.getAttribute('data-id') === id
-            );
-            break;
-          case 'shelter':
-            selectedMarker = markers.value.shelters.find(
-              m => m._element.getAttribute('data-id') === id
-            );
-            break;
-          case 'defibrillator':
-            selectedMarker = markers.value.defibrillators.find(
-              m => m._element.getAttribute('data-id') === id
-            );
-            break;
-          case 'water_station':
-            selectedMarker = markers.value.water_stations.find(
-              m => m._element.getAttribute('data-id') === id
-            );
-            break;
-          case 'food_central':
-            selectedMarker = markers.value.food_centrals.find(
-              m => m._element.getAttribute('data-id') === id
-            );
-            break;
-          case 'affected_area':
-            // Handle affected areas differently since they're layers, not markers
-            const areaIndex = locationData.affected_areas.findIndex(area => area.id === id);
-            if (areaIndex >= 0) {
-              new mapboxgl.Popup()
-                .setLngLat(selectedResult.center)
-                .setHTML(`<h3>${locationData.affected_areas[areaIndex].name}</h3>`)
-                .addTo(map.value!);
-            }
-            return; // Skip the marker popup code below
-        }
-
-        // Show popup for the marker
-        if (selectedMarker) {
-          selectedMarker.togglePopup();
-        }
       }
     });
-
-    // Apply custom styling to search results
-    geocoder.on('render', () => {
-      setTimeout(() => {
-        const suggestionElements = document.querySelectorAll('.mapboxgl-ctrl-geocoder .suggestions > li');
-
-        suggestionElements.forEach(el => {
-          const anchor = el.querySelector('a');
-          if (!anchor) return;
-
-          const placeName = anchor.textContent || '';
-
-          if (placeName.includes('(Hospital)')) {
-            el.setAttribute('data-custom', 'true');
-            el.setAttribute('data-category', 'hospital');
-          } else if (placeName.includes('(Shelter)')) {
-            el.setAttribute('data-custom', 'true');
-            el.setAttribute('data-category', 'shelter');
-          } else if (placeName.includes('(Defibrillator)')) {
-            el.setAttribute('data-custom', 'true');
-            el.setAttribute('data-category', 'defibrillator');
-          } else if (placeName.includes('(Water Station)')) {
-            el.setAttribute('data-custom', 'true');
-            el.setAttribute('data-category', 'water_station');
-          } else if (placeName.includes('(Food Central)')) {
-            el.setAttribute('data-custom', 'true');
-            el.setAttribute('data-category', 'food_central');
-          } else if (placeName.includes('(Affected Area)')) {
-            el.setAttribute('data-custom', 'true');
-            el.setAttribute('data-category', 'affected_area');
-          }
-        });
-      }, 10);
-    });
-
-    map.value.addControl(geocoder, 'top-left');
   };
 
+  // Custom geocoder to search our points of interest
+  const customGeocoder = (query: string, data: LocationData) => {
+    if (!query || query.length < 2) return [];
+
+    const geoJSON = createSearchableGeoJSON(data);
+    const lowerQuery = query.toLowerCase();
+
+    return geoJSON.features.filter(feature => {
+      const title = (feature.properties?.title || '').toLowerCase();
+      const description = (feature.properties?.description || '').toLowerCase();
+
+      if (title.includes(lowerQuery) || description.includes(lowerQuery)) {
+        feature.place_name = feature.properties?.title || 'Location';
+        feature.text = feature.properties?.title || 'Location';
+        return true;
+      }
+      return false;
+    });
+  };
+
+  // Update search when data changes
+  watch(() => locationData.value, () => {
+    if (geocoder.value) {
+      geocoder.value.setProximity(null);
+    }
+  }, { deep: true });
+
   return {
+    geocoder,
     initializeSearch
   };
 }

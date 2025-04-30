@@ -11,6 +11,7 @@ import GeneralInfo from '@/views/general/GeneralInfoView.vue'
 import News from '@/views/home/NewsView.vue'
 import RegisterAdmin from '@/views/RegisterAdmin.vue'
 
+
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
 

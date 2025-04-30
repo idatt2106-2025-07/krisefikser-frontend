@@ -6,6 +6,7 @@ import { mapboxConfig } from '@/config/mapboxConfig';
 export function useMapInitialization(containerRef: Ref<HTMLElement | null, HTMLElement | null>) {
   const map = ref<mapboxgl.Map | null>(null);
   const isMapLoaded = ref(false);
+  const isStyleLoaded = ref(false);
 
   onMounted(() => {
     if (!containerRef.value) {
@@ -37,6 +38,11 @@ export function useMapInitialization(containerRef: Ref<HTMLElement | null, HTMLE
       const coordinates = e.lngLat;
       console.log('[' + coordinates.lng + ', ' + coordinates.lat + ']');
     });
+
+    map.value.on('style.load', () => {
+      isStyleLoaded.value = true;
+      console.log('Map style loaded');
+    });
   });
 
   onUnmounted(() => {
@@ -47,6 +53,7 @@ export function useMapInitialization(containerRef: Ref<HTMLElement | null, HTMLE
 
   return {
     map,
-    isMapLoaded
+    isMapLoaded,
+    isStyleLoaded
   };
 }

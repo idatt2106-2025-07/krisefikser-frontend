@@ -11,10 +11,12 @@ export interface PointOfInterest {
 
 export interface AffectedArea {
   id: number;
-  name: string;
-  latitude: number;
   longitude: number;
-  radius: number;
+  latitude: number;
+  dangerRadiusKm: number;
+  severityLevel: number;
+  description: string;
+  startDate: string;
 }
 
 export interface LocationData {

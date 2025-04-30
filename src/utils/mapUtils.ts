@@ -1,5 +1,5 @@
 import { MARKER_COLORS, MARKER_LABELS } from '@/constants/markerStyles';
-import type { LocationItem, LocationData, AffectedArea } from '@/types/mapTypes';
+import type { PointOfInterest, LocationData, AffectedArea } from '@/types/mapTypes';
 
 type MarkerType = keyof typeof MARKER_COLORS;
 
@@ -20,13 +20,15 @@ export function createCustomMarker(type: string): HTMLDivElement {
   return el;
 }
 
+
+//TODO: FIX
 export function createSearchableGeoJSON(locationData: LocationData) {
   const features = [];
 
   // Process each location type
   Object.entries(locationData).forEach(([category, items]) => {
     if (Array.isArray(items)) {
-      items.forEach((item: LocationItem | AffectedArea) => {
+      items.forEach((item: PointOfInterest | AffectedArea) => {
         features.push({
           type: 'Feature',
           properties: {

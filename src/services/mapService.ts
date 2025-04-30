@@ -1,4 +1,3 @@
-import type { LocationItem, AffectedArea, GetPointsOfInterestRequest } from '@/types/mapTypes.ts'
 import axiosInstance from '@/services/axiosService'
 
 class MapService {
@@ -9,6 +8,14 @@ class MapService {
     const response = await axiosInstance.get('/point-of-interest', {
       params: { types: filters.join(',') }
     });
+    return response.data
+  }
+
+  /**
+   * Fetches all Points of interests
+   */
+  async getAffectedAreas() {
+    const response = await axiosInstance.get('/affected-area');
     return response.data
   }
 }

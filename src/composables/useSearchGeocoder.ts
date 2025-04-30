@@ -87,23 +87,23 @@ export function useSearchGeocoder(
               m => m._element.getAttribute('data-id') === id
             );
             break;
-          case 'waterStation':
-            selectedMarker = markers.value.waterStations.find(
+          case 'water_station':
+            selectedMarker = markers.value.water_stations.find(
               m => m._element.getAttribute('data-id') === id
             );
             break;
-          case 'foodCentral':
-            selectedMarker = markers.value.foodCentrals.find(
+          case 'food_central':
+            selectedMarker = markers.value.food_centrals.find(
               m => m._element.getAttribute('data-id') === id
             );
             break;
-          case 'affectedArea':
+          case 'affected_area':
             // Handle affected areas differently since they're layers, not markers
-            const areaIndex = locationData.affectedAreas.findIndex(area => area.id === id);
+            const areaIndex = locationData.affected_areas.findIndex(area => area.id === id);
             if (areaIndex >= 0) {
               new mapboxgl.Popup()
                 .setLngLat(selectedResult.center)
-                .setHTML(`<h3>${locationData.affectedAreas[areaIndex].name}</h3>`)
+                .setHTML(`<h3>${locationData.affected_areas[areaIndex].name}</h3>`)
                 .addTo(map.value!);
             }
             return; // Skip the marker popup code below
@@ -138,13 +138,13 @@ export function useSearchGeocoder(
             el.setAttribute('data-category', 'defibrillator');
           } else if (placeName.includes('(Water Station)')) {
             el.setAttribute('data-custom', 'true');
-            el.setAttribute('data-category', 'waterStation');
+            el.setAttribute('data-category', 'water_station');
           } else if (placeName.includes('(Food Central)')) {
             el.setAttribute('data-custom', 'true');
-            el.setAttribute('data-category', 'foodCentral');
+            el.setAttribute('data-category', 'food_central');
           } else if (placeName.includes('(Affected Area)')) {
             el.setAttribute('data-custom', 'true');
-            el.setAttribute('data-category', 'affectedArea');
+            el.setAttribute('data-category', 'affected_area');
           }
         });
       }, 10);

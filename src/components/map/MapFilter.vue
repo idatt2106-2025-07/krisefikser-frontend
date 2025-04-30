@@ -2,11 +2,11 @@
 import { ref, watch, onMounted } from 'vue';
 
 const filters = ref({
-  affectedAreas: true,
+  affected_areas: true,
   shelter: true,
   defibrillator: true,
-  waterStation: true,
-  foodCentral: true,
+  water_station: true,
+  food_central: true,
   hospital: true
 });
 
@@ -27,7 +27,7 @@ onMounted(() => {
     <h2 class="filter-title">Filters</h2>
 
     <div class="filter-item">
-      <input type="checkbox" id="affected-areas" v-model="filters.affectedAreas" />
+      <input type="checkbox" id="affected-areas" v-model="filters.affected_areas" />
       <label for="affected-areas">Affected Areas</label>
     </div>
 
@@ -42,12 +42,12 @@ onMounted(() => {
     </div>
 
     <div class="filter-item">
-      <input type="checkbox" id="water-station" v-model="filters.waterStation" />
+      <input type="checkbox" id="water-station" v-model="filters.water_station" />
       <label for="water-station">Water station</label>
     </div>
 
     <div class="filter-item">
-      <input type="checkbox" id="food-central" v-model="filters.foodCentral" />
+      <input type="checkbox" id="food-central" v-model="filters.food_central" />
       <label for="food-central">Food central</label>
     </div>
 

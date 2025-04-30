@@ -6,7 +6,7 @@ import type { AffectedArea, Filters } from '@/types/mapTypes';
 
 export function useMapLayers(
   map: Ref<mapboxgl.Map | null>,
-  affectedAreas: AffectedArea[],
+  affected_areas: AffectedArea[],
   filters: Ref<Filters>
 ) {
   const circleLayers = ref<string[]>([]);
@@ -14,7 +14,7 @@ export function useMapLayers(
   const initializeLayers = () => {
     if (!map.value) return;
 
-    affectedAreas.forEach((area, index) => {
+    affected_areas.forEach((area, index) => {
       const layerId = `affected-area-${index}`;
       circleLayers.value.push(layerId);
 
@@ -46,7 +46,7 @@ export function useMapLayers(
           'fill-outline-color': '#ff0000'
         },
         'layout': {
-          'visibility': filters.value.affectedAreas !== false ? 'visible' : 'none'
+          'visibility': filters.value.affected_areas !== false ? 'visible' : 'none'
         }
       });
 
@@ -60,7 +60,7 @@ export function useMapLayers(
           'line-width': 2
         },
         'layout': {
-          'visibility': filters.value.affectedAreas !== false ? 'visible' : 'none'
+          'visibility': filters.value.affected_areas !== false ? 'visible' : 'none'
         }
       });
 
@@ -91,7 +91,7 @@ export function useMapLayers(
     // Show/hide affected areas
     circleLayers.value.forEach(layerId => {
       if (map.value && map.value.getLayer(layerId)) {
-        const visibility = newFilters.affectedAreas !== false ? 'visible' : 'none';
+        const visibility = newFilters.affected_areas !== false ? 'visible' : 'none';
         map.value.setLayoutProperty(layerId, 'visibility', visibility);
 
         // Also update the outline layer visibility

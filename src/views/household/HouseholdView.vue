@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import SidebarContent from '../components/SidebarContent.vue'
+import SidebarContent from '@/components/navigation/SidebarContent.vue'
 
 /**
  * Interface representing a sidebar item.

@@ -12,10 +12,7 @@ import mapService from '@/services/mapService'
 // Use shallowRef to prevent deep reactivity
 const locationData = shallowRef<LocationData>({
   pointsOfInterest: [],
-  affectedAreas: [
-    { id: 1, name: 'Nuclear accident', latitude: 59.891880402035895, longitude: 10.51990906253613, radius: 10000 },
-    { id: 2, name: 'Landslide Area', latitude: 60.071893022317425, longitude: 10.589586417243936, radius: 5000 },
-  ]
+  affectedAreas: []
 });
 
 // This flag prevents user actions while loading
@@ -67,6 +64,30 @@ const fetchPointsOfInterest = async (filters: string[]) => {
   }
 };
 
+const fetchAffectedAreas = async () => {
+  try {
+    console.log('Fetching affected areas');
+    const response = await mapService.getAffectedAreas();
+
+    // Create a new object to replace the old one
+    const newData = {
+      pointsOfInterest: locationData.value.pointsOfInterest,
+      affectedAreas: response
+    };
+
+    // Replace the entire object
+    locationData.value = newData;
+    console.log('Affected areas updated');
+
+    // Make sure layers update
+    if (map.value && isStyleLoaded.value) {
+      tryInitializeLayers(3);
+    }
+  } catch (error) {
+    console.error('Error fetching affected areas:', error);
+  }
+};
+
 const isDebouncing = ref(false);
 
 // Use a watcher with immediate false
@@ -105,7 +126,7 @@ watch(
 const mapContainer = ref<HTMLElement | null>(null);
 const { map, isMapLoaded, isStyleLoaded } = useMapInitialization(mapContainer);
 const { markers, initializeMarkers, updateMarkers } = useMarkerManagement(map, locationData, filtersRef);
-const { tryInitializeLayers, initializeLayers } = useMapLayers(map, locationData, filtersRef);
+const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(map, locationData, filtersRef);
 const { initializeSearch } = useSearchGeocoder(map, locationData, markers);
 
 // Watch for data changes to update markers
@@ -117,6 +138,16 @@ watch(needsMarkerUpdate, async (needsUpdate) => {
     needsMarkerUpdate.value = false;
   }
 });
+
+watch(
+  () => filtersRef.value.affected_areas,
+  (showAffectedAreas) => {
+    if (!map.value || !isMapLoaded.value) return;
+
+    console.log('Toggling affected areas visibility:', showAffectedAreas);
+    updateLayerVisibility(showAffectedAreas);
+  }
+);
 
 onMounted(() => {
   // Wait for both the map AND style to load before initializing
@@ -132,11 +163,18 @@ onMounted(() => {
         initializeSearch();
 
         // Initial load if we have filters
-        if (!initialLoaded.value && Object.keys(filtersRef.value).length > 0) {
+        if (!initialLoaded.value) {
           initialLoaded.value = true;
-          const poiFilters = getEnabledFilters(filtersRef.value).filter(f => f !== 'affected_areas');
-          if (poiFilters.length > 0) {
-            fetchPointsOfInterest(poiFilters);
+
+          // Fetch affected areas regardless of filters
+          fetchAffectedAreas();
+
+          // Fetch POIs if we have filters
+          if (Object.keys(filtersRef.value).length > 0) {
+            const poiFilters = getEnabledFilters(filtersRef.value).filter(f => f !== 'affected_areas');
+            if (poiFilters.length > 0) {
+              fetchPointsOfInterest(poiFilters);
+            }
           }
         }
       }, 100);

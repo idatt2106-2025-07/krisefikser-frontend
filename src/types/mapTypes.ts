@@ -1,21 +1,25 @@
-export interface LocationItem {
-  id: string
-  name: string
-  coordinates: [number, number]
-  address?: string
+export interface PointOfInterest {
+  id: number;
+  latitude: number;
+  longitude: number;
+  type: 'HOSPITAL' | 'SHELTER' | 'DEFIBRILLATOR' | 'WATER_STATION' | 'FOOD_CENTRAL';
+  opensAt: string | null;
+  closesAt: string | null;
+  contactNumber: string | null;
+  description: string;
 }
 
-export interface AffectedArea extends LocationItem {
-  radius: number
+export interface AffectedArea {
+  id: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+  radius: number;
 }
 
 export interface LocationData {
-  hospitals: LocationItem[]
-  shelters: LocationItem[]
-  defibrillators: LocationItem[]
-  water_stations: LocationItem[]
-  food_centrals: LocationItem[]
-  affected_areas: AffectedArea[]
+  pointsOfInterest: PointOfInterest[];
+  affectedAreas: AffectedArea[];
 }
 
 export interface MarkerCollections {

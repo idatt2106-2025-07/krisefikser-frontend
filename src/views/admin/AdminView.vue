@@ -11,7 +11,6 @@
 
       <TabPanels>
         <TabPanel v-for="(tab, index) in tabs" :key="index" :value="index.toString()">
-<<<<<<< HEAD
           <AdminPanel v-if="tab.type !== 'InviteAdmin'" :type="tab.type === 'Users' ? 'User' : tab.type" />
           <div v-else>
             <h2>Invite Admin</h2>
@@ -32,9 +31,6 @@
               <p v-if="message" :class="{ success: success, error: !success }">{{ message }}</p>
             </form>
           </div>
-=======
-          <AdminPanel :type="tab.type === 'Users' ? 'User' : tab.type" />
->>>>>>> 80cb168 (organized the codebase)
         </TabPanel>
       </TabPanels>
     </Tabs>
@@ -43,17 +39,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-<<<<<<< HEAD
-<<<<<<< HEAD
 import axios from 'axios'
 import AdminPanel from '@/components/admin/AdminPanel.vue' // Adjust the path as needed
-=======
-import AdminPanel from '@/components/AdminPanel.vue' // Adjust the path as needed
->>>>>>> 80cb168 (organized the codebase)
-=======
-import AdminPanel from '@/components/admin/AdminPanel.vue' // Adjust the path as needed
->>>>>>> 0b5c3e9 (fixed imports in files)
-
 /* PrimeVue v4 components */
 import Tabs from 'primevue/tabs'
 import TabList from 'primevue/tablist'
@@ -65,15 +52,11 @@ const tabs = [
   { label: 'Manage Map', type: 'Map' },
   { label: 'Gameification', type: 'Gameification' },
   { label: 'Manage Users', type: 'Users' },
-<<<<<<< HEAD
   { label: 'Invite Admin', type: 'InviteAdmin' },
-=======
->>>>>>> 80cb168 (organized the codebase)
 ] as const
 
 const value = ref('0') // Default to the first tab
 
-<<<<<<< HEAD
 // Invite Admin state
 const email = ref('')
 const loading = ref(false)
@@ -101,7 +84,8 @@ async function handleInviteAdmin() {
   } finally {
     loading.value = false
   }
-=======
+}
+
 const showAddIconForm = ref(false)
 const iconType = ref('')
 const iconTypes = [
@@ -120,7 +104,6 @@ function handleAddIcon() {
   }
   alert(`Icon added: Type – ${iconType.value}`)
   showAddIconForm.value = false
->>>>>>> 80cb168 (organized the codebase)
 }
 </script>
 
@@ -147,7 +130,6 @@ function handleAddIcon() {
   padding: 2rem;
 }
 
-<<<<<<< HEAD
 .field {
   margin-bottom: 1rem;
   display: flex;
@@ -178,7 +160,4 @@ button:disabled {
   color: red;
   margin-top: 1rem;
 }
-=======
-/* keep your existing .button-group, .add-icon-form, etc. */
->>>>>>> 80cb168 (organized the codebase)
 </style>

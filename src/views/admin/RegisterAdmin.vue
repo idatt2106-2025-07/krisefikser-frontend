@@ -13,8 +13,8 @@ const token = ref('')
 
 // Fetch the username and token from the route query parameters
 const route = useRoute()
-username.value = route.query.username as string || ''
-token.value = route.query.token as string || ''
+username.value = (route.query.username as string) || ''
+token.value = (route.query.token as string) || ''
 
 // Computed properties
 const passwordsMatch = computed(() => password.value === confirmPassword.value)

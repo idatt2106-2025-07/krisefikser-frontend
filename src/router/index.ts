@@ -9,8 +9,7 @@ import StorageView from '@/views/storage/StorageView.vue'
 import AdminView from '@/views/admin/AdminView.vue'
 import GeneralInfo from '@/views/general/GeneralInfoView.vue'
 import News from '@/views/home/NewsView.vue'
-import RegisterAdmin from '@/views/RegisterAdmin.vue'
-
+import RegisterAdmin from '@/views/admin/RegisterAdmin.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -77,7 +76,7 @@ const router = createRouter({
       path: '/register-admin',
       name: 'register-admin',
       component: RegisterAdmin,
-    }
+    },
   ],
 })
 

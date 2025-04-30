@@ -11,7 +11,26 @@
 
       <TabPanels>
         <TabPanel v-for="(tab, index) in tabs" :key="index" :value="index.toString()">
-          <AdminPanel :type="tab.type === 'Users' ? 'User' : tab.type" />
+          <AdminPanel v-if="tab.type !== 'InviteAdmin'" :type="tab.type === 'Users' ? 'User' : tab.type" />
+          <div v-else>
+            <h2>Invite Admin</h2>
+            <form @submit.prevent="handleInviteAdmin">
+              <div class="field">
+                <label for="email">Admin Email</label>
+                <input
+                  id="email"
+                  type="email"
+                  v-model="email"
+                  placeholder="Enter admin email"
+                  required
+                />
+              </div>
+              <button type="submit" :disabled="loading">
+                {{ loading ? 'Sending...' : 'Send Invite' }}
+              </button>
+              <p v-if="message" :class="{ success: success, error: !success }">{{ message }}</p>
+            </form>
+          </div>
         </TabPanel>
       </TabPanels>
     </Tabs>
@@ -20,6 +39,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import axios from 'axios'
 import AdminPanel from '@/components/admin/AdminPanel.vue' // Adjust the path as needed
 
 /* PrimeVue v4 components */
@@ -33,28 +53,38 @@ const tabs = [
   { label: 'Manage Map', type: 'Map' },
   { label: 'Gameification', type: 'Gameification' },
   { label: 'Manage Users', type: 'Users' },
+  { label: 'Invite Admin', type: 'InviteAdmin' },
 ] as const
 
 const value = ref('0') // Default to the first tab
 
-const showAddIconForm = ref(false)
-const iconType = ref('')
-const iconTypes = [
-  'Shelter',
-  'Affected Area',
-  'Defibrillator',
-  'Water Station',
-  'Food central',
-  'Hospital',
-]
+// Invite Admin state
+const email = ref('')
+const loading = ref(false)
+const message = ref('')
+const success = ref(false)
 
-function handleAddIcon() {
-  if (!iconType.value) {
-    alert('Please select an icon type.')
-    return
+async function handleInviteAdmin() {
+  loading.value = true
+  message.value = ''
+  success.value = false
+
+  try {
+    // Use the full backend endpoint
+    const response = await axios.post('/api/admin/invite', { email: email.value })
+    message.value = response.data
+    success.value = true
+  } catch (error) {
+    console.error(error)
+    if (axios.isAxiosError(error) && error.response) {
+      message.value = error.response.data || 'Failed to send invite'
+    } else {
+      message.value = 'Failed to send invite'
+    }
+    success.value = false
+  } finally {
+    loading.value = false
   }
-  alert(`Icon added: Type – ${iconType.value}`)
-  showAddIconForm.value = false
 }
 </script>
 
@@ -81,5 +111,34 @@ function handleAddIcon() {
   padding: 2rem;
 }
 
-/* keep your existing .button-group, .add-icon-form, etc. */
+.field {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.success {
+  color: green;
+  margin-top: 1rem;
+}
+
+.error {
+  color: red;
+  margin-top: 1rem;
+}
 </style>

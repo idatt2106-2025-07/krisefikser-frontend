@@ -1,15 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import RegisterView from '@/views/RegisterView.vue'
-import LoginView from '@/views/LoginView.vue'
-import UserSettingsView from '@/views/UserSettingsView.vue'
-import MapView from '@/views/MapView.vue'
-import HouseholdView from '@/views/HouseholdView.vue'
-import StorageView from '@/views/StorageView.vue'
-import AdminView from '@/views/AdminView.vue'
-import GeneralInfo from '@/views/GeneralInfoView.vue'
-import News from '@/views/NewsView.vue'
-import Quiz from '@/views/QuizView.vue'
+
+// Views
+import HomeView from '@/views/home/HomeView.vue'
+import RegisterView from '@/views/auth/RegisterView.vue'
+import LoginView from '@/views/auth/LoginView.vue'
+import UserSettingsView from '@/views/user/UserSettingsView.vue'
+import HouseholdView from '@/views/household/HouseholdView.vue'
+import StorageView from '@/views/storage/StorageView.vue'
+import AdminView from '@/views/admin/AdminView.vue'
+import GeneralInfo from '@/views/general/GeneralInfoView.vue'
+import News from '@/views/home/NewsView.vue'
+import MapView from '@/views/map/MapView.vue'
+
+// Components
+import QuizCreator from '@/views/admin/QuizCreator.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -72,7 +76,7 @@ const router = createRouter({
     {
       path: '/quiz',
       name: 'quiz',
-      component: Quiz,
+      component: QuizCreator,
     },
   ],
 })

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import MapView from '@/views/MapView.vue'
+import MapView from '@/views/map/MapView.vue'
 
 describe('MapView.vue', () => {
   it('renders a placeholder map view', () => {

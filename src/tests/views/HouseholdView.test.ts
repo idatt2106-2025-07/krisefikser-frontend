@@ -6,7 +6,7 @@ import { defineComponent } from 'vue'
 // ────────────────────────────────────────────────────────────
 // 1. Component under test
 // ────────────────────────────────────────────────────────────
-import HouseholdPage from '@/views/HouseholdView.vue' // adjust if the file lives elsewhere
+import HouseholdPage from '@/views/household/HouseholdView.vue' // adjust if the file lives elsewhere
 
 // ────────────────────────────────────────────────────────────
 // 2. Stub child components

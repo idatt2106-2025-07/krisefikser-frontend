@@ -1,8 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-
-
-import RegisterAdmin from '@/views/RegisterAdmin.vue'
-
 // Views
 import HomeView from '@/views/home/HomeView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
@@ -13,10 +9,10 @@ import StorageView from '@/views/storage/StorageView.vue'
 import AdminView from '@/views/admin/AdminView.vue'
 import GeneralInfo from '@/views/general/GeneralInfoView.vue'
 import News from '@/views/home/NewsView.vue'
+import RegisterAdmin from '@/views/RegisterAdmin.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
-
 
 
 const router = createRouter({

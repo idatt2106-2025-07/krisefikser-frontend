@@ -1,5 +1,5 @@
 // src/composables/useMapLayers.ts
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import type { Ref} from 'vue';
 import mapboxgl from 'mapbox-gl';
 import * as turf from '@turf/turf';
@@ -24,84 +24,114 @@ export function useMapLayers(
       removeAllLayers();
     }
 
-    try {
-      console.log('Initializing map layers with affected areas:',
-                 locationData.value.affectedAreas.length);
-
-      locationData.value.affectedAreas.forEach((area, index) => {
+    locationData.value.affectedAreas.forEach((area, index) => {
+      try {
         const layerId = `affected-area-${index}`;
         circleLayers.value.push(layerId);
 
-        // Create a circle as a polygon (in meters)
+        // Debug info
+        console.log(`Creating layer ${layerId} for area:`, area);
+
+        // Create a circle as a polygon (in km)
         const circlePolygon = turf.circle(
           [area.longitude, area.latitude],
-          area.radius / 1000, // Convert to km
+          area.dangerRadiusKm,
           { steps: 64, units: 'kilometers' }
         );
 
-        // Only add source if it doesn't exist
-        if (!map.value.getSource(layerId)) {
-          map.value.addSource(layerId, {
-            'type': 'geojson',
-            'data': {
-              'type': 'Feature',
-              'geometry': circlePolygon.geometry,
-              'properties': {
-                'name': area.name
-              }
-            }
-          });
+        // Use severity level to determine color
+        let fillColor = 'rgba(255, 0, 0, 0.1)';
+        let strokeColor = '#ff0000';
+
+        switch (area.severityLevel) {
+          case 1: // Low severity
+            fillColor = 'rgba(255, 255, 0, 0.2)'; // Yellow, more visible
+            strokeColor = '#ffff00';
+            break;
+          case 2: // Medium severity
+            fillColor = 'rgba(255, 165, 0, 0.2)'; // Orange, more visible
+            strokeColor = '#ffa500';
+            break;
+          case 3: // High severity
+            fillColor = 'rgba(255, 0, 0, 0.2)'; // Red, more visible
+            strokeColor = '#ff0000';
+            break;
         }
 
-        // Only add layer if it doesn't exist
-        if (!map.value.getLayer(layerId)) {
-          map.value.addLayer({
-            'id': layerId,
-            'type': 'fill',
-            'source': layerId,
-            'paint': {
-              'fill-color': 'rgba(255, 0, 0, 0.1)',
-              'fill-outline-color': '#ff0000'
-            },
-            'layout': {
-              'visibility': filters.value.affected_areas !== false ? 'visible' : 'none'
-            }
-          });
+        // Check if source already exists
+        if (map.value.getSource(layerId)) {
+          map.value.removeSource(layerId);
         }
 
-        // Only add outline layer if it doesn't exist
-        if (!map.value.getLayer(`${layerId}-outline`)) {
-          map.value.addLayer({
-            'id': `${layerId}-outline`,
-            'type': 'line',
-            'source': layerId,
-            'paint': {
-              'line-color': '#ff0000',
-              'line-width': 2
-            },
-            'layout': {
-              'visibility': filters.value.affected_areas !== false ? 'visible' : 'none'
+        // Add source for the circle
+        map.value.addSource(layerId, {
+          'type': 'geojson',
+          'data': {
+            'type': 'Feature',
+            'geometry': circlePolygon.geometry,
+            'properties': {
+              'description': area.description,
+              'severity': area.severityLevel,
+              'startDate': area.startDate
             }
-          });
-        }
+          }
+        });
 
-        // Add click handler for the layer
+        // Add fill layer
+        map.value.addLayer({
+          'id': layerId,
+          'type': 'fill',
+          'source': layerId,
+          'layout': {
+            'visibility': filters.value.affected_areas !== false ? 'visible' : 'none'
+          },
+          'paint': {
+            'fill-color': fillColor,
+            'fill-opacity': 0.6 // Increased opacity for visibility
+          }
+        });
+
+        // Add outline layer
+        const outlineLayerId = `${layerId}-outline`;
+        map.value.addLayer({
+          'id': outlineLayerId,
+          'type': 'line',
+          'source': layerId,
+          'layout': {
+            'visibility': filters.value.affected_areas !== false ? 'visible' : 'none'
+          },
+          'paint': {
+            'line-color': strokeColor,
+            'line-width': 2,
+            'line-opacity': 0.8
+          }
+        });
+
+        console.log(`Successfully created layers: ${layerId}, ${outlineLayerId}`);
+
+        // Add popup for the circle with updated properties
         map.value.on('click', layerId, (e) => {
           if (e.features && e.features.length > 0) {
             new mapboxgl.Popup()
               .setLngLat(e.lngLat)
-              .setHTML(`<h3>${area.name}</h3>`)
+              .setHTML(`
+                <div class="popup-content">
+                  <h3>Emergancy alert!</h3>
+                  <h4>${area.description}</h4>
+                  <h4>Severity: ${area.severityLevel}</h4>
+                  <h4>Started: ${new Date(area.startDate).toLocaleString()}</h4>
+                </div>
+              `)
               .addTo(map.value!);
           }
         });
-      });
 
-      layersInitialized.value = true;
-      console.log('Layers successfully initialized:', circleLayers.value.length);
-    } catch (error) {
-      console.error('Error initializing layers:', error);
-    }
-  };
+      } catch (err) {
+        console.error(`Error creating layer for area ${index}:`, err);
+      }
+    });
+
+  }
 
   const removeAllLayers = () => {
     if (!map.value) return;
@@ -148,9 +178,34 @@ export function useMapLayers(
     attemptInit();
   };
 
+  const updateLayerVisibility = (showAffectedAreas: boolean) => {
+    if (!map.value) return;
+
+    circleLayers.value.forEach((layerId) => {
+      if (map.value.getLayer(layerId)) {
+        map.value.setLayoutProperty(
+          layerId,
+          'visibility',
+          showAffectedAreas ? 'visible' : 'none'
+        );
+
+        // Also update outline layers
+        const outlineLayerId = `${layerId}-outline`;
+        if (map.value.getLayer(outlineLayerId)) {
+          map.value.setLayoutProperty(
+            outlineLayerId,
+            'visibility',
+            showAffectedAreas ? 'visible' : 'none'
+          );
+        }
+      }
+    });
+  };
+
   return {
     circleLayers,
     initializeLayers,
-    tryInitializeLayers
+    tryInitializeLayers,
+    updateLayerVisibility
   };
 }

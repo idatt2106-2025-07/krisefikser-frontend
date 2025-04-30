@@ -50,11 +50,11 @@ export function createSearchableGeoJSON(locationData: LocationData) {
       features.push({
         type: 'Feature',
         properties: {
-          title: area.name,
+          title: area.description,
           description: 'Affected Area',
           category: 'affected_area',
           id: area.id,
-          radius: area.radius
+          radius: area.dangerRadiusKm
         },
         geometry: {
           type: 'Point',

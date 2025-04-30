@@ -44,11 +44,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 <<<<<<< HEAD
+<<<<<<< HEAD
 import axios from 'axios'
 import AdminPanel from '@/components/admin/AdminPanel.vue' // Adjust the path as needed
 =======
 import AdminPanel from '@/components/AdminPanel.vue' // Adjust the path as needed
 >>>>>>> 80cb168 (organized the codebase)
+=======
+import AdminPanel from '@/components/admin/AdminPanel.vue' // Adjust the path as needed
+>>>>>>> 0b5c3e9 (fixed imports in files)
 
 /* PrimeVue v4 components */
 import Tabs from 'primevue/tabs'

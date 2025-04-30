@@ -1,27 +1,27 @@
 export interface PointOfInterest {
-  id: number;
-  latitude: number;
-  longitude: number;
-  type: 'HOSPITAL' | 'SHELTER' | 'DEFIBRILLATOR' | 'WATER_STATION' | 'FOOD_CENTRAL';
-  opensAt: string | null;
-  closesAt: string | null;
-  contactNumber: string | null;
-  description: string;
+  id: number
+  latitude: number
+  longitude: number
+  type: 'HOSPITAL' | 'SHELTER' | 'DEFIBRILLATOR' | 'WATER_STATION' | 'FOOD_CENTRAL'
+  opensAt: string | null
+  closesAt: string | null
+  contactNumber: string | null
+  description: string
 }
 
 export interface AffectedArea {
-  id: number;
-  longitude: number;
-  latitude: number;
-  dangerRadiusKm: number;
-  severityLevel: number;
-  description: string;
-  startDate: string;
+  id: number
+  longitude: number
+  latitude: number
+  dangerRadiusKm: number
+  severityLevel: number
+  description: string
+  startDate: string
 }
 
 export interface LocationData {
-  pointsOfInterest: PointOfInterest[];
-  affectedAreas: AffectedArea[];
+  pointsOfInterest: PointOfInterest[]
+  affectedAreas: AffectedArea[]
 }
 
 export interface MarkerCollections {

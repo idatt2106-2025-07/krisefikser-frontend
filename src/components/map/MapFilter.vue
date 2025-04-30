@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue'
 
 const filters = ref({
   affected_areas: true,
@@ -7,19 +7,23 @@ const filters = ref({
   defibrillator: true,
   water_station: true,
   food_central: true,
-  hospital: true
-});
+  hospital: true,
+})
 
-const emit = defineEmits(['filter-change']);
+const emit = defineEmits(['filter-change'])
 
 // Use watch instead of manual toggle
-watch(filters, (newValue) => {
-  emit('filter-change', { ...newValue });
-}, { deep: true });
+watch(
+  filters,
+  (newValue) => {
+    emit('filter-change', { ...newValue })
+  },
+  { deep: true },
+)
 
 onMounted(() => {
-  emit('filter-change', { ...filters.value });
-});
+  emit('filter-change', { ...filters.value })
+})
 </script>
 
 <template>
@@ -82,7 +86,7 @@ onMounted(() => {
   user-select: none;
 }
 
-input[type="checkbox"] {
+input[type='checkbox'] {
   margin-right: 8px;
   width: 18px;
   height: 18px;
@@ -92,6 +96,5 @@ input[type="checkbox"] {
 label {
   margin-top: 2px;
   cursor: pointer;
-
 }
 </style>

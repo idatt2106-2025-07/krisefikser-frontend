@@ -1,28 +1,27 @@
-import { MARKER_COLORS, MARKER_LABELS } from '@/constants/markerStyles';
-import type { PointOfInterest, LocationData, AffectedArea } from '@/types/mapTypes';
+import { MARKER_COLORS, MARKER_LABELS } from '@/constants/markerStyles'
+import type { PointOfInterest, LocationData, AffectedArea } from '@/types/mapTypes'
 
-type MarkerType = keyof typeof MARKER_COLORS;
+type MarkerType = keyof typeof MARKER_COLORS
 
 export function createCustomMarker(type: string): HTMLDivElement {
-  const el = document.createElement('div');
+  const el = document.createElement('div')
 
   // Base styles for all markers
-  el.style.width = '24px';
-  el.style.height = '24px';
-  el.style.borderRadius = '50%';
-  el.style.display = 'flex';
-  el.style.justifyContent = 'center';
-  el.style.alignItems = 'center';
-  el.style.fontWeight = 'bold';
-  el.style.backgroundColor = MARKER_COLORS[type as MarkerType] || MARKER_COLORS.default;
-  el.textContent = MARKER_LABELS[type as keyof typeof MARKER_LABELS] || MARKER_LABELS.default;
+  el.style.width = '24px'
+  el.style.height = '24px'
+  el.style.borderRadius = '50%'
+  el.style.display = 'flex'
+  el.style.justifyContent = 'center'
+  el.style.alignItems = 'center'
+  el.style.fontWeight = 'bold'
+  el.style.backgroundColor = MARKER_COLORS[type as MarkerType] || MARKER_COLORS.default
+  el.textContent = MARKER_LABELS[type as keyof typeof MARKER_LABELS] || MARKER_LABELS.default
 
-  return el;
+  return el
 }
 
-
 export function createSearchableGeoJSON(locationData: LocationData) {
-  const features = [];
+  const features = []
 
   // Process points of interest
   if (locationData.pointsOfInterest && Array.isArray(locationData.pointsOfInterest)) {
@@ -34,14 +33,14 @@ export function createSearchableGeoJSON(locationData: LocationData) {
           description: poi.description,
           category: poi.type,
           id: poi.id,
-          poiType: poi.type
+          poiType: poi.type,
         },
         geometry: {
           type: 'Point',
-          coordinates: [poi.longitude, poi.latitude]
-        }
-      });
-    });
+          coordinates: [poi.longitude, poi.latitude],
+        },
+      })
+    })
   }
 
   // Process affected areas
@@ -54,30 +53,30 @@ export function createSearchableGeoJSON(locationData: LocationData) {
           description: 'Affected Area',
           category: 'affected_area',
           id: area.id,
-          radius: area.dangerRadiusKm
+          radius: area.dangerRadiusKm,
         },
         geometry: {
           type: 'Point',
-          coordinates: [area.longitude, area.latitude]
-        }
-      });
-    });
+          coordinates: [area.longitude, area.latitude],
+        },
+      })
+    })
   }
 
   return {
     type: 'FeatureCollection',
-    features: features
-  };
+    features: features,
+  }
 }
 
 export function getTypeDisplayName(type: string): string {
   const names = {
-    'HOSPITAL': 'Hospital',
-    'SHELTER': 'Shelter',
-    'DEFIBRILLATOR': 'Defibrillator',
-    'WATER_STATION': 'Water Station',
-    'FOOD_CENTRAL': 'Food Central'
-  };
+    HOSPITAL: 'Hospital',
+    SHELTER: 'Shelter',
+    DEFIBRILLATOR: 'Defibrillator',
+    WATER_STATION: 'Water Station',
+    FOOD_CENTRAL: 'Food Central',
+  }
 
-  return names[type] || type;
+  return names[type] || type
 }

@@ -6,8 +6,8 @@ class MapService {
    */
   async getPointsOfInterest(filters: string[]) {
     const response = await axiosInstance.get('/point-of-interest', {
-      params: { types: filters.join(',') }
-    });
+      params: { types: filters.join(',') },
+    })
     return response.data
   }
 
@@ -15,7 +15,7 @@ class MapService {
    * Fetches all Points of interests
    */
   async getAffectedAreas() {
-    const response = await axiosInstance.get('/affected-area');
+    const response = await axiosInstance.get('/affected-area')
     return response.data
   }
 }

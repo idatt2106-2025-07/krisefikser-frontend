@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import SearchBar from '../components/SearchBar.vue'
-import SortDropdown from '../components/SortDropdown.vue'
-import DaysCircle from '../components/DaysCircle.vue'
-import FilterSidebar from '../components/FilterSidebar.vue'
-import threeDots from '../assets/three-dots-horizontal.svg'
+import SearchBar from '@/components/common/SearchBar.vue'
+import SortDropdown from '@/components/common/SortDropdown.vue'
+import DaysCircle from '@/components/common/DaysCircle.vue'
+import FilterSidebar from '@/components/storage/FilterSidebar.vue'
+import threeDots from '@/assets/three-dots-horizontal.svg'
 
 interface StorageItem {
   id: number

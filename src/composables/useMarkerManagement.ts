@@ -13,8 +13,8 @@ export function useMarkerManagement(
     hospitals: [],
     shelters: [],
     defibrillators: [],
-    waterStations: [],
-    foodCentrals: []
+    water_stations: [],
+    food_centrals: []
   });
 
   const initializeMarkers = () => {
@@ -66,31 +66,31 @@ export function useMarkerManagement(
     });
 
     // Add water station markers
-    locationData.waterStations.forEach(waterStation => {
+    locationData.water_stations.forEach(water_station => {
       const el = createCustomMarker('waterStation');
-      el.setAttribute('data-id', waterStation.id);
+      el.setAttribute('data-id', water_station.id);
       const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat(waterStation.coordinates as [number, number])
-        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${waterStation.name}</h3>`));
+        .setLngLat(water_station.coordinates as [number, number])
+        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${water_station.name}</h3>`));
 
-      markers.value.waterStations.push(marker);
+      markers.value.water_stations.push(marker);
 
-      if (filters.value.waterStation !== false) {
+      if (filters.value.water_station !== false) {
         marker.addTo(map.value!);
       }
     });
 
     // Add food central markers
-    locationData.foodCentrals.forEach(foodCentral => {
+    locationData.food_centrals.forEach(food_central => {
       const el = createCustomMarker('foodCentral');
-      el.setAttribute('data-id', foodCentral.id);
+      el.setAttribute('data-id', food_central.id);
       const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat(foodCentral.coordinates as [number, number])
-        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${foodCentral.name}</h3>`));
+        .setLngLat(food_central.coordinates as [number, number])
+        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${food_central.name}</h3>`));
 
-      markers.value.foodCentrals.push(marker);
+      markers.value.food_centrals.push(marker);
 
-      if (filters.value.foodCentral !== false) {
+      if (filters.value.food_central !== false) {
         marker.addTo(map.value!);
       }
     });
@@ -127,8 +127,8 @@ export function useMarkerManagement(
     });
 
     // Show/hide water station markers
-    markers.value.waterStations.forEach(marker => {
-      if (newFilters.waterStation !== false) {
+    markers.value.water_stations.forEach(marker => {
+      if (newFilters.water_station !== false) {
         marker.addTo(map.value!);
       } else {
         marker.remove();
@@ -136,8 +136,8 @@ export function useMarkerManagement(
     });
 
     // Show/hide food central markers
-    markers.value.foodCentrals.forEach(marker => {
-      if (newFilters.foodCentral !== false) {
+    markers.value.food_centrals.forEach(marker => {
+      if (newFilters.food_central !== false) {
         marker.addTo(map.value!);
       } else {
         marker.remove();

@@ -1,78 +1,204 @@
 <!-- src/components/map/TheMap.vue -->
 <script setup lang="ts">
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { ref, onMounted, watch, computed } from 'vue';
-import { useMapInitialization } from '@/composables/useMapInitialization';
-import { useMarkerManagement } from '@/composables/useMarkerManagement';
-import { useMapLayers } from '@/composables/useMapLayers';
-import { useSearchGeocoder } from '@/composables/useSearchGeocoder';
-import type { LocationData } from '@/types/mapTypes';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
+import 'mapbox-gl/dist/mapbox-gl.css'
+import { ref, onMounted, watch, computed, nextTick, shallowRef } from 'vue'
+import { useMapInitialization } from '@/composables/useMapInitialization'
+import { useMarkerManagement } from '@/composables/useMarkerManagement'
+import { useMapLayers } from '@/composables/useMapLayers'
+import { useSearchGeocoder } from '@/composables/useSearchGeocoder'
+import type { LocationData } from '@/types/mapTypes'
+import mapService from '@/services/mapService'
 
-// Sample location data
-const locationData: LocationData = {
-  hospitals: [
-    { id: 'h1', name: 'Central Hospital', coordinates: [10.386908626620283, 63.41987409956735] },
-    { id: 'h2', name: 'Regional Medical Center', coordinates: [10.431876, 63.445629] },
-  ],
-  shelters: [
-    { id: 's1', name: 'Emergency Shelter A', coordinates: [10.401904909653808, 63.419437224860474] },
-    { id: 's2', name: 'Community Center Shelter', coordinates: [10.397017368166019, 63.42698127994322] },
-  ],
-  defibrillators: [
-    { id: 'd1', name: 'Station Defibrillator', coordinates: [10.388450983374923, 63.42901951877633] },
-    { id: 'd2', name: 'Mall Defibrillator', coordinates: [10.39211011441759, 63.4211620329142] },
-  ],
-  waterStations: [
-    { id: 'w1', name: 'Clean Water Station 1', coordinates: [10.423231833423785, 63.44108060012897] },
-    { id: 'w2', name: 'Emergency Water Supply', coordinates: [10.394279400742164, 63.42409567600333] },
-  ],
-  foodCentrals: [
-    { id: 'f1', name: 'Food Distribution Center', coordinates: [10.395070630744812, 63.42262371444579] },
-    { id: 'f2', name: 'Community Kitchen', coordinates: [10.39876097991447, 63.431682219154595] },
-  ],
-  affectedAreas: [
-    { id: 'a1', name: 'Nuclear accident', coordinates: [10.405876, 63.415629], radius: 500 },
-    { id: 'a2', name: 'Landslide Area', coordinates: [10.41063276391543, 63.42678272573633], radius: 300 },
-  ],
-};
+// Use shallowRef to prevent deep reactivity
+const locationData = shallowRef<LocationData>({
+  pointsOfInterest: [],
+  affectedAreas: [],
+})
+
+// This flag prevents user actions while loading
+const isLoading = ref(false)
+// Track previous filters to prevent duplicate calls
+const prevFilters = ref<string[]>([])
 
 const props = defineProps({
   filters: {
     type: Object,
-    default: () => ({})
+    default: () => ({}),
+  },
+})
+
+const filtersRef = computed(() => props.filters)
+
+const getEnabledFilters = (filters: Record<string, boolean>) => {
+  return Object.keys(filters).filter((key) => filters[key] === true)
+}
+
+// Flags to coordinate data loading and map updates
+const needsMarkerUpdate = ref(false)
+const initialLoaded = ref(false)
+
+// Define this function separately from the watcher
+const fetchPointsOfInterest = async (filters: string[]) => {
+  if (filters.length === 0) return
+
+  try {
+    isLoading.value = true
+    console.log('Fetching POIs with filters:', filters)
+    const response = await mapService.getPointsOfInterest(filters)
+
+    // Create a new object to replace the old one
+    const newData = {
+      pointsOfInterest: response,
+      affectedAreas: locationData.value.affectedAreas,
+    }
+
+    // Replace the entire object
+    locationData.value = newData
+    needsMarkerUpdate.value = true
+
+    console.log('Data updated, will refresh markers on next tick')
+  } catch (error) {
+    console.error('Error fetching POIs:', error)
+  } finally {
+    isLoading.value = false
   }
-});
+}
 
-const filtersRef = computed(() => props.filters);
+const fetchAffectedAreas = async () => {
+  try {
+    console.log('Fetching affected areas')
+    const response = await mapService.getAffectedAreas()
 
-const mapContainer = ref<HTMLElement | null>(null);
-const { map, isMapLoaded } = useMapInitialization(mapContainer);
-const { markers, initializeMarkers } = useMarkerManagement(map, locationData, filtersRef);
-const { initializeLayers } = useMapLayers(map, locationData.affectedAreas, filtersRef);
-const { initializeSearch } = useSearchGeocoder(map, locationData, markers);
+    // Create a new object to replace the old one
+    const newData = {
+      pointsOfInterest: locationData.value.pointsOfInterest,
+      affectedAreas: response,
+    }
+
+    // Replace the entire object
+    locationData.value = newData
+    console.log('Affected areas updated')
+
+    // Make sure layers update
+    if (map.value && isStyleLoaded.value) {
+      tryInitializeLayers(3)
+    }
+  } catch (error) {
+    console.error('Error fetching affected areas:', error)
+  }
+}
+
+const isDebouncing = ref(false)
+
+// Use a watcher with immediate false
+watch(
+  filtersRef,
+  (newFilters) => {
+    // Skip if loading
+    if (isLoading.value || isDebouncing.value) return
+
+    // Get filters except affected_areas
+    const poiFilters = getEnabledFilters(newFilters).filter((f) => f !== 'affected_areas')
+
+    // Skip if filters haven't changed
+    const filtersStr = poiFilters.sort().join(',')
+    const prevFiltersStr = prevFilters.value.sort().join(',')
+
+    if (filtersStr === prevFiltersStr) {
+      console.log('Skipping duplicate request with same filters')
+      return
+    }
+
+    // Update prev filters now
+    prevFilters.value = [...poiFilters]
+
+    isDebouncing.value = true
+    setTimeout(() => {
+      isDebouncing.value = false
+    }, 300)
+
+    // Call fetch outside the watcher body
+    fetchPointsOfInterest(poiFilters)
+  },
+  { deep: true },
+)
+
+const mapContainer = ref<HTMLElement | null>(null)
+const { map, isMapLoaded, isStyleLoaded } = useMapInitialization(mapContainer)
+const { markers, initializeMarkers, updateMarkers } = useMarkerManagement(
+  map,
+  locationData,
+  filtersRef,
+)
+const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(map, locationData, filtersRef)
+const { initializeSearch } = useSearchGeocoder(map, locationData, markers)
+
+// Watch for data changes to update markers
+watch(needsMarkerUpdate, async (needsUpdate) => {
+  if (needsUpdate && isMapLoaded.value) {
+    console.log('Updating markers with new data')
+    await nextTick()
+    updateMarkers()
+    needsMarkerUpdate.value = false
+  }
+})
+
+watch(
+  () => filtersRef.value.affected_areas,
+  (showAffectedAreas) => {
+    if (!map.value || !isMapLoaded.value) return
+
+    console.log('Toggling affected areas visibility:', showAffectedAreas)
+    updateLayerVisibility(showAffectedAreas)
+  },
+)
 
 onMounted(() => {
-  // Wait for the map to load before initializing components
-  watch(isMapLoaded, (loaded) => {
-    if (loaded) {
-      initializeMarkers();
-      initializeLayers();
-      initializeSearch();
-    }
-  });
-});
+  // Wait for both the map AND style to load before initializing
+  watch([isMapLoaded, isStyleLoaded], ([mapLoaded, styleLoaded]) => {
+    if (mapLoaded && styleLoaded) {
+      console.log('Map and style loaded, initializing components')
 
+      // Add a slight delay to ensure everything is ready
+      setTimeout(() => {
+        // Use the retry logic instead of direct initialization
+        tryInitializeLayers(5) // Try up to 5 times with 200ms intervals
+        initializeMarkers()
+        initializeSearch()
+
+        // Initial load if we have filters
+        if (!initialLoaded.value) {
+          initialLoaded.value = true
+
+          // Fetch affected areas regardless of filters
+          fetchAffectedAreas()
+
+          // Fetch POIs if we have filters
+          if (Object.keys(filtersRef.value).length > 0) {
+            const poiFilters = getEnabledFilters(filtersRef.value).filter(
+              (f) => f !== 'affected_areas',
+            )
+            if (poiFilters.length > 0) {
+              fetchPointsOfInterest(poiFilters)
+            }
+          }
+        }
+      }, 100)
+    }
+  })
+})
 </script>
 
 <template>
-  <div ref="mapContainer" class="map-container">
-  </div>
+  <div ref="mapContainer" class="map-container"></div>
 </template>
 
 <style scoped>
 .map-container {
   width: 100%;
+  height: 100%;
+  position: relative;
   height: 100%;
   position: relative;
   overflow: hidden;

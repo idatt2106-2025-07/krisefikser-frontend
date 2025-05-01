@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import TheMap from '@/components/TheMap.vue'
-import MapFilter from '@/components/MapFilter.vue'
+import TheMap from '@/components/map/TheMap.vue'
+import MapFilter from '@/components/map/MapFilter.vue'
 import { ref } from 'vue'
 
 const activeFilters = ref({})

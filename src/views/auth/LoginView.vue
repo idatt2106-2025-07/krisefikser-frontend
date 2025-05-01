@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import axios from 'axios'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
+import { useAuthStore } from '@/stores/auth'
 
 const email = ref('')
 const password = ref('')
 const emailError = ref(false)
 const touched = ref(false)
+const authStore = useAuthStore()
 
 function validateEmail() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -15,11 +18,28 @@ function validateEmail() {
 
 const formValid = computed(() => email.value && password.value && !emailError.value)
 
-function handleLogin() {
+async function handleLogin() {
   touched.value = true
   validateEmail()
+
   if (!formValid.value) return
-  alert('Login successful!')
+
+  try {
+    const response = await axios.post('http://localhost:8080/api/auth/login', {
+      email: email.value,
+      password: password.value,
+    })
+
+    // Store the token using Pinia and localStorage
+    authStore.setToken(response.data.token)
+
+    alert(`Login successful: ${response.data.message}`)
+    // Optionally, redirect the user after login
+    // e.g., use router.push('/dashboard')
+  } catch (error) {
+    console.error('Error during login:', error)
+    alert('Login failed. Please check your credentials and try again.')
+  }
 }
 </script>
 
@@ -27,7 +47,6 @@ function handleLogin() {
   <div class="page-wrapper">
     <form class="login-form" @submit.prevent="handleLogin">
       <h2>Login</h2>
-
       <div class="field">
         <label for="email">Email</label>
         <InputText
@@ -39,7 +58,6 @@ function handleLogin() {
         />
         <small v-if="emailError" class="p-error">Email invalid</small>
       </div>
-
       <div class="field">
         <label for="password">Password</label>
         <Password
@@ -51,9 +69,7 @@ function handleLogin() {
           :invalid="touched && !password"
         />
       </div>
-
       <button type="submit" :disabled="!formValid">Login</button>
-
       <p class="register-link">
         Don't have an account? <router-link to="/register">Register here</router-link>
       </p>

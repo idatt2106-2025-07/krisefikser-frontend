@@ -2,10 +2,10 @@ import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token: localStorage.getItem('token') || null as string | null
+    token: localStorage.getItem('token') || (null as string | null),
   }),
   getters: {
-    isLoggedIn: (state) => !!state.token
+    isLoggedIn: (state) => !!state.token,
   },
   actions: {
     setToken(newToken: string) {
@@ -15,6 +15,6 @@ export const useAuthStore = defineStore('auth', {
     clearToken() {
       this.token = null
       localStorage.removeItem('token')
-    }
-  }
+    },
+  },
 })

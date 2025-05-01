@@ -36,7 +36,7 @@ const formValid = computed(
     agreeToTerms.value &&
     passwordsMatch.value &&
     !emailError.value,
-    // !!token.value, // Commented out token validation
+  // !!token.value, // Commented out token validation
 )
 
 async function handleSubmit() {

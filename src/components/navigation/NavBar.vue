@@ -19,7 +19,7 @@ function logout() {
   <nav class="navbar">
     <div v-if="isLoggedIn">
       <!-- Logged-in NavBar -->
-      <LoggedInNavBar :logout="logout" />
+      <LoggedInNavBar />
     </div>
     <div v-else>
       <!-- Logged-out NavBar -->

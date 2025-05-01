@@ -8,7 +8,7 @@ const router = useRouter()
 const isMenuOpen = ref(false)
 
 const navigateToProfile = () => {
-  router.push('/profile')
+  router.push('/settings')
 }
 
 const logout = () => {

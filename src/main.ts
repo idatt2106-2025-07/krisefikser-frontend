@@ -12,8 +12,10 @@ import Password from 'primevue/password'
 import Checkbox from 'primevue/checkbox'
 import Button from 'primevue/button'
 import ToastService from 'primevue/toastservice'
+import { createPinia } from 'pinia'
 
 const app = createApp(App)
+const pinia = createPinia()
 
 app.use(router)
 app.use(ToastService)
@@ -25,6 +27,7 @@ app.use(PrimeVue, {
     },
   },
 })
+app.use(pinia)
 
 // Register PrimeVue components
 app.component('InputText', InputText)

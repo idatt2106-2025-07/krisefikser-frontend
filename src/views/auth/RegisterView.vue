@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
+import axios from 'axios' // Import Axios for HTTP requests
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 
@@ -12,9 +13,9 @@ const agreeToTerms = ref(false)
 const emailError = ref(false)
 const confirmTouched = ref(false)
 
-// Google reCAPTCHA
-const token = ref('')
-const recaptchaRef = ref<HTMLElement | null>(null)
+// Google reCAPTCHA (commented out)
+// const token = ref('')
+// const recaptchaRef = ref<HTMLElement | null>(null)
 
 /** e‑mail syntax check */
 function validateEmail() {
@@ -34,11 +35,11 @@ const formValid = computed(
     confirmpassword.value &&
     agreeToTerms.value &&
     passwordsMatch.value &&
-    !emailError.value &&
-    !!token.value,
+    !emailError.value,
+  // !!token.value, // Commented out token validation
 )
 
-function handleSubmit() {
+async function handleSubmit() {
   validateEmail()
   confirmTouched.value = true
 
@@ -46,25 +47,38 @@ function handleSubmit() {
     return
   }
 
-  alert(`Submitted with token: ${token.value}`)
-}
-
-function renderRecaptcha() {
-  if (window.grecaptcha && recaptchaRef.value) {
-    window.grecaptcha.render(recaptchaRef.value, {
-      sitekey: import.meta.env.VITE_APP_RECAPTCHA_SITE_KEY,
-      callback: (response: string) => {
-        token.value = response
-      },
+  try {
+    const response = await axios.post('http://localhost:8080/api/auth/register', {
+      username: username.value,
+      email: email.value,
+      password: password.value,
+      // recaptchaToken: token.value, // Commented out reCAPTCHA token
     })
-  } else {
-    setTimeout(renderRecaptcha, 500)
+
+    alert(`Registration successful: ${response.data.message}`)
+  } catch (error) {
+    console.error('Error during registration:', error)
+    alert('Registration failed. Please try again.')
   }
 }
 
-onMounted(() => {
-  nextTick(renderRecaptcha)
-})
+// Commented out reCAPTCHA rendering logic
+// function renderRecaptcha() {
+//   if (window.grecaptcha && recaptchaRef.value) {
+//     window.grecaptcha.render(recaptchaRef.value, {
+//       sitekey: import.meta.env.VITE_APP_RECAPTCHA_SITE_KEY,
+//       callback: (response: string) => {
+//         token.value = response
+//       },
+//     })
+//   } else {
+//     setTimeout(renderRecaptcha, 500)
+//   }
+// }
+
+// onMounted(() => {
+//   nextTick(renderRecaptcha)
+// })
 </script>
 
 <template>
@@ -115,8 +129,8 @@ onMounted(() => {
         <label for="agreeToTerms">I agree to the terms and conditions</label>
       </div>
 
-      <!-- 🔐 reCAPTCHA -->
-      <div ref="recaptchaRef" class="recaptcha-container" />
+      <!-- 🔐 reCAPTCHA (commented out) -->
+      <!-- <div ref="recaptchaRef" class="recaptcha-container" /> -->
 
       <button type="submit" :disabled="!formValid">Register</button>
 

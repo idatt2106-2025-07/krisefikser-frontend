@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import TheMap from '@/components/map/TheMap.vue';
+import TheMap from '@/components/map/TheMap.vue'
 import MapFilter from '@/components/map/MapFilter.vue'
-import { ref } from 'vue';
+import { ref } from 'vue'
 
-const activeFilters = ref({});
+const activeFilters = ref({})
 
 const handleFilterChange = (filters: {}) => {
-  activeFilters.value = filters;
-};
+  activeFilters.value = filters
+}
 </script>
 
 <template>

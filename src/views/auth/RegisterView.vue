@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios' // Import Axios for HTTP requests
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
-
 // reactive state
-const username = ref('')
+const router = useRouter()
+// reactive state
+const name = ref('') // changed from username to name
 const email = ref('')
 const password = ref('')
 const confirmpassword = ref('')
@@ -29,7 +31,7 @@ const passwordsMatch = computed(() => password.value === confirmpassword.value)
 /** only allow submit if everything is valid */
 const formValid = computed(
   () =>
-    username.value &&
+    name.value && // replaced username with name
     email.value &&
     password.value &&
     confirmpassword.value &&
@@ -47,18 +49,28 @@ async function handleSubmit() {
     return
   }
 
+  const isLoading = ref(false)
+
   try {
+    isLoading.value = true
     const response = await axios.post('http://localhost:8080/api/auth/register', {
-      username: username.value,
+      name: name.value, // replaced username with name
       email: email.value,
       password: password.value,
-      // recaptchaToken: token.value, // Commented out reCAPTCHA token
     })
 
     alert(`Registration successful: ${response.data.message}`)
+    // Redirect to login page
+    router.push('/login')
   } catch (error) {
     console.error('Error during registration:', error)
-    alert('Registration failed. Please try again.')
+    if (axios.isAxiosError(error) && error.response) {
+      alert(error.response.data?.message || 'Registration failed. Please try again.')
+    } else {
+      alert('An unexpected error occurred. Please try again.')
+    }
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -87,8 +99,9 @@ async function handleSubmit() {
       <h2>Register</h2>
 
       <div class="field">
-        <label for="username">Username</label>
-        <InputText id="username" v-model="username" placeholder="Username" />
+        <label for="name">Name</label>
+        <!-- updated label and id -->
+        <InputText id="name" v-model="name" placeholder="Name" />
       </div>
 
       <div class="field">

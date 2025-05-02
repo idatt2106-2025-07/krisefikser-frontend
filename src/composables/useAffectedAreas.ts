@@ -26,111 +26,213 @@ export function useMapLayers(
 
     locationData.value.affectedAreas.forEach((area, index) => {
       try {
-        const layerId = `affected-area-${index}`
-        circleLayers.value.push(layerId)
+        const areaId = `affected-area-${index}`
 
-        // Debug info
-        console.log(`Creating layer ${layerId} for area:`, area)
-
-        // Create a circle as a polygon (in km)
-        const circlePolygon = turf.circle([area.longitude, area.latitude], area.dangerRadiusKm, {
-          steps: 64,
-          units: 'kilometers',
-        })
-
-        // Use severity level to determine color
-        let fillColor = 'rgba(255, 0, 0, 0.1)'
-        let strokeColor = '#ff0000'
-
-        switch (area.severityLevel) {
-          case 1: // Low severity
-            fillColor = 'rgba(255, 255, 0, 0.2)' // Yellow, more visible
-            strokeColor = '#ffff00'
-            break
-          case 2: // Medium severity
-            fillColor = 'rgba(255, 165, 0, 0.2)' // Orange, more visible
-            strokeColor = '#ffa500'
-            break
-          case 3: // High severity
-            fillColor = 'rgba(255, 0, 0, 0.2)' // Red, more visible
-            strokeColor = '#ff0000'
-            break
+        // Create a single popup for the entire affected area
+        const addPopupHandler = (layerId: string) => {
+          map.value.on('click', layerId, (e) => {
+            if (e.features && e.features.length > 0) {
+              new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(`
+                  <div class="popup-content">
+                    <h3>Emergency alert!</h3>
+                    <p>${area.description}</p>
+                    <h4>Severity: ${area.severityLevel}</h4>
+                    <h4>Started: ${new Date(area.startDate).toLocaleString()}</h4>
+                  </div>
+                `)
+                .addTo(map.value!)
+            }
+          })
         }
 
-        // Check if source already exists
-        if (map.value.getSource(layerId)) {
-          map.value.removeSource(layerId)
-        }
+        // Create non-overlapping rings for each danger level
+        // High danger (red) - innermost ring
+        if (area.highDangerRadiusKm) {
+          const highLayerId = `${areaId}-high`
+          circleLayers.value.push(highLayerId)
 
-        // Add source for the circle
-        map.value.addSource(layerId, {
-          type: 'geojson',
-          data: {
-            type: 'Feature',
-            geometry: circlePolygon.geometry,
-            properties: {
-              description: area.description,
-              severity: area.severityLevel,
-              startDate: area.startDate,
+          // High danger zone - solid circle
+          const highCircle = turf.circle(
+            [area.longitude, area.latitude],
+            area.highDangerRadiusKm,
+            { steps: 64, units: 'kilometers' }
+          )
+
+          map.value.addSource(highLayerId, {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              geometry: highCircle.geometry,
+              properties: { description: area.description }
+            }
+          })
+
+          map.value.addLayer({
+            id: highLayerId,
+            type: 'fill',
+            source: highLayerId,
+            layout: {
+              visibility: filters.value.affected_areas !== false ? 'visible' : 'none'
             },
-          },
-        })
+            paint: {
+              'fill-color': 'rgba(255, 0, 0, 0.4)', // Red
+              'fill-outline-color': '#ff0000'
+            }
+          })
 
-        // Add fill layer
-        map.value.addLayer({
-          id: layerId,
-          type: 'fill',
-          source: layerId,
-          layout: {
-            visibility: filters.value.affected_areas !== false ? 'visible' : 'none',
-          },
-          paint: {
-            'fill-color': fillColor,
-            'fill-opacity': 0.6, // Increased opacity for visibility
-          },
-        })
+          // Add popup handler
+          addPopupHandler(highLayerId)
+        }
 
-        // Add outline layer
-        const outlineLayerId = `${layerId}-outline`
-        map.value.addLayer({
-          id: outlineLayerId,
-          type: 'line',
-          source: layerId,
-          layout: {
-            visibility: filters.value.affected_areas !== false ? 'visible' : 'none',
-          },
-          paint: {
-            'line-color': strokeColor,
-            'line-width': 2,
-            'line-opacity': 0.8,
-          },
-        })
+        // Medium danger (orange) - middle ring (donut shape)
+        if (area.mediumDangerRadiusKm && area.highDangerRadiusKm) {
+          const mediumLayerId = `${areaId}-medium`
+          circleLayers.value.push(mediumLayerId)
 
-        console.log(`Successfully created layers: ${layerId}, ${outlineLayerId}`)
+          // Create donut shape - outer circle minus inner circle
+          const outerCircle = turf.circle(
+            [area.longitude, area.latitude],
+            area.mediumDangerRadiusKm,
+            { steps: 64, units: 'kilometers' }
+          )
 
-        // Add popup for the circle with updated properties
-        map.value.on('click', layerId, (e) => {
-          if (e.features && e.features.length > 0) {
-            new mapboxgl.Popup()
-              .setLngLat(e.lngLat)
-              .setHTML(
-                `
-                <div class="popup-content">
-                  <h3>Emergancy alert!</h3>
-                  <p>${area.description}</p>
-                  <h4>Severity: ${area.severityLevel}</h4>
-                  <h4>Started: ${new Date(area.startDate).toLocaleString()}</h4>
-                </div>
-              `,
-              )
-              .addTo(map.value!)
+          const innerCircle = turf.circle(
+            [area.longitude, area.latitude],
+            area.highDangerRadiusKm,
+            { steps: 64, units: 'kilometers' }
+          )
+
+          // Create the donut as a polygon with hole
+          const donut = {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                outerCircle.geometry.coordinates[0], // Outer ring
+                [...innerCircle.geometry.coordinates[0]].reverse() // Inner ring (hole) - note the reversal
+              ]
+            }
           }
-        })
+
+          map.value.addSource(mediumLayerId, {
+            type: 'geojson',
+            data: donut
+          })
+
+          map.value.addLayer({
+            id: mediumLayerId,
+            type: 'fill',
+            source: mediumLayerId,
+            layout: {
+              visibility: filters.value.affected_areas !== false ? 'visible' : 'none'
+            },
+            paint: {
+              'fill-color': 'rgba(255, 165, 0, 0.3)', // Orange
+              'fill-outline-color': '#ffa500'
+            }
+          })
+
+          // Add popup handler
+          addPopupHandler(mediumLayerId)
+        }
+
+        // Low danger (yellow) - outermost ring (donut shape)
+        if (area.lowDangerRadiusKm && area.mediumDangerRadiusKm) {
+          const lowLayerId = `${areaId}-low`
+          circleLayers.value.push(lowLayerId)
+
+          // Create donut shape - outer circle minus medium circle
+          const outerCircle = turf.circle(
+            [area.longitude, area.latitude],
+            area.lowDangerRadiusKm,
+            { steps: 64, units: 'kilometers' }
+          )
+
+          const innerCircle = turf.circle(
+            [area.longitude, area.latitude],
+            area.mediumDangerRadiusKm,
+            { steps: 64, units: 'kilometers' }
+          )
+
+          // Create the donut as a polygon with hole
+          const donut = {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                outerCircle.geometry.coordinates[0], // Outer ring
+                [...innerCircle.geometry.coordinates[0]].reverse() // Inner ring (hole) - note the reversal
+              ]
+            }
+          }
+
+          map.value.addSource(lowLayerId, {
+            type: 'geojson',
+            data: donut
+          })
+
+          map.value.addLayer({
+            id: lowLayerId,
+            type: 'fill',
+            source: lowLayerId,
+            layout: {
+              visibility: filters.value.affected_areas !== false ? 'visible' : 'none'
+            },
+            paint: {
+              'fill-color': 'rgba(255, 255, 0, 0.2)', // Yellow
+              'fill-outline-color': '#ffff00'
+            }
+          })
+
+          // Add popup handler
+          addPopupHandler(lowLayerId)
+        }
+
+        // Add border lines between the danger zones
+        ['high', 'medium', 'low'].forEach((level, i) => {
+          const radiusProperty = `${level}DangerRadiusKm`;
+          if (area[radiusProperty]) {
+            const outlineId = `${areaId}-${level}-outline`;
+            circleLayers.value.push(outlineId);
+
+            const circle = turf.circle(
+              [area.longitude, area.latitude],
+              area[radiusProperty],
+              { steps: 64, units: 'kilometers' }
+            );
+
+            map.value.addSource(outlineId, {
+              type: 'geojson',
+              data: circle
+            });
+
+            map.value.addLayer({
+              id: outlineId,
+              type: 'line',
+              source: outlineId,
+              layout: {
+                visibility: filters.value.affected_areas !== false ? 'visible' : 'none'
+              },
+              paint: {
+                'line-color': i === 0 ? '#ff0000' : i === 1 ? '#ffa500' : '#ffff00',
+                'line-width': 2,
+                'line-opacity': 0.8
+              }
+            });
+          }
+        });
       } catch (err) {
-        console.error(`Error creating layer for area ${index}:`, err)
+        console.error(`Error creating layers for area ${index}:`, err)
       }
     })
+
+    layersInitialized.value = true
   }
+
 
   const removeAllLayers = () => {
     if (!map.value) return

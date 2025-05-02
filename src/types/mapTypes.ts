@@ -10,13 +10,15 @@ export interface PointOfInterest {
 }
 
 export interface AffectedArea {
-  id: number
-  longitude: number
-  latitude: number
-  dangerRadiusKm: number
-  severityLevel: number
-  description: string
-  startDate: string
+  id: number;
+  longitude: number;
+  latitude: number;
+  highDangerRadiusKm: number;
+  mediumDangerRadiusKm: number;
+  lowDangerRadiusKm: number;
+  severityLevel: number;
+  description: string;
+  startDate: string;
 }
 
 export interface LocationData {

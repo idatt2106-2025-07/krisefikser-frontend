@@ -71,12 +71,13 @@ export function createSearchableGeoJSON(locationData: LocationData) {
 
 export function getTypeDisplayName(type: string): string {
   const names = {
-    HOSPITAL: 'Hospital',
-    SHELTER: 'Shelter',
-    DEFIBRILLATOR: 'Defibrillator',
-    WATER_STATION: 'Water Station',
-    FOOD_CENTRAL: 'Food Central',
-  }
+    'HOSPITAL': 'Hospital',
+    'SHELTER': 'Shelter',
+    'DEFIBRILLATOR': 'Defibrillator',
+    'WATER_STATION': 'Water Station',
+    'FOOD_CENTRAL': 'Food Central',
+    'MEETING_PLACE': 'Meeting Place'
+  };
 
-  return names[type] || type
+  return names[type] || type;
 }

@@ -8,6 +8,7 @@ const filters = ref({
   water_station: true,
   food_central: true,
   hospital: true,
+  meeting_place: true
 })
 
 const emit = defineEmits(['filter-change'])
@@ -58,6 +59,11 @@ onMounted(() => {
     <div class="filter-item">
       <input type="checkbox" id="hospital" v-model="filters.hospital" />
       <label for="hospital">Hospital</label>
+    </div>
+
+    <div class="filter-item">
+      <input type="checkbox" id="meeting-place" v-model="filters.meeting_place" />
+      <label for="meeting-place">Meeting place</label>
     </div>
   </div>
 </template>

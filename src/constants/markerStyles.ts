@@ -1,10 +1,11 @@
 export const MARKER_COLORS = {
-  hospital: '#ff4d4d', // Red
-  shelter: '#4da6ff', // Blue
-  defibrillator: '#ffcc00', // Yellow
-  water_station: '#00ccff', // Light blue
-  food_central: '#66cc66', // Green
-  default: '#808080', // Gray
+  hospital: '#ff4d4d',
+  shelter: '#4da6ff',
+  defibrillator: '#ffcc00',
+  water_station: '#00ccff',
+  food_central: '#96ba04',
+  meeting_place: '#31bb03',
+  default: '#808080',
 }
 
 export const MARKER_LABELS = {
@@ -13,5 +14,6 @@ export const MARKER_LABELS = {
   defibrillator: 'D',
   water_station: 'W',
   food_central: 'F',
+  meeting_place: 'M',
   default: '?',
 }

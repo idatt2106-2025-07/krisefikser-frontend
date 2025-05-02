@@ -2,7 +2,7 @@ export interface PointOfInterest {
   id: number
   latitude: number
   longitude: number
-  type: 'HOSPITAL' | 'SHELTER' | 'DEFIBRILLATOR' | 'WATER_STATION' | 'FOOD_CENTRAL'
+  type: 'HOSPITAL' | 'SHELTER' | 'DEFIBRILLATOR' | 'WATER_STATION' | 'FOOD_CENTRAL' | 'MEETING_PLACE'
   opensAt: string | null
   closesAt: string | null
   contactNumber: string | null

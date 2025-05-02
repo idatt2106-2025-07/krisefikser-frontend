@@ -17,6 +17,7 @@ export function useMarkerManagement(
     DEFIBRILLATOR: 'defibrillator',
     WATER_STATION: 'water_station',
     FOOD_CENTRAL: 'food_central',
+    MEETING_PLACE: 'meeting_place'
   }
 
   const getMarkerType = (poiType: string): string => {

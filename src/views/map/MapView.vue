@@ -3,9 +3,9 @@ import TheMap from '@/components/map/TheMap.vue'
 import MapFilter from '@/components/map/MapFilter.vue'
 import { ref } from 'vue'
 
-const activeFilters = ref({})
+const activeFilters = ref<Record<string, boolean>>({})
 
-const handleFilterChange = (filters: {}) => {
+const handleFilterChange = (filters: Record<string, boolean>) => {
   activeFilters.value = filters
 }
 </script>

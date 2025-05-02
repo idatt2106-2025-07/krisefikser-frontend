@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
@@ -9,6 +10,7 @@ const email = ref('')
 const password = ref('')
 const emailError = ref(false)
 const touched = ref(false)
+const router = useRouter()
 const authStore = useAuthStore()
 
 function validateEmail() {
@@ -25,17 +27,25 @@ async function handleLogin() {
   if (!formValid.value) return
 
   try {
-    const response = await axios.post('http://localhost:8080/api/auth/login', {
-      email: email.value,
-      password: password.value,
-    })
+    const response = await axios.post(
+      'http://localhost:8080/api/auth/login',
+      {
+        email: email.value,
+        password: password.value,
+      },
+      {
+        withCredentials: true,
+      },
+    )
 
-    // Store the token using Pinia and localStorage
-    authStore.setToken(response.data.token)
+    // If you're storing a token in localStorage AND also setting a cookie, choose one method.
+    // If token is in cookie, you likely don't need this:
+    // authStore.setToken(response.data.token)
 
     alert(`Login successful: ${response.data.message}`)
-    // Optionally, redirect the user after login
-    // e.g., use router.push('/dashboard')
+
+    // Redirect to a protected route
+    router.push('/')
   } catch (error) {
     console.error('Error during login:', error)
     alert('Login failed. Please check your credentials and try again.')

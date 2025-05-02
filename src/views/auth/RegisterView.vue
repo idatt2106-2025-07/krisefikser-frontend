@@ -1,66 +1,60 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios' // Import Axios for HTTP requests
+import axios from 'axios'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
-// reactive state
+
 const router = useRouter()
-// reactive state
-const name = ref('') // changed from username to name
+const name = ref('')
 const email = ref('')
 const password = ref('')
 const confirmpassword = ref('')
 const agreeToTerms = ref(false)
 const emailError = ref(false)
 const confirmTouched = ref(false)
+const isLoading = ref(false) // added global loading state
 
-// Google reCAPTCHA (commented out)
-// const token = ref('')
-// const recaptchaRef = ref<HTMLElement | null>(null)
-
-/** e‑mail syntax check */
 function validateEmail() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   emailError.value = !emailRegex.test(email.value)
 }
 
-/** true if the two password boxes match */
 const passwordsMatch = computed(() => password.value === confirmpassword.value)
 
-/** only allow submit if everything is valid */
 const formValid = computed(
   () =>
-    name.value && // replaced username with name
+    name.value &&
     email.value &&
     password.value &&
     confirmpassword.value &&
     agreeToTerms.value &&
     passwordsMatch.value &&
     !emailError.value,
-  // !!token.value, // Commented out token validation
 )
 
 async function handleSubmit() {
   validateEmail()
   confirmTouched.value = true
 
-  if (!formValid.value) {
-    return
-  }
-
-  const isLoading = ref(false)
+  if (!formValid.value) return
 
   try {
     isLoading.value = true
-    const response = await axios.post('http://localhost:8080/api/auth/register', {
-      name: name.value, // replaced username with name
-      email: email.value,
-      password: password.value,
-    })
+
+    const response = await axios.post(
+      'http://localhost:8080/api/auth/register',
+      {
+        name: name.value,
+        email: email.value,
+        password: password.value,
+      },
+      {
+        withCredentials: true,
+      },
+    )
 
     alert(`Registration successful: ${response.data.message}`)
-    // Redirect to login page
     router.push('/login')
   } catch (error) {
     console.error('Error during registration:', error)
@@ -73,24 +67,6 @@ async function handleSubmit() {
     isLoading.value = false
   }
 }
-
-// Commented out reCAPTCHA rendering logic
-// function renderRecaptcha() {
-//   if (window.grecaptcha && recaptchaRef.value) {
-//     window.grecaptcha.render(recaptchaRef.value, {
-//       sitekey: import.meta.env.VITE_APP_RECAPTCHA_SITE_KEY,
-//       callback: (response: string) => {
-//         token.value = response
-//       },
-//     })
-//   } else {
-//     setTimeout(renderRecaptcha, 500)
-//   }
-// }
-
-// onMounted(() => {
-//   nextTick(renderRecaptcha)
-// })
 </script>
 
 <template>
@@ -100,8 +76,7 @@ async function handleSubmit() {
 
       <div class="field">
         <label for="name">Name</label>
-        <!-- updated label and id -->
-        <InputText id="name" v-model="name" placeholder="Name" />
+        <InputText id="name" v-model="name" placeholder="Name" :disabled="isLoading" />
       </div>
 
       <div class="field">
@@ -112,13 +87,20 @@ async function handleSubmit() {
           placeholder="Email"
           @blur="validateEmail"
           :class="{ 'p-invalid': emailError }"
+          :disabled="isLoading"
         />
         <small v-if="emailError" class="p-error">Email invalid</small>
       </div>
 
       <div class="field">
         <label for="password">Password</label>
-        <Password id="password" v-model="password" toggleMask placeholder="Password" />
+        <Password
+          id="password"
+          v-model="password"
+          toggleMask
+          placeholder="Password"
+          :disabled="isLoading"
+        />
       </div>
 
       <div class="field">
@@ -131,6 +113,7 @@ async function handleSubmit() {
           placeholder="Confirm Password"
           :class="{ 'p-invalid': confirmTouched && !passwordsMatch }"
           @blur="confirmTouched = true"
+          :disabled="isLoading"
         />
         <small v-if="confirmTouched && !passwordsMatch" class="p-error"
           >Passwords don’t match</small
@@ -138,14 +121,13 @@ async function handleSubmit() {
       </div>
 
       <div class="checkbox-container">
-        <input type="checkbox" id="agreeToTerms" v-model="agreeToTerms" />
+        <input type="checkbox" id="agreeToTerms" v-model="agreeToTerms" :disabled="isLoading" />
         <label for="agreeToTerms">I agree to the terms and conditions</label>
       </div>
 
-      <!-- 🔐 reCAPTCHA (commented out) -->
-      <!-- <div ref="recaptchaRef" class="recaptcha-container" /> -->
-
-      <button type="submit" :disabled="!formValid">Register</button>
+      <button type="submit" :disabled="!formValid || isLoading">
+        {{ isLoading ? 'Registering...' : 'Register' }}
+      </button>
 
       <p class="login-link">
         Already have an account?
@@ -187,7 +169,6 @@ async function handleSubmit() {
   margin-top: 0.25rem;
 }
 
-/* make PrimeVue inputs 100% wide */
 .field :deep(.p-inputtext),
 .field :deep(.p-password-input) {
   width: 100%;
@@ -197,10 +178,6 @@ async function handleSubmit() {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin: 1rem 0;
-}
-
-.recaptcha-container {
   margin: 1rem 0;
 }
 

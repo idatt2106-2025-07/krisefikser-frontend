@@ -26,9 +26,9 @@ function navigateTo(path: string) {
 </script>
 
 <template>
-  <div class="navbar p-d-flex p-ai-center p-jc-between p-p-2">
+  <div class="navbar">
     <!-- Left side: Logo + Hamburger -->
-    <div class="p-d-flex p-ai-center gap-2 relative">
+    <div class="left-section p-d-flex p-ai-center gap-2 relative">
       <img src="@/assets/logo.svg" alt="Logo" class="h-10 w-auto" @click="navigateToHome" />
 
       <div class="custom-button hamburger-menu p-d-flex p-ai-center gap-2" @click="toggleMenu">
@@ -47,8 +47,8 @@ function navigateTo(path: string) {
       </ul>
     </div>
 
-    <!-- Right side: Only Login -->
-    <div class="p-d-flex p-ai-center gap-4">
+    <!-- Right side: Login button -->
+    <div class="right-section p-d-flex p-ai-center">
       <Button class="login-button p-button-sm" @click="navigateToLogin">
         <img src="@/assets/icons/login_icon.svg" alt="Login Icon" class="p-button-icon" />
         <span>Login</span>
@@ -58,18 +58,31 @@ function navigateTo(path: string) {
 </template>
 
 <style scoped>
-img {
-  max-height: 40px;
-  width: auto;
-  cursor: pointer;
-}
-
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
   border-bottom: 2px solid #333;
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+img {
+  max-height: 40px;
+  width: auto;
+  cursor: pointer;
 }
 
 .p-d-flex {

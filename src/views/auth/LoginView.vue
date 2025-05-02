@@ -35,7 +35,7 @@ async function handleLogin() {
       },
       {
         withCredentials: true,
-      }
+      },
     )
 
     // If you're storing a token in localStorage AND also setting a cookie, choose one method.

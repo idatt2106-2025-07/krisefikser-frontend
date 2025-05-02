@@ -4,13 +4,13 @@ import axios from 'axios'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null as null | { email: string; role: string }
+    user: null as null | { email: string; role: string },
   }),
   actions: {
     async fetchUser() {
       try {
         const response = await axios.get('http://localhost:8080/api/auth/me', {
-          withCredentials: true // 🔐 Required for cookie auth
+          withCredentials: true, // 🔐 Required for cookie auth
         })
         this.user = response.data
       } catch {
@@ -19,9 +19,9 @@ export const useAuthStore = defineStore('auth', {
     },
     clearToken() {
       this.user = null
-    }
+    },
   },
   getters: {
-    isLoggedIn: (state) => !!state.user
-  }
+    isLoggedIn: (state) => !!state.user,
+  },
 })

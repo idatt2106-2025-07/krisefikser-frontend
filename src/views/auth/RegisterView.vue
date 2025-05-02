@@ -51,7 +51,7 @@ async function handleSubmit() {
       },
       {
         withCredentials: true,
-      }
+      },
     )
 
     alert(`Registration successful: ${response.data.message}`)
@@ -94,7 +94,13 @@ async function handleSubmit() {
 
       <div class="field">
         <label for="password">Password</label>
-        <Password id="password" v-model="password" toggleMask placeholder="Password" :disabled="isLoading" />
+        <Password
+          id="password"
+          v-model="password"
+          toggleMask
+          placeholder="Password"
+          :disabled="isLoading"
+        />
       </div>
 
       <div class="field">

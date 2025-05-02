@@ -78,7 +78,7 @@ async function handleEmailChange() {
       },
       {
         withCredentials: true,
-      }
+      },
     )
 
     alert(response.data.message)

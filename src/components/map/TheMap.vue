@@ -151,7 +151,15 @@ watch(
 
 const mapContainer = ref<HTMLElement | null>(null)
 const { map, isMapLoaded, isStyleLoaded } = useMapInitialization(mapContainer)
-const { markers, initializeMarkers, updateMarkers } = useMarkerManagement(
+const {
+  markers,
+  initializeMarkers,
+  updateMarkers
+}: {
+  markers: any;  // Use 'any' temporarily to bypass complex typing
+  initializeMarkers: () => void;
+  updateMarkers: () => void;
+} = useMarkerManagement(
   map,
   locationData,
   filtersRef,
@@ -241,7 +249,6 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   position: relative;
-  height: 100%;
   overflow: hidden;
 }
 

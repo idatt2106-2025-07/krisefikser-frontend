@@ -14,7 +14,7 @@ const props = defineProps({
   },
 })
 
-const getIconDetails = (type) => {
+const getIconDetails = (type: string) => {
   switch (type.toLowerCase()) {
     case 'hospital':
       return { color: '#ff5252', faIcon: 'fa-hospital' }

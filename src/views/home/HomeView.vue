@@ -60,7 +60,7 @@ const navigateToNews = () => {
       <NotificationBar :notifications="notifications" />
 
       <div class="main-content">
-        <TheMap class="map-area" />
+        <TheMap class="map-area" :isHomePage="true" />
 
         <div class="content-column buttons-column">
           <div class="page-buttons">

@@ -26,6 +26,11 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  isHomePage: {
+    type: Boolean,
+    default: false,
+    required: false
+  }
 })
 
 const filtersRef = computed(() => props.filters)
@@ -60,6 +65,26 @@ const fetchPointsOfInterest = async (filters: string[]) => {
     console.log('Data updated, will refresh markers on next tick')
   } catch (error) {
     console.error('Error fetching POIs:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const fetchAllPointsOfInterest = async () => {
+  try {
+    isLoading.value = true
+    console.log('Home page: Fetching all POIs')
+
+    // Get all POIs without any filters
+    const response = await mapService.getAllPointsOfInterest()
+
+    locationData.value = {
+      pointsOfInterest: response,
+      affectedAreas: locationData.value.affectedAreas,
+    }
+    needsMarkerUpdate.value = true
+  } catch (error) {
+    console.error('Error fetching all POIs:', error)
   } finally {
     isLoading.value = false
   }
@@ -165,20 +190,22 @@ onMounted(() => {
         // Use the retry logic instead of direct initialization
         tryInitializeLayers(5) // Try up to 5 times with 200ms intervals
         initializeMarkers()
-        initializeSearch()
+        if(!props.isHomePage) {
+          initializeSearch()
+        }
 
         // Initial load if we have filters
         if (!initialLoaded.value) {
           initialLoaded.value = true
-
-          // Fetch affected areas regardless of filters
           fetchAffectedAreas()
 
-          // Fetch POIs if we have filters
-          if (Object.keys(filtersRef.value).length > 0) {
-            const poiFilters = getEnabledFilters(filtersRef.value).filter(
-              (f) => f !== 'affected_areas',
-            )
+          // Simple conditional for home vs map page
+          if (props.isHomePage) {
+            fetchAllPointsOfInterest()
+          } else {
+            const poiFilters = getEnabledFilters(filtersRef.value)
+              .filter(f => f !== 'affected_areas')
+
             if (poiFilters.length > 0) {
               fetchPointsOfInterest(poiFilters)
             }
@@ -191,17 +218,62 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="mapContainer" class="map-container"></div>
+  <div class="map-wrapper">
+    <div ref="mapContainer" class="map-container"></div>
+    <div v-if="props.isHomePage" class="map-nav-button">
+      <router-link to="/map" class="btn-expand-map">
+        <span class="icon">⛶</span>
+        <span class="text">Full Map</span>
+      </router-link>
+    </div>
+  </div>
 </template>
 
 <style scoped>
+.map-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
 .map-container {
   width: 100%;
   height: 100%;
   position: relative;
   height: 100%;
-  position: relative;
   overflow: hidden;
+}
+
+.map-nav-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+}
+
+.btn-expand-map {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 12px;
+  width: 100%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.btn-expand-map:hover {
+  background-color: #f5f5f5;
+}
+
+.btn-expand-map .icon {
+  font-size: 18px;
 }
 
 :deep(.mapboxgl-popup-content) {
@@ -223,7 +295,6 @@ onMounted(() => {
   font-size: 14px;
 }
 
-/* Target last child to remove bottom margin from final element */
 :deep(.popup-content p:last-of-type),
 :deep(.popup-content h4:last-of-type) {
   margin-bottom: 0;

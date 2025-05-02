@@ -1,9 +1,8 @@
 import type { PointOfInterest, LocationData, AffectedArea } from '@/types/mapTypes'
 
 export function createSearchableGeoJSON(locationData: LocationData) {
-  const features = []
+  const features: { type: string; properties: { title: string; description: string; category: "HOSPITAL" | "SHELTER" | "DEFIBRILLATOR" | "WATER_STATION" | "FOOD_CENTRAL" | "MEETING_PLACE"; id: number; poiType: "HOSPITAL" | "SHELTER" | "DEFIBRILLATOR" | "WATER_STATION" | "FOOD_CENTRAL" | "MEETING_PLACE" } | { title: string; description: string; category: string; id: number; radius: any }; geometry: { type: string; coordinates: number[] } | { type: string; coordinates: number[] } }[] = []
 
-  // Process points of interest
   if (locationData.pointsOfInterest && Array.isArray(locationData.pointsOfInterest)) {
     locationData.pointsOfInterest.forEach((poi: PointOfInterest) => {
       features.push({
@@ -23,7 +22,6 @@ export function createSearchableGeoJSON(locationData: LocationData) {
     })
   }
 
-  // Process affected areas
   if (locationData.affectedAreas && Array.isArray(locationData.affectedAreas)) {
     locationData.affectedAreas.forEach((area: AffectedArea) => {
       features.push({
@@ -33,7 +31,7 @@ export function createSearchableGeoJSON(locationData: LocationData) {
           description: 'Affected Area',
           category: 'affected_area',
           id: area.id,
-          radius: area.dangerRadiusKm,
+          radius: area.lowDangerRadiusKm,
         },
         geometry: {
           type: 'Point',
@@ -59,5 +57,5 @@ export function getTypeDisplayName(type: string): string {
     MEETING_PLACE: 'Meeting Place',
   }
 
-  return names[type] || type
+  return names[type as keyof typeof names] || type
 }

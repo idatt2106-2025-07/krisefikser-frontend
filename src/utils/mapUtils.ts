@@ -1,24 +1,4 @@
-import { MARKER_COLORS, MARKER_LABELS } from '@/constants/markerStyles'
 import type { PointOfInterest, LocationData, AffectedArea } from '@/types/mapTypes'
-
-type MarkerType = keyof typeof MARKER_COLORS
-
-export function createCustomMarker(type: string): HTMLDivElement {
-  const el = document.createElement('div')
-
-  // Base styles for all markers
-  el.style.width = '24px'
-  el.style.height = '24px'
-  el.style.borderRadius = '50%'
-  el.style.display = 'flex'
-  el.style.justifyContent = 'center'
-  el.style.alignItems = 'center'
-  el.style.fontWeight = 'bold'
-  el.style.backgroundColor = MARKER_COLORS[type as MarkerType] || MARKER_COLORS.default
-  el.textContent = MARKER_LABELS[type as keyof typeof MARKER_LABELS] || MARKER_LABELS.default
-
-  return el
-}
 
 export function createSearchableGeoJSON(locationData: LocationData) {
   const features = []

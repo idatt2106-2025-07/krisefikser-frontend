@@ -57,9 +57,7 @@ function navigateTo(path: string) {
   </div>
 </template>
 
-
 <style scoped>
-
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -86,7 +84,6 @@ img {
   width: auto;
   cursor: pointer;
 }
-
 
 .p-d-flex {
   display: flex;

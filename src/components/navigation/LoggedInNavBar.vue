@@ -74,9 +74,7 @@ const navigateTo = (path: string) => {
   </div>
 </template>
 
-
 <style scoped>
-
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -95,7 +93,6 @@ const navigateTo = (path: string) => {
 .relative {
   position: relative;
 }
-
 
 img {
   max-height: 40px;

@@ -16,37 +16,8 @@ function logout() {
 </script>
 
 <template>
-  <nav class="navbar">
-    <div v-if="isLoggedIn">
-      <!-- Logged-in NavBar -->
-      <LoggedInNavBar />
-    </div>
-    <div v-else>
-      <!-- Logged-out NavBar -->
-      <LoggedOutNavBar />
-    </div>
-  </nav>
+  <div>
+    <LoggedInNavBar v-if="isLoggedIn" />
+    <LoggedOutNavBar v-else />
+  </div>
 </template>
-
-<style scoped>
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem;
-  background-color: #007bff;
-  color: white;
-}
-
-.navbar a {
-  color: white;
-  text-decoration: none;
-  margin: 0 0.5rem;
-}
-
-.navbar button {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-</style>

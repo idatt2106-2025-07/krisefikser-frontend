@@ -30,9 +30,9 @@ const navigateTo = (path: string) => {
 </script>
 
 <template>
-  <div class="navbar p-d-flex p-ai-center p-jc-between p-p-2">
+  <div class="navbar">
     <!-- Left side: Logo + Hamburger Menu -->
-    <div class="p-d-flex p-ai-center gap-2 relative">
+    <div class="left-section p-d-flex p-ai-center gap-4 relative">
       <img
         src="@/assets/logo.svg"
         alt="Logo"
@@ -50,6 +50,7 @@ const navigateTo = (path: string) => {
         </div>
         <span class="menu-text">Menu</span>
       </div>
+
       <ul v-if="isMenuOpen" class="dropdown-menu">
         <li class="dropdown-item" @click="navigateTo('/')">Home</li>
         <li class="dropdown-item" @click="navigateTo('/storage')">Emergency storage</li>
@@ -59,7 +60,7 @@ const navigateTo = (path: string) => {
     </div>
 
     <!-- Right side: Profile and Logout -->
-    <div class="p-d-flex p-ai-center gap-4">
+    <div class="right-section p-d-flex p-ai-center gap-4">
       <Button class="custom-button profile-button p-button-sm" @click="navigateToProfile">
         <img src="@/assets/icons/profile_icon.svg" alt="Profile Icon" class="p-button-icon" />
         <span>Profile</span>
@@ -73,11 +74,8 @@ const navigateTo = (path: string) => {
   </div>
 </template>
 
+
 <style scoped>
-img {
-  max-height: 40px;
-  width: auto;
-}
 
 .navbar {
   display: flex;
@@ -85,6 +83,23 @@ img {
   align-items: center;
   padding: 0.5rem 1rem;
   border-bottom: 2px solid #333;
+}
+
+.left-section,
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.relative {
+  position: relative;
+}
+
+
+img {
+  max-height: 40px;
+  width: auto;
 }
 
 .p-d-flex {

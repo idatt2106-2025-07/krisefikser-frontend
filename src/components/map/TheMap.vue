@@ -203,4 +203,33 @@ onMounted(() => {
   position: relative;
   overflow: hidden;
 }
+
+:deep(.mapboxgl-popup-content) {
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+:deep(.popup-content h3) {
+  font-size: 18px;
+}
+
+:deep(.popup-content p) {
+  font-size: 14px;
+  text-align: left;
+}
+
+:deep(.popup-content h4) {
+  font-size: 14px;
+}
+
+/* Target last child to remove bottom margin from final element */
+:deep(.popup-content p:last-of-type),
+:deep(.popup-content h4:last-of-type) {
+  margin-bottom: 0;
+}
+
+:deep(.popup-content h3:first-of-type) {
+  margin-top: 0;
+}
 </style>

@@ -47,7 +47,7 @@ export function useMarkerManagement(
             new mapboxgl.Popup().setHTML(`
             <div class="popup-content">
               <h3>${getTypeDisplayName(poi.type)}</h3>
-              <h4>${poi.description}</h4>
+              <p>${poi.description}</p>
               ${poi.opensAt ? `<h4>Open: ${poi.opensAt} - ${poi.closesAt}</h4>` : ''}
               ${poi.contactNumber ? `<h4>Contact: ${poi.contactNumber}</h4>` : ''}
             </div>

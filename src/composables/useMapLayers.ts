@@ -117,7 +117,7 @@ export function useMapLayers(
                 `
                 <div class="popup-content">
                   <h3>Emergancy alert!</h3>
-                  <h4>${area.description}</h4>
+                  <p>${area.description}</p>
                   <h4>Severity: ${area.severityLevel}</h4>
                   <h4>Started: ${new Date(area.startDate).toLocaleString()}</h4>
                 </div>

@@ -4,6 +4,7 @@ import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import DatePicker from 'primevue/datepicker'
 import Button from 'primevue/button'
+import axios from 'axios'
 
 interface Props {
   type: 'Name' | 'Email' | 'Password' | 'Birthday'
@@ -56,6 +57,38 @@ watch(
 function save() {
   alert(`${props.type} settings saved!`)
 }
+
+// For email change functionality
+const newEmail = ref('')
+const isLoading = ref(false)
+
+async function handleEmailChange() {
+  if (!newEmail.value) {
+    return alert('Please enter a new email address.')
+  }
+
+  try {
+    isLoading.value = true
+
+    // Calling the change-email endpoint
+    const response = await axios.post(
+      'http://localhost:8080/api/user/change-email',
+      {
+        newEmail: newEmail.value,
+      },
+      {
+        withCredentials: true,
+      }
+    )
+
+    alert(response.data.message)
+  } catch (error) {
+    console.error('Error updating email:', error)
+    alert('Error updating email. Please try again.')
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -84,6 +117,20 @@ function save() {
         />
         <small v-if="emailError" class="p-error">Email invalid</small>
       </div>
+      <h3>Change Email</h3>
+      <div class="field">
+        <label for="new-email">New Email</label>
+        <input
+          id="new-email"
+          type="email"
+          v-model="newEmail"
+          placeholder="Enter new email"
+          :disabled="isLoading"
+        />
+      </div>
+      <button @click="handleEmailChange" :disabled="isLoading">
+        {{ isLoading ? 'Updating...' : 'Update Email' }}
+      </button>
     </template>
 
     <!-- Password -->
@@ -135,5 +182,18 @@ function save() {
 .field :deep(.p-inputtext),
 .field :deep(.p-password-input) {
   width: 100%;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 </style>

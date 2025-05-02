@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import LoggedInNavBar from './LoggedInNavBar.vue'
 import LoggedOutNavBar from './LoggedOutNavBar.vue'
 
 const authStore = useAuthStore()
 
-// Use the store's getter to determine login status
+onMounted(() => {
+  authStore.fetchUser() //Check login status on mount
+})
+
 const isLoggedIn = computed(() => authStore.isLoggedIn)
 
 function logout() {

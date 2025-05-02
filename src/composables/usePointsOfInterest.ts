@@ -12,7 +12,7 @@ export function useMarkerManagement(
 ) {
   const markers = ref<mapboxgl.Marker[]>([])
 
-  const typeToFilterKey = {
+  const typeToFilterKey: Record<string, keyof Filters> = {
     HOSPITAL: 'hospital',
     SHELTER: 'shelter',
     DEFIBRILLATOR: 'defibrillator',
@@ -45,6 +45,8 @@ export function useMarkerManagement(
   const initializeMarkers = () => {
     if (!map.value) return
 
+    const mapInstance = map.value
+
     // Clear existing markers
     removeAllMarkers()
 
@@ -73,7 +75,7 @@ export function useMarkerManagement(
           `),
           )
 
-        marker.addTo(map.value)
+        marker.addTo(mapInstance)
         markers.value.push(marker)
       }
     })

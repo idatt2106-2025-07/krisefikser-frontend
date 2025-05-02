@@ -3,7 +3,8 @@ import { ref } from 'vue'
 import type { Ref } from 'vue'
 import mapboxgl from 'mapbox-gl'
 import * as turf from '@turf/turf'
-import type { LocationData, Filters } from '@/types/mapTypes'
+import type { LocationData, Filters, AffectedArea } from '@/types/mapTypes'
+import type { Feature, Polygon, GeoJsonProperties } from 'geojson';
 
 export function useMapLayers(
   map: Ref<mapboxgl.Map | null>,
@@ -12,6 +13,15 @@ export function useMapLayers(
 ) {
   const circleLayers = ref<string[]>([])
   const layersInitialized = ref(false)
+
+  function getDangerRadius(area: AffectedArea, level: string): number | undefined {
+    switch(level) {
+      case 'high': return area.highDangerRadiusKm;
+      case 'medium': return area.mediumDangerRadiusKm;
+      case 'low': return area.lowDangerRadiusKm;
+      default: return undefined;
+    }
+  }
 
   const initializeLayers = () => {
     if (!map.value) {
@@ -26,11 +36,14 @@ export function useMapLayers(
 
     locationData.value.affectedAreas.forEach((area, index) => {
       try {
+        if (!map.value) return
+        const mapInstance = map.value
+
         const areaId = `affected-area-${index}`
 
         // Create a single popup for the entire affected area
         const addPopupHandler = (layerId: string) => {
-          map.value.on('click', layerId, (e) => {
+          mapInstance.on('click', layerId, (e) => {
             if (e.features && e.features.length > 0) {
               new mapboxgl.Popup()
                 .setLngLat(e.lngLat)
@@ -61,7 +74,7 @@ export function useMapLayers(
             units: 'kilometers',
           })
 
-          map.value.addSource(highLayerId, {
+          mapInstance.addSource(highLayerId, {
             type: 'geojson',
             data: {
               type: 'Feature',
@@ -70,7 +83,7 @@ export function useMapLayers(
             },
           })
 
-          map.value.addLayer({
+          mapInstance.addLayer({
             id: highLayerId,
             type: 'fill',
             source: highLayerId,
@@ -105,25 +118,25 @@ export function useMapLayers(
             { steps: 64, units: 'kilometers' },
           )
 
-          // Create the donut as a polygon with hole
-          const donut = {
-            type: 'Feature',
+          // Then in your code where you create the donut:
+          const donut: Feature<Polygon, GeoJsonProperties> = {
+            type: "Feature", // Use literal "Feature" instead of 'Feature'
             properties: {},
             geometry: {
-              type: 'Polygon',
+              type: "Polygon", // Use literal "Polygon" instead of 'Polygon'
               coordinates: [
                 outerCircle.geometry.coordinates[0], // Outer ring
-                [...innerCircle.geometry.coordinates[0]].reverse(), // Inner ring (hole) - note the reversal
+                [...innerCircle.geometry.coordinates[0]].reverse(), // Inner ring (hole)
               ],
             },
-          }
+          };
 
-          map.value.addSource(mediumLayerId, {
+          mapInstance.addSource(mediumLayerId, {
             type: 'geojson',
             data: donut,
           })
 
-          map.value.addLayer({
+          mapInstance.addLayer({
             id: mediumLayerId,
             type: 'fill',
             source: mediumLayerId,
@@ -158,7 +171,7 @@ export function useMapLayers(
           )
 
           // Create the donut as a polygon with hole
-          const donut = {
+          const donut: Feature<Polygon, GeoJsonProperties> = {
             type: 'Feature',
             properties: {},
             geometry: {
@@ -170,12 +183,12 @@ export function useMapLayers(
             },
           }
 
-          map.value.addSource(lowLayerId, {
+          mapInstance.addSource(lowLayerId, {
             type: 'geojson',
             data: donut,
           })
 
-          map.value.addLayer({
+          mapInstance.addLayer({
             id: lowLayerId,
             type: 'fill',
             source: lowLayerId,
@@ -194,22 +207,26 @@ export function useMapLayers(
 
         // Add border lines between the danger zones
         ;['high', 'medium', 'low'].forEach((level, i) => {
-          const radiusProperty = `${level}DangerRadiusKm`
-          if (area[radiusProperty]) {
+          const radius = getDangerRadius(area, level);
+          if (radius) {
             const outlineId = `${areaId}-${level}-outline`
             circleLayers.value.push(outlineId)
 
-            const circle = turf.circle([area.longitude, area.latitude], area[radiusProperty], {
-              steps: 64,
-              units: 'kilometers',
-            })
+            const circle = turf.circle(
+              [area.longitude, area.latitude],
+              radius,
+              {
+                steps: 64,
+                units: 'kilometers',
+              }
+            )
 
-            map.value.addSource(outlineId, {
+            mapInstance.addSource(outlineId, {
               type: 'geojson',
               data: circle,
             })
 
-            map.value.addLayer({
+            mapInstance.addLayer({
               id: outlineId,
               type: 'line',
               source: outlineId,
@@ -234,17 +251,18 @@ export function useMapLayers(
 
   const removeAllLayers = () => {
     if (!map.value) return
+    const mapInstance = map.value
 
     circleLayers.value.forEach((layerId) => {
       try {
-        if (map.value.getLayer(layerId)) {
-          map.value.removeLayer(layerId)
+        if (mapInstance.getLayer(layerId)) {
+          mapInstance.removeLayer(layerId)
         }
-        if (map.value.getLayer(`${layerId}-outline`)) {
-          map.value.removeLayer(`${layerId}-outline`)
+        if (mapInstance.getLayer(`${layerId}-outline`)) {
+          mapInstance.removeLayer(`${layerId}-outline`)
         }
-        if (map.value.getSource(layerId)) {
-          map.value.removeSource(layerId)
+        if (mapInstance.getSource(layerId)) {
+          mapInstance.removeSource(layerId)
         }
       } catch (error) {
         console.warn(`Error removing layer ${layerId}:`, error)
@@ -281,15 +299,16 @@ export function useMapLayers(
 
   const updateLayerVisibility = (showAffectedAreas: boolean) => {
     if (!map.value) return
+    const mapInstance = map.value
 
     circleLayers.value.forEach((layerId) => {
-      if (map.value.getLayer(layerId)) {
-        map.value.setLayoutProperty(layerId, 'visibility', showAffectedAreas ? 'visible' : 'none')
+      if (mapInstance.getLayer(layerId)) {
+        mapInstance.setLayoutProperty(layerId, 'visibility', showAffectedAreas ? 'visible' : 'none')
 
         // Also update outline layers
         const outlineLayerId = `${layerId}-outline`
-        if (map.value.getLayer(outlineLayerId)) {
-          map.value.setLayoutProperty(
+        if (mapInstance.getLayer(outlineLayerId)) {
+          mapInstance.setLayoutProperty(
             outlineLayerId,
             'visibility',
             showAffectedAreas ? 'visible' : 'none',

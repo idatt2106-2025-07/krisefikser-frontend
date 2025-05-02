@@ -47,6 +47,7 @@ export interface Filters {
   water_station?: boolean
   food_central?: boolean
   affected_areas?: boolean
+  meeting_place?: boolean
 }
 
 export interface GetPointsOfInterestRequest {

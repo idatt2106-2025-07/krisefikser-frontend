@@ -25,7 +25,7 @@ function navigateTo(path: string) {
 }
 
 function navigateToMap() {
-  router.push('/map');
+  router.push('/map')
 }
 </script>
 

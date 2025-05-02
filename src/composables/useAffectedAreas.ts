@@ -34,14 +34,16 @@ export function useMapLayers(
             if (e.features && e.features.length > 0) {
               new mapboxgl.Popup()
                 .setLngLat(e.lngLat)
-                .setHTML(`
+                .setHTML(
+                  `
                   <div class="popup-content">
                     <h3>Emergency alert!</h3>
                     <p>${area.description}</p>
                     <h4>Severity: ${area.severityLevel}</h4>
                     <h4>Started: ${new Date(area.startDate).toLocaleString()}</h4>
                   </div>
-                `)
+                `,
+                )
                 .addTo(map.value!)
             }
           })
@@ -54,19 +56,18 @@ export function useMapLayers(
           circleLayers.value.push(highLayerId)
 
           // High danger zone - solid circle
-          const highCircle = turf.circle(
-            [area.longitude, area.latitude],
-            area.highDangerRadiusKm,
-            { steps: 64, units: 'kilometers' }
-          )
+          const highCircle = turf.circle([area.longitude, area.latitude], area.highDangerRadiusKm, {
+            steps: 64,
+            units: 'kilometers',
+          })
 
           map.value.addSource(highLayerId, {
             type: 'geojson',
             data: {
               type: 'Feature',
               geometry: highCircle.geometry,
-              properties: { description: area.description }
-            }
+              properties: { description: area.description },
+            },
           })
 
           map.value.addLayer({
@@ -74,12 +75,12 @@ export function useMapLayers(
             type: 'fill',
             source: highLayerId,
             layout: {
-              visibility: filters.value.affected_areas !== false ? 'visible' : 'none'
+              visibility: filters.value.affected_areas !== false ? 'visible' : 'none',
             },
             paint: {
               'fill-color': 'rgba(255, 0, 0, 0.4)', // Red
-              'fill-outline-color': '#ff0000'
-            }
+              'fill-outline-color': '#ff0000',
+            },
           })
 
           // Add popup handler
@@ -95,13 +96,13 @@ export function useMapLayers(
           const outerCircle = turf.circle(
             [area.longitude, area.latitude],
             area.mediumDangerRadiusKm,
-            { steps: 64, units: 'kilometers' }
+            { steps: 64, units: 'kilometers' },
           )
 
           const innerCircle = turf.circle(
             [area.longitude, area.latitude],
             area.highDangerRadiusKm,
-            { steps: 64, units: 'kilometers' }
+            { steps: 64, units: 'kilometers' },
           )
 
           // Create the donut as a polygon with hole
@@ -112,14 +113,14 @@ export function useMapLayers(
               type: 'Polygon',
               coordinates: [
                 outerCircle.geometry.coordinates[0], // Outer ring
-                [...innerCircle.geometry.coordinates[0]].reverse() // Inner ring (hole) - note the reversal
-              ]
-            }
+                [...innerCircle.geometry.coordinates[0]].reverse(), // Inner ring (hole) - note the reversal
+              ],
+            },
           }
 
           map.value.addSource(mediumLayerId, {
             type: 'geojson',
-            data: donut
+            data: donut,
           })
 
           map.value.addLayer({
@@ -127,12 +128,12 @@ export function useMapLayers(
             type: 'fill',
             source: mediumLayerId,
             layout: {
-              visibility: filters.value.affected_areas !== false ? 'visible' : 'none'
+              visibility: filters.value.affected_areas !== false ? 'visible' : 'none',
             },
             paint: {
               'fill-color': 'rgba(255, 165, 0, 0.3)', // Orange
-              'fill-outline-color': '#ffa500'
-            }
+              'fill-outline-color': '#ffa500',
+            },
           })
 
           // Add popup handler
@@ -145,16 +146,15 @@ export function useMapLayers(
           circleLayers.value.push(lowLayerId)
 
           // Create donut shape - outer circle minus medium circle
-          const outerCircle = turf.circle(
-            [area.longitude, area.latitude],
-            area.lowDangerRadiusKm,
-            { steps: 64, units: 'kilometers' }
-          )
+          const outerCircle = turf.circle([area.longitude, area.latitude], area.lowDangerRadiusKm, {
+            steps: 64,
+            units: 'kilometers',
+          })
 
           const innerCircle = turf.circle(
             [area.longitude, area.latitude],
             area.mediumDangerRadiusKm,
-            { steps: 64, units: 'kilometers' }
+            { steps: 64, units: 'kilometers' },
           )
 
           // Create the donut as a polygon with hole
@@ -165,14 +165,14 @@ export function useMapLayers(
               type: 'Polygon',
               coordinates: [
                 outerCircle.geometry.coordinates[0], // Outer ring
-                [...innerCircle.geometry.coordinates[0]].reverse() // Inner ring (hole) - note the reversal
-              ]
-            }
+                [...innerCircle.geometry.coordinates[0]].reverse(), // Inner ring (hole) - note the reversal
+              ],
+            },
           }
 
           map.value.addSource(lowLayerId, {
             type: 'geojson',
-            data: donut
+            data: donut,
           })
 
           map.value.addLayer({
@@ -180,12 +180,12 @@ export function useMapLayers(
             type: 'fill',
             source: lowLayerId,
             layout: {
-              visibility: filters.value.affected_areas !== false ? 'visible' : 'none'
+              visibility: filters.value.affected_areas !== false ? 'visible' : 'none',
             },
             paint: {
               'fill-color': 'rgba(255, 255, 0, 0.2)', // Yellow
-              'fill-outline-color': '#ffff00'
-            }
+              'fill-outline-color': '#ffff00',
+            },
           })
 
           // Add popup handler
@@ -193,38 +193,37 @@ export function useMapLayers(
         }
 
         // Add border lines between the danger zones
-        ['high', 'medium', 'low'].forEach((level, i) => {
-          const radiusProperty = `${level}DangerRadiusKm`;
+        ;['high', 'medium', 'low'].forEach((level, i) => {
+          const radiusProperty = `${level}DangerRadiusKm`
           if (area[radiusProperty]) {
-            const outlineId = `${areaId}-${level}-outline`;
-            circleLayers.value.push(outlineId);
+            const outlineId = `${areaId}-${level}-outline`
+            circleLayers.value.push(outlineId)
 
-            const circle = turf.circle(
-              [area.longitude, area.latitude],
-              area[radiusProperty],
-              { steps: 64, units: 'kilometers' }
-            );
+            const circle = turf.circle([area.longitude, area.latitude], area[radiusProperty], {
+              steps: 64,
+              units: 'kilometers',
+            })
 
             map.value.addSource(outlineId, {
               type: 'geojson',
-              data: circle
-            });
+              data: circle,
+            })
 
             map.value.addLayer({
               id: outlineId,
               type: 'line',
               source: outlineId,
               layout: {
-                visibility: filters.value.affected_areas !== false ? 'visible' : 'none'
+                visibility: filters.value.affected_areas !== false ? 'visible' : 'none',
               },
               paint: {
                 'line-color': i === 0 ? '#ff0000' : i === 1 ? '#ffa500' : '#ffff00',
                 'line-width': 2,
-                'line-opacity': 0.8
-              }
-            });
+                'line-opacity': 0.8,
+              },
+            })
           }
-        });
+        })
       } catch (err) {
         console.error(`Error creating layers for area ${index}:`, err)
       }
@@ -232,7 +231,6 @@ export function useMapLayers(
 
     layersInitialized.value = true
   }
-
 
   const removeAllLayers = () => {
     if (!map.value) return

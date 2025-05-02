@@ -18,7 +18,7 @@ export function useMarkerManagement(
     DEFIBRILLATOR: 'defibrillator',
     WATER_STATION: 'water_station',
     FOOD_CENTRAL: 'food_central',
-    MEETING_PLACE: 'meeting_place'
+    MEETING_PLACE: 'meeting_place',
   }
 
   const getMarkerType = (poiType: string): string => {
@@ -26,21 +26,21 @@ export function useMarkerManagement(
   }
 
   const createMarker = (poiType: string) => {
-  // Create a wrapper element for the marker
-  const el = document.createElement('div')
+    // Create a wrapper element for the marker
+    const el = document.createElement('div')
 
-  // Mount our POIIcon component into this element
-  const markerApp = createApp(MapIcon, {
-    type: poiType,
-    size: 'small',
-    withBackground: true,
-  })
+    // Mount our POIIcon component into this element
+    const markerApp = createApp(MapIcon, {
+      type: poiType,
+      size: 'small',
+      withBackground: true,
+    })
 
-  // Mount the app to the element
-  markerApp.mount(el)
+    // Mount the app to the element
+    markerApp.mount(el)
 
-  return el
-}
+    return el
+  }
 
   const initializeMarkers = () => {
     if (!map.value) return

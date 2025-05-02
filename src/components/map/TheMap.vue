@@ -29,8 +29,8 @@ const props = defineProps({
   isHomePage: {
     type: Boolean,
     default: false,
-    required: false
-  }
+    required: false,
+  },
 })
 
 const filtersRef = computed(() => props.filters)
@@ -190,7 +190,7 @@ onMounted(() => {
         // Use the retry logic instead of direct initialization
         tryInitializeLayers(5) // Try up to 5 times with 200ms intervals
         initializeMarkers()
-        if(!props.isHomePage) {
+        if (!props.isHomePage) {
           initializeSearch()
         }
 
@@ -203,8 +203,9 @@ onMounted(() => {
           if (props.isHomePage) {
             fetchAllPointsOfInterest()
           } else {
-            const poiFilters = getEnabledFilters(filtersRef.value)
-              .filter(f => f !== 'affected_areas')
+            const poiFilters = getEnabledFilters(filtersRef.value).filter(
+              (f) => f !== 'affected_areas',
+            )
 
             if (poiFilters.length > 0) {
               fetchPointsOfInterest(poiFilters)

@@ -2,7 +2,13 @@ export interface PointOfInterest {
   id: number
   latitude: number
   longitude: number
-  type: 'HOSPITAL' | 'SHELTER' | 'DEFIBRILLATOR' | 'WATER_STATION' | 'FOOD_CENTRAL' | 'MEETING_PLACE'
+  type:
+    | 'HOSPITAL'
+    | 'SHELTER'
+    | 'DEFIBRILLATOR'
+    | 'WATER_STATION'
+    | 'FOOD_CENTRAL'
+    | 'MEETING_PLACE'
   opensAt: string | null
   closesAt: string | null
   contactNumber: string | null
@@ -10,15 +16,15 @@ export interface PointOfInterest {
 }
 
 export interface AffectedArea {
-  id: number;
-  longitude: number;
-  latitude: number;
-  highDangerRadiusKm: number;
-  mediumDangerRadiusKm: number;
-  lowDangerRadiusKm: number;
-  severityLevel: number;
-  description: string;
-  startDate: string;
+  id: number
+  longitude: number
+  latitude: number
+  highDangerRadiusKm: number
+  mediumDangerRadiusKm: number
+  lowDangerRadiusKm: number
+  severityLevel: number
+  description: string
+  startDate: string
 }
 
 export interface LocationData {

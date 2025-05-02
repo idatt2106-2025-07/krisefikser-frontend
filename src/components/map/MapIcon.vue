@@ -2,46 +2,46 @@
 const props = defineProps({
   type: {
     type: String,
-    required: true
+    required: true,
   },
   size: {
     type: String,
-    default: 'medium'
+    default: 'medium',
   },
   withBackground: {
     type: Boolean,
-    default: false
-  }
-});
+    default: false,
+  },
+})
 
 const getIconDetails = (type) => {
   switch (type.toLowerCase()) {
     case 'hospital':
-      return { color: '#ff5252', faIcon: 'fa-hospital' };
+      return { color: '#ff5252', faIcon: 'fa-hospital' }
     case 'shelter':
-      return { color: '#4caf50', faIcon: 'fa-home' };
+      return { color: '#4caf50', faIcon: 'fa-home' }
     case 'defibrillator':
-      return { color: '#2196f3', faIcon: 'fa-heartbeat' };
+      return { color: '#2196f3', faIcon: 'fa-heartbeat' }
     case 'water_station':
-      return { color: '#03a9f4', faIcon: 'fa-tint' };
+      return { color: '#03a9f4', faIcon: 'fa-tint' }
     case 'food_central':
-      return { color: '#ff9800', faIcon: 'fa-utensils' };
+      return { color: '#ff9800', faIcon: 'fa-utensils' }
     case 'meeting_place':
-      return { color: '#9c27b0', faIcon: 'fa-users' };
+      return { color: '#9c27b0', faIcon: 'fa-users' }
     case 'affected_areas':
-      return { color: '#ff5252', faIcon: 'fa-exclamation-triangle' };
+      return { color: '#ff5252', faIcon: 'fa-exclamation-triangle' }
     default:
-      return { color: '#757575', faIcon: 'fa-question' };
+      return { color: '#757575', faIcon: 'fa-question' }
   }
-};
+}
 </script>
 
 <template>
-  <div
-    class="poi-icon"
-    :class="[`size-${size}`, { 'with-background': props.withBackground }]"
-  >
-    <i :class="`fas ${getIconDetails(type).faIcon}`" :style="{ color: getIconDetails(type).color }"></i>
+  <div class="poi-icon" :class="[`size-${size}`, { 'with-background': props.withBackground }]">
+    <i
+      :class="`fas ${getIconDetails(type).faIcon}`"
+      :style="{ color: getIconDetails(type).color }"
+    ></i>
   </div>
 </template>
 

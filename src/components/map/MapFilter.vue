@@ -10,7 +10,7 @@ const filters = ref({
   water_station: true,
   food_central: true,
   hospital: true,
-  meeting_place: true
+  meeting_place: true,
 })
 
 const emit = defineEmits(['filter-change'])

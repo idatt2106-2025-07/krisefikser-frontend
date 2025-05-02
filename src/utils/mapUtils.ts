@@ -1,7 +1,31 @@
 import type { PointOfInterest, LocationData, AffectedArea } from '@/types/mapTypes'
 
 export function createSearchableGeoJSON(locationData: LocationData) {
-  const features: { type: string; properties: { title: string; description: string; category: "HOSPITAL" | "SHELTER" | "DEFIBRILLATOR" | "WATER_STATION" | "FOOD_CENTRAL" | "MEETING_PLACE"; id: number; poiType: "HOSPITAL" | "SHELTER" | "DEFIBRILLATOR" | "WATER_STATION" | "FOOD_CENTRAL" | "MEETING_PLACE" } | { title: string; description: string; category: string; id: number; radius: any }; geometry: { type: string; coordinates: number[] } | { type: string; coordinates: number[] } }[] = []
+  const features: {
+    type: string
+    properties:
+      | {
+          title: string
+          description: string
+          category:
+            | 'HOSPITAL'
+            | 'SHELTER'
+            | 'DEFIBRILLATOR'
+            | 'WATER_STATION'
+            | 'FOOD_CENTRAL'
+            | 'MEETING_PLACE'
+          id: number
+          poiType:
+            | 'HOSPITAL'
+            | 'SHELTER'
+            | 'DEFIBRILLATOR'
+            | 'WATER_STATION'
+            | 'FOOD_CENTRAL'
+            | 'MEETING_PLACE'
+        }
+      | { title: string; description: string; category: string; id: number; radius: any }
+    geometry: { type: string; coordinates: number[] } | { type: string; coordinates: number[] }
+  }[] = []
 
   if (locationData.pointsOfInterest && Array.isArray(locationData.pointsOfInterest)) {
     locationData.pointsOfInterest.forEach((poi: PointOfInterest) => {

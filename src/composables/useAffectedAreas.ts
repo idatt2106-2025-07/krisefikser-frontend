@@ -4,7 +4,7 @@ import type { Ref } from 'vue'
 import mapboxgl from 'mapbox-gl'
 import * as turf from '@turf/turf'
 import type { LocationData, Filters, AffectedArea } from '@/types/mapTypes'
-import type { Feature, Polygon, GeoJsonProperties } from 'geojson';
+import type { Feature, Polygon, GeoJsonProperties } from 'geojson'
 
 export function useMapLayers(
   map: Ref<mapboxgl.Map | null>,
@@ -15,11 +15,15 @@ export function useMapLayers(
   const layersInitialized = ref(false)
 
   function getDangerRadius(area: AffectedArea, level: string): number | undefined {
-    switch(level) {
-      case 'high': return area.highDangerRadiusKm;
-      case 'medium': return area.mediumDangerRadiusKm;
-      case 'low': return area.lowDangerRadiusKm;
-      default: return undefined;
+    switch (level) {
+      case 'high':
+        return area.highDangerRadiusKm
+      case 'medium':
+        return area.mediumDangerRadiusKm
+      case 'low':
+        return area.lowDangerRadiusKm
+      default:
+        return undefined
     }
   }
 
@@ -120,16 +124,16 @@ export function useMapLayers(
 
           // Then in your code where you create the donut:
           const donut: Feature<Polygon, GeoJsonProperties> = {
-            type: "Feature", // Use literal "Feature" instead of 'Feature'
+            type: 'Feature', // Use literal "Feature" instead of 'Feature'
             properties: {},
             geometry: {
-              type: "Polygon", // Use literal "Polygon" instead of 'Polygon'
+              type: 'Polygon', // Use literal "Polygon" instead of 'Polygon'
               coordinates: [
                 outerCircle.geometry.coordinates[0], // Outer ring
                 [...innerCircle.geometry.coordinates[0]].reverse(), // Inner ring (hole)
               ],
             },
-          };
+          }
 
           mapInstance.addSource(mediumLayerId, {
             type: 'geojson',
@@ -207,19 +211,15 @@ export function useMapLayers(
 
         // Add border lines between the danger zones
         ;['high', 'medium', 'low'].forEach((level, i) => {
-          const radius = getDangerRadius(area, level);
+          const radius = getDangerRadius(area, level)
           if (radius) {
             const outlineId = `${areaId}-${level}-outline`
             circleLayers.value.push(outlineId)
 
-            const circle = turf.circle(
-              [area.longitude, area.latitude],
-              radius,
-              {
-                steps: 64,
-                units: 'kilometers',
-              }
-            )
+            const circle = turf.circle([area.longitude, area.latitude], radius, {
+              steps: 64,
+              units: 'kilometers',
+            })
 
             mapInstance.addSource(outlineId, {
               type: 'geojson',

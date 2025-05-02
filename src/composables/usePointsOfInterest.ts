@@ -1,8 +1,9 @@
-import { ref, watch } from 'vue'
+import { ref, watch, createApp } from 'vue'
 import type { Ref } from 'vue'
 import mapboxgl from 'mapbox-gl'
-import { createCustomMarker, getTypeDisplayName } from '@/utils/mapUtils'
+import { getTypeDisplayName } from '@/utils/mapUtils'
 import type { LocationData, Filters, PointOfInterest } from '@/types/mapTypes'
+import MapIcon from '@/components/map/MapIcon.vue'
 
 export function useMarkerManagement(
   map: Ref<mapboxgl.Map | null>,
@@ -24,6 +25,23 @@ export function useMarkerManagement(
     return poiType.toLowerCase()
   }
 
+  const createMarker = (poiType: string) => {
+  // Create a wrapper element for the marker
+  const el = document.createElement('div')
+
+  // Mount our POIIcon component into this element
+  const markerApp = createApp(MapIcon, {
+    type: poiType,
+    size: 'small',
+    withBackground: true,
+  })
+
+  // Mount the app to the element
+  markerApp.mount(el)
+
+  return el
+}
+
   const initializeMarkers = () => {
     if (!map.value) return
 
@@ -31,14 +49,14 @@ export function useMarkerManagement(
     removeAllMarkers()
 
     // Add markers for each point of interest
-    locationData.value.pointsOfInterest.forEach((poi) => {
+    locationData.value.pointsOfInterest.forEach((poi: PointOfInterest) => {
       // Get filter key for this type
       const filterKey = typeToFilterKey[poi.type]
 
       // Check if this type is enabled in filters
       if (filters.value[filterKey] !== false) {
         const markerType = getMarkerType(poi.type)
-        const el = createCustomMarker(markerType)
+        const el = createMarker(markerType)
         el.setAttribute('data-id', poi.id.toString())
         el.setAttribute('data-type', poi.type)
 

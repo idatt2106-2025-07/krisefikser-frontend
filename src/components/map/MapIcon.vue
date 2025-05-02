@@ -1,12 +1,16 @@
 <script setup lang="ts">
-defineProps({
+const props = defineProps({
   type: {
     type: String,
     required: true
   },
   size: {
     type: String,
-    default: 'medium' // small, medium, large
+    default: 'medium'
+  },
+  withBackground: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -35,7 +39,7 @@ const getIconDetails = (type) => {
 <template>
   <div
     class="poi-icon"
-    :class="[`size-${size}`]"
+    :class="[`size-${size}`, { 'with-background': props.withBackground }]"
   >
     <i :class="`fas ${getIconDetails(type).faIcon}`" :style="{ color: getIconDetails(type).color }"></i>
   </div>
@@ -52,9 +56,15 @@ const getIconDetails = (type) => {
   /* background-color: rgba(240, 240, 240, 0.8); */
 }
 
+.poi-icon.with-background {
+  border-radius: 50%;
+  background-color: white;
+  border: 2px solid rgb(211, 211, 211);
+}
+
 .size-small {
-  width: 20px;
-  height: 20px;
+  width: 32px;
+  height: 32px;
   font-size: 16px;
 }
 

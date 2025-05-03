@@ -15,6 +15,8 @@ import RegisterAdmin from '@/views/RegisterAdmin.vue'
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
 
+import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -73,6 +75,15 @@ const router = createRouter({
       path: '/quiz',
       name: 'quiz',
       component: QuizCreator,
+    },
+    {
+      path: '/verify-email',
+      name: 'verify-email',
+      component: VerifyEmailView,
+    },
+    {
+      path: '/verify',
+      redirect: { name: 'verify-email' },
     },
     {
       path: '/register-admin',

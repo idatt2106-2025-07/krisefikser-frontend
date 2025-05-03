@@ -212,4 +212,11 @@ img {
   border-color: white !important;
   color: #333 !important;
 }
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: white;
+}
 </style>

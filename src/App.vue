@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LoggedOutNavBar from './components/navigation/LoggedOutNavBar.vue'
 import NavBar from './components/navigation/NavBar.vue'
 </script>
 

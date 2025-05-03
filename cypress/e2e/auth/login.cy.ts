@@ -2,8 +2,8 @@
 import '@cypress/code-coverage/support'
 
 describe('Login page', () => {
-  const emailInput = 'input#email' // PrimeVue InputText
-  const passwordInput = 'input#password' // PrimeVue Password (masked)
+  const emailInput = 'input#email'
+  const passwordInput = 'input#password'
   const submitButton = 'button[type=submit]'
 
   beforeEach(() => {
@@ -30,27 +30,22 @@ describe('Login page', () => {
   })
 
   it('logs in successfully and redirects to /', () => {
-    // Mock backend 200 response
     cy.intercept('POST', '/api/auth/login', {
       statusCode: 200,
       body: { message: 'Logged in!' },
     }).as('loginRequest')
 
-    // Stub window.alert so we can assert its call
     cy.window().then((win) => cy.stub(win, 'alert').as('alertStub'))
 
-    // Fill & submit
     cy.get(emailInput).type('user@example.com')
     cy.get(passwordInput).type('superSecret')
     cy.contains(submitButton, 'Login').click()
 
-    // Validate request payload
     cy.wait('@loginRequest').its('request.body').should('deep.equal', {
       email: 'user@example.com',
       password: 'superSecret',
     })
 
-    // Assert alert and redirect
     cy.get('@alertStub').should('have.been.calledWith', 'Login successful: Logged in!')
     cy.location('pathname').should('eq', '/')
   })

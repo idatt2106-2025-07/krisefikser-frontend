@@ -19,18 +19,15 @@ describe('Register page', () => {
   })
 
   it('shows client‑side validation errors', () => {
-    // Invalid email
     cy.get('input[placeholder="Email"]').type('not‑an‑email')
     cy.get('input[placeholder="Email"]').blur()
     cy.contains('small', 'Email invalid').should('be.visible')
 
-    // Mismatched passwords
     cy.get('input[placeholder="Password"]').first().type('foo')
     cy.get('input[placeholder="Confirm Password"]').type('bar')
     cy.get('input[placeholder="Confirm Password"]').blur()
     cy.contains('small', 'Passwords don’t match').should('be.visible')
 
-    // Submit stays disabled
     cy.contains('button', 'Register').should('be.disabled')
   })
 
@@ -50,10 +47,8 @@ describe('Register page', () => {
     cy.get('.agreeToTerms').check()
     cy.get('button[type="submit"]').click()
 
-    // inline green message
     cy.get('.status-message.success').should('contain', 'Registered successfully')
 
-    // wait for the URL to change to /login
     cy.url().should('include', '/login')
   })
 
@@ -63,7 +58,6 @@ describe('Register page', () => {
       body: { message: 'Email already in use' },
     }).as('registerErr')
 
-    // fill and submit
     cy.get('#name').type('Test User')
     cy.get('#email').type('test@example.com')
     cy.get('#email').blur()
@@ -74,7 +68,6 @@ describe('Register page', () => {
     cy.get('button[type="submit"]').click()
     cy.wait('@registerErr')
 
-    // inline red message, stays on /register
     cy.get('.status-message.error').should('contain', 'Email already in use')
     cy.url().should('include', REGISTER_PATH)
   })

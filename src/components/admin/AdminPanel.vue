@@ -31,8 +31,8 @@
 import { ref } from 'vue'
 import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
-import TheMap from '@/components/TheMap.vue'
-import GameificationSettings from '@/components/CRUDActivities.vue'
+import TheMap from '@/components/map/TheMap.vue'
+import GameificationSettings from '@/components/admin/CRUDActivities.vue'
 
 interface Props {
   type: 'Map' | 'User' | 'Gameification'

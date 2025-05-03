@@ -33,7 +33,7 @@ vi.mock('@/components/AdminPanel.vue', () => ({
 }))
 
 /* ───── component under test (import **after** mocks) ───── */
-import AdminView from '@/views/AdminView.vue'
+import AdminView from '@/views/admin/AdminView.vue'
 
 /* ───── tests ───── */
 describe('AdminView.vue', () => {

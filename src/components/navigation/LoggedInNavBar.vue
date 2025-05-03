@@ -7,30 +7,41 @@ const router = useRouter()
 
 const isMenuOpen = ref(false)
 
-function navigateToLogin() {
+const navigateToProfile = () => {
+  router.push('/settings')
+}
+
+const logout = () => {
   router.push('/login')
 }
 
-function navigateToHome() {
+const navigateToHome = () => {
   router.push('/')
 }
 
-function toggleMenu() {
+const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }
 
-function navigateTo(path: string) {
+const navigateTo = (path: string) => {
   router.push(path)
   isMenuOpen.value = false
 }
 </script>
 
 <template>
-  <div class="navbar p-d-flex p-ai-center p-jc-between p-p-2">
-    <!-- Left side: Logo + Hamburger -->
-    <div class="p-d-flex p-ai-center gap-2 relative">
-      <img src="@/assets/logo.svg" alt="Logo" class="h-10 w-auto" @click="navigateToHome" />
+  <div class="navbar">
+    <!-- Left side: Logo + Hamburger Menu -->
+    <div class="left-section p-d-flex p-ai-center gap-4 relative">
+      <img
+        src="@/assets/logo.svg"
+        alt="Logo"
+        class="h-10 w-auto"
+        @click="navigateToHome"
+        style="cursor: pointer"
+      />
 
+      <!-- Custom Hamburger Icon and Menu Text -->
       <div class="custom-button hamburger-menu p-d-flex p-ai-center gap-2" @click="toggleMenu">
         <div class="hamburger-icon">
           <div class="line"></div>
@@ -42,28 +53,28 @@ function navigateTo(path: string) {
 
       <ul v-if="isMenuOpen" class="dropdown-menu">
         <li class="dropdown-item" @click="navigateTo('/')">Home</li>
-        <li class="dropdown-item" @click="navigateTo('/info')">General Info</li>
+        <li class="dropdown-item" @click="navigateTo('/storage')">Emergency storage</li>
+        <li class="dropdown-item" @click="navigateTo('/info')">General info</li>
         <li class="dropdown-item" @click="navigateTo('/quiz')">Quiz</li>
       </ul>
     </div>
 
-    <!-- Right side: Only Login -->
-    <div class="p-d-flex p-ai-center gap-4">
-      <Button class="login-button p-button-sm" @click="navigateToLogin">
-        <img src="@/assets/icons/login_icon.svg" alt="Login Icon" class="p-button-icon" />
-        <span>Login</span>
+    <!-- Right side: Profile and Logout -->
+    <div class="right-section p-d-flex p-ai-center gap-4">
+      <Button class="custom-button profile-button p-button-sm" @click="navigateToProfile">
+        <img src="@/assets/icons/profile_icon.svg" alt="Profile Icon" class="p-button-icon" />
+        <span>Profile</span>
+      </Button>
+
+      <Button severity="danger" class="custom-button p-button-sm" @click="logout">
+        <img src="@/assets/icons/logout_icon.svg" alt="Logout Icon" class="p-button-icon" />
+        <span>Logout</span>
       </Button>
     </div>
   </div>
 </template>
 
 <style scoped>
-img {
-  max-height: 40px;
-  width: auto;
-  cursor: pointer;
-}
-
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -72,8 +83,25 @@ img {
   border-bottom: 2px solid #333;
 }
 
+.left-section,
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.relative {
+  position: relative;
+}
+
+img {
+  max-height: 40px;
+  width: auto;
+}
+
 .p-d-flex {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 8px;
 }
@@ -115,6 +143,12 @@ img {
   margin-right: 8px;
 }
 
+.p-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .custom-button {
   background-color: white;
   border: 1px solid white;
@@ -132,7 +166,6 @@ img {
 .custom-button:hover {
   background-color: #bbb;
   border-color: white;
-  color: #333;
 }
 
 .dropdown-menu {
@@ -168,13 +201,13 @@ img {
   background-color: #b4b4b4;
 }
 
-.login-button {
+.profile-button {
   background-color: white;
   border: 1px solid white;
   color: #333;
 }
 
-.login-button.p-button:hover {
+.profile-button.p-button:hover {
   background-color: #bbb !important;
   border-color: white !important;
   color: #333 !important;

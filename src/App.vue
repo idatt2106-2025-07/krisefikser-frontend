@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import LoggedOutNavBar from './components/LoggedOutNavBar.vue'
+import NavBar from './components/navigation/NavBar.vue'
 </script>
 
 <template>
   <div id="app">
-    <LoggedOutNavBar />
+    <NavBar />
     <router-view />
   </div>
 </template>

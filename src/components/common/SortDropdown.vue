@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits, watch } from 'vue'
-import selectArrow from '../assets/select-arrow.svg'
+import selectArrow from '@/assets/select-arrow.svg'
 
 const props = defineProps({
   options: {

@@ -22,7 +22,6 @@
 import { ref } from 'vue'
 import AdminPanel from '@/components/admin/AdminPanel.vue' // Adjust the path as needed
 
-/* PrimeVue v4 components */
 import Tabs from 'primevue/tabs'
 import TabList from 'primevue/tablist'
 import Tab from 'primevue/tab'

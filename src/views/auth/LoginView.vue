@@ -38,13 +38,8 @@ async function handleLogin() {
       },
     )
 
-    // If you're storing a token in localStorage AND also setting a cookie, choose one method.
-    // If token is in cookie, you likely don't need this:
-    // authStore.setToken(response.data.token)
-
     alert(`Login successful: ${response.data.message}`)
 
-    // Redirect to a protected route
     router.push('/')
   } catch (error) {
     console.error('Error during login:', error)
@@ -71,7 +66,7 @@ async function handleLogin() {
       <div class="field">
         <label for="password">Password</label>
         <Password
-          id="password"
+          inputId="password"
           v-model="password"
           toggleMask
           :feedback="false"
@@ -113,7 +108,6 @@ async function handleLogin() {
   flex-direction: column;
 }
 
-/* make PrimeVue inputs 100% wide */
 .field :deep(.p-inputtext),
 .field :deep(.p-password-input) {
   width: 100%;

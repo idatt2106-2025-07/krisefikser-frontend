@@ -10,6 +10,7 @@ import StorageView from '@/views/storage/StorageView.vue'
 import AdminView from '@/views/admin/AdminView.vue'
 import GeneralInfo from '@/views/general/GeneralInfoView.vue'
 import News from '@/views/home/NewsView.vue'
+import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -71,6 +72,15 @@ const router = createRouter({
       path: '/quiz',
       name: 'quiz',
       component: QuizCreator,
+    },
+    {
+      path: '/verify-email',
+      name: 'verify-email',
+      component: VerifyEmailView,
+    },
+    {
+      path: '/verify',
+      redirect: { name: 'verify-email' },
     },
   ],
 })

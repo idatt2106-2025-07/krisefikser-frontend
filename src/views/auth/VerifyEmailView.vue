@@ -20,7 +20,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
+import type { AxiosResponse } from 'axios'
 import { useRoute } from 'vue-router'
 
 interface AuthResponse {

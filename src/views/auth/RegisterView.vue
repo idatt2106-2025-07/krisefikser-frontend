@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import InputText from 'primevue/inputtext'
@@ -13,7 +13,10 @@ const confirmpassword = ref('')
 const agreeToTerms = ref(false)
 const emailError = ref(false)
 const confirmTouched = ref(false)
-const isLoading = ref(false) // added global loading state
+const isLoading = ref(false)
+
+const message = ref('')
+const messageType = ref<'' | 'success' | 'error'>('')
 
 function validateEmail() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -34,36 +37,48 @@ const formValid = computed(
 )
 
 async function handleSubmit() {
+  message.value = ''
+  messageType.value = ''
+
   validateEmail()
   confirmTouched.value = true
-
   if (!formValid.value) return
 
   try {
     isLoading.value = true
 
-    const response = await axios.post(
+    const res = await axios.post(
       'http://localhost:8080/api/auth/register',
-      {
-        name: name.value,
-        email: email.value,
-        password: password.value,
-      },
-      {
-        withCredentials: true,
-      },
+      { name: name.value, email: email.value, password: password.value },
+      { withCredentials: true },
     )
 
-    alert(`Registration successful: ${response.data.message}`)
-    router.push('/login')
-  } catch (error) {
-    console.error('Error during registration:', error)
-    if (axios.isAxiosError(error) && error.response) {
-      alert(error.response.data?.message || 'Registration failed. Please try again.')
-    } else {
-      alert('An unexpected error occurred. Please try again.')
+    if (res.status === 201) {
+      message.value =
+        'Registered successfully. A verification email has been sent to your email address.'
+      messageType.value = 'success'
+
+      setTimeout(() => {
+        isLoading.value = false
+        router.push('/login')
+      }, 2000)
+
+      return
     }
+
+    console.error('Unexpected response status:', res.status)
+    message.value = 'Unexpected response. Please try again.'
+    messageType.value = 'error'
+  } catch (err) {
+    console.error('Error during registration:', err)
+    if (axios.isAxiosError(err) && err.response) {
+      message.value = err.response.data?.message || 'Registration failed. Please try again.'
+    } else {
+      message.value = 'An unexpected error occurred. Please try again.'
+    }
+    messageType.value = 'error'
   } finally {
+    /* cleared only for error paths */
     isLoading.value = false
   }
 }
@@ -73,6 +88,10 @@ async function handleSubmit() {
   <div class="page-wrapper">
     <form class="register-form" @submit.prevent="handleSubmit">
       <h2>Register</h2>
+
+      <div v-if="message" :class="['status-message', messageType]">
+        {{ message }}
+      </div>
 
       <div class="field">
         <label for="name">Name</label>
@@ -95,9 +114,10 @@ async function handleSubmit() {
       <div class="field">
         <label for="password">Password</label>
         <Password
-          id="password"
+          inputId="password"
           v-model="password"
           toggleMask
+          :feedback="false"
           placeholder="Password"
           :disabled="isLoading"
         />
@@ -106,7 +126,7 @@ async function handleSubmit() {
       <div class="field">
         <label for="confirmPassword">Confirm Password</label>
         <Password
-          id="confirmPassword"
+          inputId="confirmPassword"
           v-model="confirmpassword"
           toggleMask
           :feedback="false"
@@ -121,12 +141,12 @@ async function handleSubmit() {
       </div>
 
       <div class="checkbox-container">
-        <input type="checkbox" id="agreeToTerms" v-model="agreeToTerms" :disabled="isLoading" />
+        <input type="checkbox" class="agreeToTerms" v-model="agreeToTerms" :disabled="isLoading" />
         <label for="agreeToTerms">I agree to the terms and conditions</label>
       </div>
 
       <button type="submit" :disabled="!formValid || isLoading">
-        {{ isLoading ? 'Registering...' : 'Register' }}
+        {{ isLoading ? 'Registering…' : 'Register' }}
       </button>
 
       <p class="login-link">
@@ -138,6 +158,7 @@ async function handleSubmit() {
 </template>
 
 <style scoped>
+/* — layout + form — */
 .page-wrapper {
   display: flex;
   justify-content: center;
@@ -146,62 +167,68 @@ async function handleSubmit() {
   padding: 2rem;
   box-sizing: border-box;
 }
-
 .register-form {
   width: 100%;
   max-width: 400px;
   padding: 2rem;
   border: 1px solid #ccc;
   border-radius: 8px;
-  background-color: #fff;
+  background: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .field {
   margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
 }
-
-.p-error {
-  color: #d9534f;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-}
-
 .field :deep(.p-inputtext),
 .field :deep(.p-password-input) {
   width: 100%;
 }
 
+/* — messages & validation — */
+.p-error {
+  color: #d9534f;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+.status-message {
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  text-align: center;
+}
+.status-message.success {
+  color: #28a745;
+}
+.status-message.error {
+  color: #dc3545;
+}
+
+/* — misc controls — */
 .checkbox-container {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin: 1rem 0;
 }
-
 button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #007bff;
+  background: #007bff;
   color: #fff;
-  border: none;
+  border: 0;
   border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
 }
-
 button:hover:not(:disabled) {
-  background-color: #0056b3;
+  background: #0056b3;
 }
-
 button:disabled {
-  background-color: #ccc;
+  background: #ccc;
   color: #666;
   cursor: not-allowed;
 }
-
 .login-link {
   margin-top: 1rem;
   font-size: 0.9rem;

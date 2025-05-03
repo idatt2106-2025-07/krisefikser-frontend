@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
-import { getAuth } from "firebase/auth";
+import { getAuth } from 'firebase/auth'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 

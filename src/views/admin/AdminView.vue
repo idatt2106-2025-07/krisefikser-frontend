@@ -11,7 +11,10 @@
 
       <TabPanels>
         <TabPanel v-for="(tab, index) in tabs" :key="index" :value="index.toString()">
-          <AdminPanel v-if="tab.type !== 'InviteAdmin'" :type="tab.type === 'Users' ? 'User' : tab.type" />
+          <AdminPanel
+            v-if="tab.type !== 'InviteAdmin'"
+            :type="tab.type === 'Users' ? 'User' : tab.type"
+          />
           <div v-else>
             <h2>Invite Admin</h2>
             <form @submit.prevent="handleInviteAdmin">

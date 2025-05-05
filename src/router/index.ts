@@ -72,6 +72,11 @@ const router = createRouter({
       name: 'quiz',
       component: QuizCreator,
     },
+    {
+      path: '/admin/add/poi',
+      name: 'AddPOI',
+      component: () => import('@/views/admin/AddPOIView.vue')
+    },
   ],
 })
 

@@ -10,13 +10,10 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async fetchUser() {
       try {
-        const resp = await axios.get<string>(
-          '/api/auth/me',
-          {
-            withCredentials: true,
-            validateStatus: status => status === 200 || status === 204
-          }
-        )
+        const resp = await axios.get<string>('/api/auth/me', {
+          withCredentials: true,
+          validateStatus: (status) => status === 200 || status === 204,
+        })
         if (resp.status === 200) {
           this.user = resp.data
         } else {
@@ -31,8 +28,8 @@ export const useAuthStore = defineStore('auth', {
     },
   },
   getters: {
-    isLoggedIn: state => !!state.user,
+    isLoggedIn: (state) => !!state.user,
     // you can now expose the email directly
-    email: state => state.user,
+    email: (state) => state.user,
   },
 })

@@ -1,8 +1,53 @@
-<!-- AdminPanel.vue  -->
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import Button from 'primevue/button'
+import Dropdown from 'primevue/dropdown'
+import TheMap from '@/components/map/TheMap.vue'
+import GameificationSettings from '@/components/admin/CRUDActivities.vue'
+
+interface Props {
+  type: 'Map' | 'User' | 'Gameification'
+}
+
+const props = defineProps<Props>()
+
+const showAddIconForm = ref(false)
+const iconType = ref('')
+const iconTypes = [
+  'Shelter',
+  'Affected Area',
+  'Defibrillator',
+  'Water Station',
+  'Food Central',
+  'Hospital',
+]
+
+const router = useRouter()
+
+function handleAddIcon() {
+  if (!iconType.value) {
+    alert('Please select an icon type.')
+    return
+  }
+  alert(`Icon added: Type – ${iconType.value}`)
+  showAddIconForm.value = false
+}
+
+function save() {
+  alert(`${props.type} settings saved!`)
+}
+
+function handleMapClick(event: CustomEvent) {
+  const { lng, lat } = event.detail
+  router.push({ name: 'AddPOI', query: { lng, lat } })
+}
+</script>
+
 <template>
   <div class="admin-panel">
     <div v-if="props.type === 'Map'" class="map-panel">
-      <TheMap />
+      <TheMap @map-click="handleMapClick" />
       <div class="buttons">
         <Button label="Add Icon" @click="showAddIconForm = true" />
         <Button label="Save Changes" @click="save" class="mt-2" />
@@ -27,46 +72,6 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue'
-import Button from 'primevue/button'
-import Dropdown from 'primevue/dropdown'
-import TheMap from '@/components/map/TheMap.vue'
-import GameificationSettings from '@/components/admin/CRUDActivities.vue'
-
-interface Props {
-  type: 'Map' | 'User' | 'Gameification'
-}
-
-const props = defineProps<Props>()
-
-const showAddIconForm = ref(false)
-const iconType = ref('')
-const iconTypes = [
-  'Shelter',
-  'Affected Area',
-  'Defibrillator',
-  'Water Station',
-  'Food Central',
-  'Hospital',
-]
-
-const userType = 'User' as const
-
-function handleAddIcon() {
-  if (!iconType.value) {
-    alert('Please select an icon type.')
-    return
-  }
-  alert(`Icon added: Type – ${iconType.value}`)
-  showAddIconForm.value = false
-}
-
-function save() {
-  alert(`${props.type} settings saved!`)
-}
-</script>
-
 <style scoped>
 .admin-panel {
   padding: 2rem;
@@ -90,7 +95,6 @@ function save() {
   margin-bottom: 1rem;
 }
 
-/* container */
 .admin-container {
   max-width: 900px;
   margin: 0 auto;
@@ -100,13 +104,13 @@ function save() {
   background: #fff;
 }
 
-/* reach into PrimeVue’s generated markup */
 :deep(.sidebar) {
   width: 200px;
   display: flex;
-  flex-direction: column; /* <<< makes the headers vertical */
+  flex-direction: column;
   border-right: 2px solid #000;
 }
+
 :deep(.sidebar-item) {
   padding: 1rem;
   text-align: center;
@@ -117,6 +121,7 @@ function save() {
     background-color 0.3s,
     color 0.3s;
 }
+
 :deep(.sidebar-item[aria-selected='true']) {
   background: #18daff80;
   color: #fff;
@@ -125,6 +130,7 @@ function save() {
 :deep(.content-wrapper) {
   flex: 1;
 }
+
 :deep(.p-tabpanel) {
   padding: 2rem;
 }

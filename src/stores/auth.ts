@@ -10,7 +10,7 @@ export const useAuthStore = defineStore('auth', {
     async fetchUser() {
       try {
         const response = await axios.get('http://localhost:8080/api/auth/me', {
-          withCredentials: true, // 🔐 Required for cookie auth
+          withCredentials: true,
         })
         this.user = response.data
       } catch {

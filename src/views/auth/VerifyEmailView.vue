@@ -26,15 +26,14 @@ import { useRoute } from 'vue-router'
 
 interface AuthResponse {
   message: string
-  // other fields (e.g. token, user) if needed
 }
 
 const route = useRoute()
 const token = route.query.token as string | undefined
 
-const loading = ref<boolean>(true)
-const success = ref<boolean>(false)
-const message = ref<string>('')
+const loading = ref(true)
+const success = ref(false)
+const message = ref('')
 
 onMounted(async () => {
   if (!token) {
@@ -44,16 +43,16 @@ onMounted(async () => {
   }
 
   try {
-    const resp: AxiosResponse<AuthResponse> = await axios.get('/verify-email', {
-      params: { token },
-    })
+    const resp: AxiosResponse<AuthResponse> = await axios.get(
+      '/api/auth/verify-email',
+      { params: { token } }
+    )
 
     success.value = resp.status === 200
     message.value = resp.data.message ?? 'Your email has been verified!'
   } catch (err: unknown) {
     if (axios.isAxiosError(err) && err.response?.data) {
-      const data = err.response.data as AuthResponse
-      message.value = data.message
+      message.value = (err.response.data as AuthResponse).message
     } else {
       message.value = 'Network error—please try again later.'
     }

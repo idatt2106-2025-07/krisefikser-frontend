@@ -5,12 +5,9 @@ import LoggedInNavBar from './LoggedInNavBar.vue'
 import LoggedOutNavBar from './LoggedOutNavBar.vue'
 
 const authStore = useAuthStore()
-
-onMounted(() => {
-  authStore.fetchUser() //Check login status on mount
-})
-
 const isLoggedIn = computed(() => authStore.isLoggedIn)
+
+onMounted(() => authStore.fetchUser())
 
 function logout() {
   authStore.clearToken()

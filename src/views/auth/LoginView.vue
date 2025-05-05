@@ -39,7 +39,7 @@ async function handleLogin() {
     )
 
     alert(`Login successful: ${response.data.message}`)
-
+    await authStore.fetchUser()
     router.push('/')
   } catch (error) {
     console.error('Error during login:', error)

@@ -5,22 +5,27 @@ import { useAuthStore } from '@/stores/auth'
 import axios from 'axios'
 import Button from 'primevue/button'
 
-const router     = useRouter()
-const authStore  = useAuthStore()
+const router = useRouter()
+const authStore = useAuthStore()
 const isMenuOpen = ref(false)
 
-const navigateToHome    = () => { router.push('/') }
-const navigateToProfile = () => { router.push('/settings') }
-const navigateTo        = (path: string) => { router.push(path); isMenuOpen.value = false }
-const toggleMenu        = () => { isMenuOpen.value = !isMenuOpen.value }
+const navigateToHome = () => {
+  router.push('/')
+}
+const navigateToProfile = () => {
+  router.push('/settings')
+}
+const navigateTo = (path: string) => {
+  router.push(path)
+  isMenuOpen.value = false
+}
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value
+}
 
 async function logout() {
   try {
-    await axios.post(
-      '/api/auth/logout',
-      {},
-      { withCredentials: true }
-    )
+    await axios.post('/api/auth/logout', {}, { withCredentials: true })
   } catch {
     // ignore server errors
   }

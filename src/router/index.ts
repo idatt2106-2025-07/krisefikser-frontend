@@ -76,12 +76,8 @@ const router = createRouter({
     },
     {
       path: '/verify-email',
-      name: 'verify-email',
+      name: 'verifyEmail',
       component: VerifyEmailView,
-    },
-    {
-      path: '/verify',
-      redirect: { name: 'verify-email' },
     },
     {
       path: '/register-admin',

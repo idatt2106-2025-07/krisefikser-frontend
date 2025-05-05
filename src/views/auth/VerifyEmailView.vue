@@ -1,19 +1,17 @@
 <template>
-  <div class="verify-email max-w-md mx-auto p-6">
-    <h1 class="text-2xl font-semibold mb-4">Email Verification</h1>
+  <div class="verify-email">
+    <h1 class="verify-email__title">Email Verification</h1>
 
-    <div v-if="loading" class="text-gray-500">Verifying your email…</div>
+    <div v-if="loading" class="verify-email__loading">Verifying your email…</div>
 
     <div v-else>
-      <p :class="success ? 'text-green-600' : 'text-red-600'" class="mb-4">
+      <p :class="['verify-email__message', success ? 'success' : 'error']">
         {{ message }}
       </p>
-      <router-link
-        to="/login"
-        class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Go to Login
-      </router-link>
+
+      <a v-if="success" @click.prevent="router.push('/login')" class="verify-email__link">
+        Go to login
+      </a>
     </div>
   </div>
 </template>
@@ -22,19 +20,19 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import type { AxiosResponse } from 'axios'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 interface AuthResponse {
   message: string
-  // other fields (e.g. token, user) if needed
 }
 
 const route = useRoute()
+const router = useRouter()
 const token = route.query.token as string | undefined
 
-const loading = ref<boolean>(true)
-const success = ref<boolean>(false)
-const message = ref<string>('')
+const loading = ref(true)
+const success = ref(false)
+const message = ref('')
 
 onMounted(async () => {
   if (!token) {
@@ -44,16 +42,14 @@ onMounted(async () => {
   }
 
   try {
-    const resp: AxiosResponse<AuthResponse> = await axios.get('/verify-email', {
+    const resp: AxiosResponse<AuthResponse> = await axios.get('/api/auth/verify-email', {
       params: { token },
     })
-
     success.value = resp.status === 200
     message.value = resp.data.message ?? 'Your email has been verified!'
   } catch (err: unknown) {
     if (axios.isAxiosError(err) && err.response?.data) {
-      const data = err.response.data as AuthResponse
-      message.value = data.message
+      message.value = (err.response.data as AuthResponse).message
     } else {
       message.value = 'Network error—please try again later.'
     }
@@ -66,6 +62,40 @@ onMounted(async () => {
 
 <style scoped>
 .verify-email {
-  /* optional styling */
+  max-width: 28rem; /* ~max-w-md */
+  margin: 0 auto; /* mx-auto */
+  padding: 1.5rem; /* p-6 */
+}
+
+.verify-email__title {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 600; /* font-semibold */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+.verify-email__loading {
+  color: #6b7280; /* text-gray-500 */
+}
+
+.verify-email__message {
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+.verify-email__message.success {
+  color: #16a34a; /* text-green-600 */
+}
+
+.verify-email__message.error {
+  color: #dc2626; /* text-red-600 */
+}
+
+.verify-email__link {
+  color: #2563eb; /* text-blue-600 */
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.verify-email__link:hover {
+  text-decoration: underline;
 }
 </style>

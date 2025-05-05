@@ -1,31 +1,31 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import axios from 'axios'
 import Button from 'primevue/button'
 
-const router = useRouter()
-
+const router     = useRouter()
+const authStore  = useAuthStore()
 const isMenuOpen = ref(false)
 
-const navigateToProfile = () => {
-  router.push('/settings')
-}
+const navigateToHome    = () => { router.push('/') }
+const navigateToProfile = () => { router.push('/settings') }
+const navigateTo        = (path: string) => { router.push(path); isMenuOpen.value = false }
+const toggleMenu        = () => { isMenuOpen.value = !isMenuOpen.value }
 
-const logout = () => {
+async function logout() {
+  try {
+    await axios.post(
+      '/api/auth/logout',
+      {},
+      { withCredentials: true }
+    )
+  } catch {
+    // ignore server errors
+  }
+  authStore.clearToken()
   router.push('/login')
-}
-
-const navigateToHome = () => {
-  router.push('/')
-}
-
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value
-}
-
-const navigateTo = (path: string) => {
-  router.push(path)
-  isMenuOpen.value = false
 }
 </script>
 
@@ -66,6 +66,7 @@ const navigateTo = (path: string) => {
         <span>Profile</span>
       </Button>
 
+      <!-- logout now calls the POST /logout endpoint -->
       <Button severity="danger" class="custom-button p-button-sm" @click="logout">
         <img src="@/assets/icons/logout_icon.svg" alt="Logout Icon" class="p-button-icon" />
         <span>Logout</span>

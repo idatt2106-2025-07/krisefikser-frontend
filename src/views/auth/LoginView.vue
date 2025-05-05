@@ -27,8 +27,7 @@ async function handleLogin() {
   if (!formValid.value) return
 
   try {
-    const response = await axios.post(
-      'http://localhost:8080/api/auth/login',
+    const response = await axios.post(  'http://localhost:8080/api/auth/login',
       {
         email: email.value,
         password: password.value,
@@ -39,7 +38,7 @@ async function handleLogin() {
     )
 
     alert(`Login successful: ${response.data.message}`)
-
+    await authStore.fetchUser()
     router.push('/')
   } catch (error) {
     console.error('Error during login:', error)

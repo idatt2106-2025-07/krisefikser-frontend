@@ -4,15 +4,24 @@ import axios from 'axios'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null as null | { email: string; role: string },
+    // now just store the email string or null
+    user: null as null | string,
   }),
   actions: {
     async fetchUser() {
       try {
-        const response = await axios.get('http://localhost:8080/api/auth/me', {
-          withCredentials: true,
-        })
-        this.user = response.data
+        const resp = await axios.get<string>(
+          '/api/auth/me',
+          {
+            withCredentials: true,
+            validateStatus: status => status === 200 || status === 204
+          }
+        )
+        if (resp.status === 200) {
+          this.user = resp.data
+        } else {
+          this.user = null
+        }
       } catch {
         this.user = null
       }
@@ -22,6 +31,8 @@ export const useAuthStore = defineStore('auth', {
     },
   },
   getters: {
-    isLoggedIn: (state) => !!state.user,
+    isLoggedIn: state => !!state.user,
+    // you can now expose the email directly
+    email: state => state.user,
   },
 })

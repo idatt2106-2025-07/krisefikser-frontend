@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 
 const router = useRouter()
 const name = ref('')
@@ -17,6 +18,11 @@ const isLoading = ref(false)
 
 const message = ref('')
 const messageType = ref<'' | 'success' | 'error'>('')
+
+const siteKey = 'a754b964-3852-4810-a35e-c13ad84ce644'
+
+const hcaptchaToken = ref<string|null>(null)  // <-- new
+
 
 function validateEmail() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -34,6 +40,7 @@ const formValid = computed(
     agreeToTerms.value &&
     passwordsMatch.value &&
     !emailError.value,
+    hcaptchaToken.value
 )
 
 async function handleSubmit() {
@@ -47,8 +54,20 @@ async function handleSubmit() {
   try {
     isLoading.value = true
 
+    const verify = await axios.post(
+      'http://dev.krisefikser.com:8080/api/hcaptcha/verify',
+      { token: hcaptchaToken.value },
+      { withCredentials: true },
+    )
+    if (verify.status !== 200 || !verify.data.success) {
+      message.value = 'Captcha verification failed'
+      messageType.value = 'error'
+      isLoading.value = false
+      return
+    }
+
     const res = await axios.post(
-      'http://localhost:8080/api/auth/register',
+      'http://dev.krisefikser.com:8080/api/auth/register',
       { name: name.value, email: email.value, password: password.value },
       { withCredentials: true },
     )
@@ -62,7 +81,6 @@ async function handleSubmit() {
         isLoading.value = false
         router.push('/login')
       }, 2000)
-
       return
     }
 
@@ -144,6 +162,8 @@ async function handleSubmit() {
         <input type="checkbox" class="agreeToTerms" v-model="agreeToTerms" :disabled="isLoading" />
         <label for="agreeToTerms">I agree to the terms and conditions</label>
       </div>
+
+      <vue-hcaptcha sitekey="a754b964-3852-4810-a35e-c13ad84ce644" @verify="(token: string) => (hcaptchaToken = token)" @expire="() => (hcaptchaToken = null)" ></vue-hcaptcha>
 
       <button type="submit" :disabled="!formValid || isLoading">
         {{ isLoading ? 'Registering…' : 'Register' }}

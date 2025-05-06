@@ -38,14 +38,40 @@ onMounted(() => {
 
     function createAddPoiPopup(lng: number, lat: number) {
       const popupContent = document.createElement('div')
-      popupContent.innerHTML = `
-        <button
-          id="add-poi-button"
-          style="color: white; border: none; padding: 6px 12px; cursor: pointer;"
-        >
-          Add Point Of Interest
-        </button>
-      `
+      popupContent.style.display = 'flex'
+      popupContent.style.flexDirection = 'column'
+      popupContent.style.alignItems = 'stretch'
+      popupContent.style.padding = '10px'
+      popupContent.style.backgroundColor = 'white'
+      popupContent.style.borderRadius = '6px'
+      popupContent.style.boxSizing = 'border-box'
+      popupContent.style.width = '180px'
+
+      const poiButton = document.createElement('button')
+      poiButton.id = 'add-poi-button'
+      poiButton.textContent = 'Add Point Of Interest'
+      poiButton.style.backgroundColor = '#007bff'
+      poiButton.style.color = 'white'
+      poiButton.style.border = 'none'
+      poiButton.style.padding = '10px'
+      poiButton.style.marginBottom = '8px'
+      poiButton.style.cursor = 'pointer'
+      poiButton.style.borderRadius = '4px'
+      poiButton.style.width = '100%'
+
+      const affectedAreaButton = document.createElement('button')
+      affectedAreaButton.id = 'add-affected-area-button'
+      affectedAreaButton.textContent = 'Add Affected Area'
+      affectedAreaButton.style.backgroundColor = '#007bff'
+      affectedAreaButton.style.color = 'white'
+      affectedAreaButton.style.border = 'none'
+      affectedAreaButton.style.padding = '10px'
+      affectedAreaButton.style.cursor = 'pointer'
+      affectedAreaButton.style.borderRadius = '4px'
+      affectedAreaButton.style.width = '100%'
+
+      popupContent.appendChild(poiButton)
+      popupContent.appendChild(affectedAreaButton)
 
       popup = new mapboxgl.Popup({
         closeButton: false,
@@ -57,6 +83,9 @@ onMounted(() => {
 
       popupContent.querySelector('#add-poi-button')?.addEventListener('click', () => {
         window.location.href = `/admin/add/poi?lng=${lng}&lat=${lat}`
+      })
+      popupContent.querySelector('#add-affected-area-button')?.addEventListener('click', () => {
+        window.location.href = `/admin/add/affected-area?lng=${lng}&lat=${lat}`
       })
     }
 

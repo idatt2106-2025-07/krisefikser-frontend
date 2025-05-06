@@ -51,9 +51,7 @@ const getIconDetails = (type: string) => {
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  background-color: transparent; /* Remove background color */
-  /* Optional: Add light background circle */
-  /* background-color: rgba(240, 240, 240, 0.8); */
+  background-color: transparent;
 }
 
 .poi-icon.with-background {

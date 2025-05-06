@@ -8,11 +8,6 @@ const authStore = useAuthStore()
 const isLoggedIn = computed(() => authStore.isLoggedIn)
 
 onMounted(() => authStore.fetchUser())
-
-function logout() {
-  authStore.clearToken()
-  window.location.href = '/login'
-}
 </script>
 
 <template>

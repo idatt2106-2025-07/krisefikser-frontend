@@ -16,12 +16,13 @@ const emailError = ref(false)
 const confirmTouched = ref(false)
 const isLoading = ref(false)
 
-const message = ref('')
-const messageType = ref<'' | 'success' | 'error'>('')
+// toast state
+const toastMessage = ref<string | null>(null)
+const toastType = ref<'' | 'success' | 'error'>('')
 
 const siteKey = 'a754b964-3852-4810-a35e-c13ad84ce644'
 
-const hcaptchaToken = ref<string | null>(null) // <-- new
+const hcaptchaToken = ref<string | null>(null)
 
 function validateEmail() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -45,8 +46,8 @@ const formValid = computed(
 )
 
 async function handleSubmit() {
-  message.value = ''
-  messageType.value = ''
+  toastMessage.value = null
+  toastType.value = ''
 
   validateEmail()
   confirmTouched.value = true
@@ -56,46 +57,45 @@ async function handleSubmit() {
     isLoading.value = true
 
     const verify = await axios.post(
-      'http://dev.krisefikser.com:8080/api/hcaptcha/verify',
+      'http://dev.krisefikser.localhost:8080/api/hcaptcha/verify',
       { token: hcaptchaToken.value },
       { withCredentials: true },
     )
     if (verify.status !== 200 || !verify.data.success) {
-      message.value = 'Captcha verification failed'
-      messageType.value = 'error'
+      toastMessage.value = 'Captcha verification failed'
+      toastType.value = 'error'
       isLoading.value = false
       return
     }
 
     const res = await axios.post(
-      'http://dev.krisefikser.com:8080/api/auth/register',
+      'http://dev.krisefikser.localhost:8080/api/auth/register',
       { name: name.value, email: email.value, password: password.value },
       { withCredentials: true },
     )
 
     if (res.status === 201) {
-      message.value =
-        'Registered successfully. A verification email has been sent to your email address.'
-      messageType.value = 'success'
-
+      toastMessage.value = 'Registered successfully. A verification email has been sent. Redirecting to login…'
+      toastType.value = 'success'
       setTimeout(() => {
-        isLoading.value = false
+        toastMessage.value = null
+        toastType.value = ''
         router.push('/login')
       }, 2000)
       return
     }
 
     console.error('Unexpected response status:', res.status)
-    message.value = 'Unexpected response. Please try again.'
-    messageType.value = 'error'
+    toastMessage.value = 'Unexpected response. Please try again.'
+    toastType.value = 'error'
   } catch (err) {
     console.error('Error during registration:', err)
     if (axios.isAxiosError(err) && err.response) {
-      message.value = err.response.data?.message || 'Registration failed. Please try again.'
+      toastMessage.value = err.response.data?.message || 'Registration failed. Please try again.'
     } else {
-      message.value = 'An unexpected error occurred. Please try again.'
+      toastMessage.value = 'An unexpected error occurred. Please try again.'
     }
-    messageType.value = 'error'
+    toastType.value = 'error'
   } finally {
     /* cleared only for error paths */
     isLoading.value = false
@@ -105,12 +105,13 @@ async function handleSubmit() {
 
 <template>
   <div class="page-wrapper">
+    <!-- toast notification -->
+    <div v-if="toastMessage" :class="['toast', toastType]">
+      {{ toastMessage }}
+    </div>
+
     <form class="register-form" @submit.prevent="handleSubmit">
       <h2>Register</h2>
-
-      <div v-if="message" :class="['status-message', messageType]">
-        {{ message }}
-      </div>
 
       <div class="field">
         <label for="name">Name</label>
@@ -258,5 +259,26 @@ button:disabled {
   margin-top: 1rem;
   font-size: 0.9rem;
   text-align: center;
+}
+
+/* toast popup */
+.toast {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: slide-up 0.3s ease-out;
+}
+.toast.success { background: #28a745 }
+.toast.error   { background: #dc3545 }
+
+@keyframes slide-up {
+  from { transform: translate(-50%, 100%); opacity: 0 }
+  to   { transform: translate(-50%, 0);     opacity: 1 }
 }
 </style>

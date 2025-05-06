@@ -13,6 +13,10 @@ const touched = ref(false)
 const router = useRouter()
 const authStore = useAuthStore()
 
+// notification for login errors or success
+const loginError = ref<string|null>(null)
+const loginSuccess = ref<string|null>(null)
+
 // --- reset password state ---
 const isResetMode = ref(false)
 const resetEmail = ref('')
@@ -40,22 +44,37 @@ const formValid = computed(() => email.value && password.value && !emailError.va
 const resetValid = computed(() => !!resetEmail.value && !resetEmailError.value)
 
 async function handleLogin() {
+  loginError.value = null
+  loginSuccess.value = null
   touched.value = true
   validateEmail()
   if (!formValid.value) return
 
   try {
-    const response = await axios.post(
+    await axios.post(
       '/api/auth/login',
       { email: email.value, password: password.value },
       { withCredentials: true },
     )
-    alert(`Login successful: ${response.data.message}`)
     await authStore.fetchUser()
-    router.push('/')
+    // show success toast then redirect
+    loginSuccess.value = 'Login successful, redirecting...'
+    setTimeout(() => router.push('/'), 1500)
   } catch (error) {
     console.error('Error during login:', error)
-    alert('Login failed. Please check your credentials and try again.')
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status
+      const msg = (error.response?.data as any)?.message
+      if (status === 401 && msg) {
+        loginError.value = msg
+      } else {
+        loginError.value = 'Login failed. Please check your credentials and try again.'
+      }
+    } else {
+      loginError.value = 'Login failed. Please check your credentials and try again.'
+    }
+    // auto-hide after 3s
+    setTimeout(() => (loginError.value = null), 3000)
   }
 }
 
@@ -90,6 +109,14 @@ async function handleReset() {
 
 <template>
   <div class="page-wrapper">
+    <!-- toast notification -->
+    <div v-if="loginError" class="toast error">
+      {{ loginError }}
+    </div>
+    <div v-if="loginSuccess" class="toast success">
+      {{ loginSuccess }}
+    </div>
+
     <!-- login form -->
     <form v-if="!isResetMode" class="login-form" @submit.prevent="handleLogin">
       <h2>Login</h2>
@@ -119,7 +146,7 @@ async function handleReset() {
       <p class="register-link">
         Don't have an account? <router-link to="/register">Register here</router-link>
       </p>
-      <p class="forgot-password">
+      <p class="register-link forgot-password">
         <a href="#" @click.prevent="isResetMode = true">Forgot password?</a>
       </p>
     </form>
@@ -224,8 +251,7 @@ button:disabled {
 }
 
 .forgot-password {
-  text-align: right;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
 }
 
 .cancel-btn {
@@ -240,5 +266,25 @@ button:disabled {
   color: #28a745;
   display: block;
   margin-top: 0.5rem;
+}
+
+.toast {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 1000;
+  animation: slide-up 0.3s ease-out;
+}
+.toast.error   { background-color: #d9534f; }
+.toast.success { background-color: #28a745; }
+
+@keyframes slide-up {
+  from { transform: translate(-50%, 100%); opacity: 0 }
+  to   { transform: translate(-50%, 0);     opacity: 1 }
 }
 </style>

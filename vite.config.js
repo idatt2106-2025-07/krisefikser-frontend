@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   server: {
-    host: 'dev.krisefikser.com',
+    host: 'dev.krisefikser.localhost',
     proxy: {
       '/api': {
         target: 'http://localhost:8080', // Backend URL

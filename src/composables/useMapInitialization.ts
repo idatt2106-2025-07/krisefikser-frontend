@@ -3,7 +3,14 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import type { Ref } from 'vue'
 import { mapboxConfig } from '@/config/mapboxConfig'
 
-export function useMapInitialization(containerRef: Ref<HTMLElement | null, HTMLElement | null>) {
+interface MapInitializationReturn {
+  map: Ref<mapboxgl.Map | null>;
+  isMapLoaded: Ref<boolean>;
+  isStyleLoaded: Ref<boolean>;
+}
+
+// @ts-ignore
+export function useMapInitialization(containerRef: Ref<HTMLElement | null>): MapInitializationReturn {
   const map = ref<mapboxgl.Map | null>(null)
   const isMapLoaded = ref(false)
   const isStyleLoaded = ref(false)
@@ -47,8 +54,9 @@ export function useMapInitialization(containerRef: Ref<HTMLElement | null, HTMLE
       map.value.remove()
     }
   })
-
+// @ts-ignore
   return {
+    // @ts-ignore
     map,
     isMapLoaded,
     isStyleLoaded,

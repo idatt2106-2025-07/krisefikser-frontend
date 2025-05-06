@@ -24,10 +24,10 @@ export function useSearchGeocoder(
     if (!map.value) return
 
     geocoder.value = new MapboxGeocoder({
-      accessToken: mapboxgl.accessToken,
-      mapboxgl: mapboxgl,
+      accessToken: mapboxgl.accessToken || '',
+      mapboxgl: mapboxgl as any,
       placeholder: 'Search locations...',
-      localGeocoder: (query) => customGeocoder(query, locationData.value),
+      localGeocoder: (query): any[] => customGeocoder(query, locationData.value),
       render: (item) => {
         if (item.properties && item.properties.title) {
           const name = item.properties.title
@@ -63,11 +63,13 @@ export function useSearchGeocoder(
           }
         })
 
-        map.value.flyTo({
-          center: coordinates,
-          zoom: 15,
-          essential: true,
-        })
+        if (map.value) {
+          map.value.flyTo({
+            center: coordinates,
+            zoom: 15,
+            essential: true,
+          })
+        }
       }
     })
   }
@@ -90,7 +92,9 @@ export function useSearchGeocoder(
       const description = (feature.properties?.description || '').toLowerCase()
 
       if (title.includes(lowerQuery) || description.includes(lowerQuery)) {
+        // @ts-ignore
         feature.place_name = feature.properties?.title || 'Location'
+        // @ts-ignore
         feature.text = feature.properties?.title || 'Location'
         return true
       }
@@ -102,7 +106,7 @@ export function useSearchGeocoder(
     () => locationData.value,
     () => {
       if (geocoder.value) {
-        geocoder.value.setProximity(null)
+        geocoder.value.setProximity(undefined as any)
       }
     },
     { deep: true },

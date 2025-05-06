@@ -9,9 +9,21 @@
         {{ message }}
       </p>
 
-      <a v-if="success" @click.prevent="router.push('/login')" class="verify-email__link">
-        Go to login
-      </a>
+      <div class="verify-email__actions">
+        <a v-if="success" @click.prevent="router.push('/login')" class="verify-email__link">
+          Go to login
+        </a>
+        <button v-else @click="handleResend" :disabled="resendLoading" class="verify-email__retry">
+          {{ resendLoading ? 'Resending…' : 'Request new verification email' }}
+        </button>
+      </div>
+
+      <p
+        v-if="resendMessage"
+        :class="['verify-email__message', resendMessage.startsWith('Failed') ? 'error' : 'success']"
+      >
+        {{ resendMessage }}
+      </p>
     </div>
   </div>
 </template>
@@ -33,6 +45,8 @@ const token = route.query.token as string | undefined
 const loading = ref(true)
 const success = ref(false)
 const message = ref('')
+const resendLoading = ref(false)
+const resendMessage = ref<string | null>(null)
 
 onMounted(async () => {
   if (!token) {
@@ -58,6 +72,19 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+async function handleResend() {
+  resendLoading.value = true
+  resendMessage.value = null
+  try {
+    await axios.post('/api/auth/resend-verification-email', { token }, { withCredentials: true })
+    resendMessage.value = 'Verification email resent. Check your inbox.'
+  } catch {
+    resendMessage.value = 'Failed to resend verification email.'
+  } finally {
+    resendLoading.value = false
+  }
+}
 </script>
 
 <style scoped>
@@ -97,5 +124,27 @@ onMounted(async () => {
 
 .verify-email__link:hover {
   text-decoration: underline;
+}
+
+.verify-email__actions {
+  margin-bottom: 1rem;
+}
+
+.verify-email__retry {
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.verify-email__retry:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.verify-email__retry:hover:not(:disabled) {
+  background-color: #1e40af;
 }
 </style>

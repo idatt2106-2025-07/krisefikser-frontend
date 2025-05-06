@@ -4,8 +4,11 @@ import axios from 'axios'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    // now just store the email string or null
-    user: null as null | string,
+    // initialize from localStorage so it survives page reloads
+    user: ((): string | null => {
+      const stored = localStorage.getItem('auth.user')
+      return stored ? JSON.parse(stored) : null
+    })(),
   }),
   actions: {
     async fetchUser() {
@@ -14,17 +17,21 @@ export const useAuthStore = defineStore('auth', {
           withCredentials: true,
           validateStatus: (status) => status === 200 || status === 204,
         })
-        if (resp.status === 200) {
+        if (resp.status === 200 && resp.data) {
           this.user = resp.data
+          localStorage.setItem('auth.user', JSON.stringify(this.user))
         } else {
           this.user = null
+          localStorage.removeItem('auth.user')
         }
       } catch {
         this.user = null
+        localStorage.removeItem('auth.user')
       }
     },
     clearToken() {
       this.user = null
+      localStorage.removeItem('auth.user')
     },
   },
   getters: {

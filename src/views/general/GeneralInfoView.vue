@@ -9,8 +9,8 @@ interface GeneralInfoResponse {
   theme: string
 }
 
-const allInfos = ref<GeneralInfoResponse[]>([])        // <-- full list
-const infos = ref<GeneralInfoResponse[]>([])           // <-- displayed list
+const allInfos = ref<GeneralInfoResponse[]>([]) // <-- full list
+const infos = ref<GeneralInfoResponse[]>([]) // <-- displayed list
 const error = ref<string | null>(null)
 const isLoading = ref(false)
 
@@ -18,9 +18,7 @@ const isLoading = ref(false)
 const themeFilter = ref<string | null>(null)
 
 // compute unique theme options from the full list
-const themes = computed(() =>
-  Array.from(new Set(allInfos.value.map(i => i.theme)))
-)
+const themes = computed(() => Array.from(new Set(allInfos.value.map((i) => i.theme))))
 
 // helper to display nicer theme names
 function formatTheme(t: string) {
@@ -29,10 +27,9 @@ function formatTheme(t: string) {
 
 async function fetchAllInfos() {
   try {
-    const res = await axios.get<GeneralInfoResponse[]>(
-      '/api/general-info/all',
-      { withCredentials: true }
-    )
+    const res = await axios.get<GeneralInfoResponse[]>('/api/general-info/all', {
+      withCredentials: true,
+    })
     allInfos.value = res.data
   } catch (err) {
     console.error('Error fetching all themes:', err)
@@ -43,13 +40,11 @@ async function fetchGeneralInfo(theme?: string) {
   isLoading.value = true
   error.value = null
 
-  const url = theme
-    ? `/api/general-info/${theme}`
-    : '/api/general-info/all'
+  const url = theme ? `/api/general-info/${theme}` : '/api/general-info/all'
 
   try {
     const res = await axios.get<GeneralInfoResponse[]>(url, {
-      withCredentials: true
+      withCredentials: true,
     })
     infos.value = res.data
   } catch (err) {
@@ -65,12 +60,12 @@ async function fetchGeneralInfo(theme?: string) {
 }
 
 onMounted(() => {
-  fetchAllInfos()               // load themes
-  fetchGeneralInfo()            // load initial list
+  fetchAllInfos() // load themes
+  fetchGeneralInfo() // load initial list
 })
 
 // refetch only the displayed list when filter changes
-watch(themeFilter, newTheme => {
+watch(themeFilter, (newTheme) => {
   fetchGeneralInfo(newTheme || undefined)
 })
 </script>
@@ -94,7 +89,8 @@ watch(themeFilter, newTheme => {
       <li v-for="info in infos" :key="info.id" class="info-item">
         <h3 class="info-title">
           {{ info.title }}
-          <small class="info-theme">{{ formatTheme(info.theme) }}</small>   <!-- no () around theme -->
+          <small class="info-theme">{{ formatTheme(info.theme) }}</small>
+          <!-- no () around theme -->
         </h3>
         <p class="info-content">{{ info.content }}</p>
       </li>
@@ -109,7 +105,7 @@ watch(themeFilter, newTheme => {
   padding: 1rem 1.5rem;
   background: #f9fafb;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   font-family: 'Segoe UI', Tahoma, sans-serif;
   color: #333;
 }
@@ -164,12 +160,14 @@ watch(themeFilter, newTheme => {
   border-radius: 6px;
   padding: 1rem 1.2rem;
   margin-bottom: 1rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .info-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .info-title {

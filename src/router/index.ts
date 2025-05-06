@@ -10,6 +10,8 @@ import StorageView from '@/views/storage/StorageView.vue'
 import AdminView from '@/views/admin/AdminView.vue'
 import GeneralInfo from '@/views/general/GeneralInfoView.vue'
 import News from '@/views/home/NewsView.vue'
+import AddPOIView from '@/views/admin/AddPOIView.vue'
+import AddAffectedAreaView from '@/views/admin/AddAffectedAreaView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -75,7 +77,12 @@ const router = createRouter({
     {
       path: '/admin/add/poi',
       name: 'AddPOI',
-      component: () => import('@/views/admin/AddPOIView.vue')
+      component: AddPOIView,
+    },
+    {
+      path: '/admin/add/affected-area',
+      name: 'AddAffectedArea',
+      component: AddAffectedAreaView,
     },
   ],
 })

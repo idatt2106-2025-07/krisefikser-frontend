@@ -38,6 +38,16 @@ export function useMapInitialization(
 
     map.value.addControl(new mapboxgl.NavigationControl())
 
+    const geolocateControl = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      trackUserLocation: true,
+      showUserHeading: true
+    });
+
+    map.value.addControl(geolocateControl);
+
     map.value.on('load', () => {
       isMapLoaded.value = true
     })

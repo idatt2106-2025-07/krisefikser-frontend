@@ -11,9 +11,12 @@ import AdminView from '@/views/admin/AdminView.vue'
 import GeneralInfo from '@/views/general/GeneralInfoView.vue'
 import News from '@/views/home/NewsView.vue'
 import MapView from '@/views/map/MapView.vue'
+import RegisterAdmin from '@/views/RegisterAdmin.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
+
+import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -82,6 +85,14 @@ const router = createRouter({
       path: '/map',
       name: 'map',
       component: MapView,
+      path: '/verify-email',
+      name: 'verifyEmail',
+      component: VerifyEmailView,
+    },
+    {
+      path: '/register-admin',
+      name: 'register-admin',
+      component: RegisterAdmin,
     },
   ],
 })

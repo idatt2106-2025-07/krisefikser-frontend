@@ -13,31 +13,43 @@ const touched = ref(false)
 const router = useRouter()
 const authStore = useAuthStore()
 
+// --- reset password state ---
+const isResetMode = ref(false)
+const resetEmail = ref('')
+const resetEmailError = ref(false)
+const resetTouched = ref(false)
+const isResetLoading = ref(false)
+const resetSuccess = ref<string|null>(null)
+const resetError = ref<string|null>(null)
+
 function validateEmail() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   emailError.value = !emailRegex.test(email.value)
 }
 
+function validateResetEmail() {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  resetTouched.value = true
+  resetEmailError.value = !emailRegex.test(resetEmail.value)
+  resetError.value = resetEmailError.value
+    ? 'Invalid email address'
+    : null
+}
+
 const formValid = computed(() => email.value && password.value && !emailError.value)
+const resetValid = computed(() => !!resetEmail.value && !resetEmailError.value)
 
 async function handleLogin() {
   touched.value = true
   validateEmail()
-
   if (!formValid.value) return
 
   try {
     const response = await axios.post(
-      'http://localhost:8080/api/auth/login',
-      {
-        email: email.value,
-        password: password.value,
-      },
-      {
-        withCredentials: true,
-      },
+      '/api/auth/login',
+      { email: email.value, password: password.value },
+      { withCredentials: true },
     )
-
     alert(`Login successful: ${response.data.message}`)
     await authStore.fetchUser()
     router.push('/')
@@ -46,11 +58,40 @@ async function handleLogin() {
     alert('Login failed. Please check your credentials and try again.')
   }
 }
+
+async function handleReset() {
+  resetTouched.value = true
+  validateResetEmail()
+  if (!resetValid.value) return
+
+  isResetLoading.value = true
+  resetSuccess.value = null
+  resetError.value = null
+
+  try {
+    const response = await axios.post(
+      '/api/auth/new-password-link',
+      { email: resetEmail.value },
+      { withCredentials: true }
+    )
+    // the backend returns a message string on success
+    resetSuccess.value = typeof response.data === 'string'
+      ? response.data
+      : 'Password reset link sent. Check your email.'
+  } catch (err) {
+    resetError.value = axios.isAxiosError(err) && err.response?.data
+      ? err.response.data as string
+      : 'Failed to send reset link.'
+  } finally {
+    isResetLoading.value = false
+  }
+}
 </script>
 
 <template>
   <div class="page-wrapper">
-    <form class="login-form" @submit.prevent="handleLogin">
+    <!-- login form -->
+    <form v-if="!isResetMode" class="login-form" @submit.prevent="handleLogin">
       <h2>Login</h2>
       <div class="field">
         <label for="email">Email</label>
@@ -78,6 +119,32 @@ async function handleLogin() {
       <p class="register-link">
         Don't have an account? <router-link to="/register">Register here</router-link>
       </p>
+      <p class="forgot-password">
+        <a href="#" @click.prevent="isResetMode = true">Forgot password?</a>
+      </p>
+    </form>
+
+    <!-- reset-password form -->
+    <form v-else class="reset-form" @submit.prevent="handleReset">
+      <h2>Reset Password</h2>
+      <div class="field">
+        <label for="reset-email">Email</label>
+        <InputText
+          id="reset-email"
+          v-model="resetEmail"
+          placeholder="Enter your email"
+          @blur="validateResetEmail"
+          :class="{ 'p-invalid': resetEmailError }"
+        />
+        <small v-if="resetError" class="p-error">{{ resetError }}</small>
+        <small v-else-if="resetSuccess" class="p-success">{{ resetSuccess }}</small>
+      </div>
+      <button type="submit" :disabled="!resetValid || isResetLoading">
+        {{ isResetLoading ? 'Sending...' : 'Reset Password' }}
+      </button>
+      <button type="button" class="cancel-btn" @click="isResetMode = false">
+        Cancel
+      </button>
     </form>
   </div>
 </template>
@@ -100,6 +167,16 @@ async function handleLogin() {
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.reset-form {
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+  padding: 2rem;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
 
 .field {
@@ -144,5 +221,24 @@ button:disabled {
   margin-top: 1rem;
   font-size: 0.9rem;
   text-align: center;
+}
+
+.forgot-password {
+  text-align: right;
+  margin-top: 0.5rem;
+}
+
+.cancel-btn {
+  margin-top: 0.5rem;
+  background: transparent;
+  color: #555;
+  border: none;
+  cursor: pointer;
+}
+
+.p-success {
+  color: #28a745;
+  display: block;
+  margin-top: 0.5rem;
 }
 </style>

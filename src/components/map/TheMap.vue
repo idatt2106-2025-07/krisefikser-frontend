@@ -1,4 +1,3 @@
-<!-- src/components/map/TheMap.vue -->
 <script setup lang="ts">
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
 import 'mapbox-gl/dist/mapbox-gl.css'

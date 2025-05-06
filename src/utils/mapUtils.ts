@@ -1,5 +1,19 @@
 import type { PointOfInterest, LocationData, AffectedArea } from '@/types/mapTypes'
 
+/**
+ * Creates a GeoJSON object that is searchable, containing features derived from location data.
+ * The features include points of interest and affected areas, each represented as GeoJSON features.
+ *
+ * @param locationData - The location data containing points of interest and affected areas.
+ *
+ * @returns A GeoJSON `FeatureCollection` object containing the features.
+ *
+ * The `FeatureCollection` includes:
+ * - Points of interest with properties such as title, description, category, id, and poiType.
+ * - Affected areas with properties such as title, description, category, id, and radius.
+ *
+ * Each feature has a geometry of type `Point` with coordinates representing longitude and latitude.
+ */
 export function createSearchableGeoJSON(locationData: LocationData) {
   const features: {
     type: string
@@ -71,6 +85,12 @@ export function createSearchableGeoJSON(locationData: LocationData) {
   }
 }
 
+/**
+ * Retrieves the display name for a given type.
+ *
+ * @returns The display name corresponding to the provided type. If the type
+ *          is not recognized, the input type string is returned as-is.
+ */
 export function getTypeDisplayName(type: string): string {
   const names = {
     HOSPITAL: 'Hospital',

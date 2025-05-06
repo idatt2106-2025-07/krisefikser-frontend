@@ -75,7 +75,8 @@ async function handleSubmit() {
     )
 
     if (res.status === 201) {
-      toastMessage.value = 'Registered successfully. A verification email has been sent. Redirecting to login…'
+      toastMessage.value =
+        'Registered successfully. A verification email has been sent. Redirecting to login…'
       toastType.value = 'success'
       setTimeout(() => {
         toastMessage.value = null
@@ -274,11 +275,21 @@ button:disabled {
   z-index: 1000;
   animation: slide-up 0.3s ease-out;
 }
-.toast.success { background: #28a745 }
-.toast.error   { background: #dc3545 }
+.toast.success {
+  background: #28a745;
+}
+.toast.error {
+  background: #dc3545;
+}
 
 @keyframes slide-up {
-  from { transform: translate(-50%, 100%); opacity: 0 }
-  to   { transform: translate(-50%, 0);     opacity: 1 }
+  from {
+    transform: translate(-50%, 100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
 }
 </style>

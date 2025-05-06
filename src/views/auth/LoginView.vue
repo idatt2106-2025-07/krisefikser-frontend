@@ -14,8 +14,8 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 // notification for login errors or success
-const loginError = ref<string|null>(null)
-const loginSuccess = ref<string|null>(null)
+const loginError = ref<string | null>(null)
+const loginSuccess = ref<string | null>(null)
 
 // --- reset password state ---
 const isResetMode = ref(false)
@@ -23,8 +23,8 @@ const resetEmail = ref('')
 const resetEmailError = ref(false)
 const resetTouched = ref(false)
 const isResetLoading = ref(false)
-const resetSuccess = ref<string|null>(null)
-const resetError = ref<string|null>(null)
+const resetSuccess = ref<string | null>(null)
+const resetError = ref<string | null>(null)
 
 function validateEmail() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -35,9 +35,7 @@ function validateResetEmail() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   resetTouched.value = true
   resetEmailError.value = !emailRegex.test(resetEmail.value)
-  resetError.value = resetEmailError.value
-    ? 'Invalid email address'
-    : null
+  resetError.value = resetEmailError.value ? 'Invalid email address' : null
 }
 
 const formValid = computed(() => email.value && password.value && !emailError.value)
@@ -91,16 +89,18 @@ async function handleReset() {
     const response = await axios.post(
       '/api/auth/new-password-link',
       { email: resetEmail.value },
-      { withCredentials: true }
+      { withCredentials: true },
     )
     // the backend returns a message string on success
-    resetSuccess.value = typeof response.data === 'string'
-      ? response.data
-      : 'Password reset link sent. Check your email.'
+    resetSuccess.value =
+      typeof response.data === 'string'
+        ? response.data
+        : 'Password reset link sent. Check your email.'
   } catch (err) {
-    resetError.value = axios.isAxiosError(err) && err.response?.data
-      ? err.response.data as string
-      : 'Failed to send reset link.'
+    resetError.value =
+      axios.isAxiosError(err) && err.response?.data
+        ? (err.response.data as string)
+        : 'Failed to send reset link.'
   } finally {
     isResetLoading.value = false
   }
@@ -169,9 +169,7 @@ async function handleReset() {
       <button type="submit" :disabled="!resetValid || isResetLoading">
         {{ isResetLoading ? 'Sending...' : 'Reset Password' }}
       </button>
-      <button type="button" class="cancel-btn" @click="isResetMode = false">
-        Cancel
-      </button>
+      <button type="button" class="cancel-btn" @click="isResetMode = false">Cancel</button>
     </form>
   </div>
 </template>
@@ -276,15 +274,25 @@ button:disabled {
   color: #fff;
   padding: 0.75rem 1.25rem;
   border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   animation: slide-up 0.3s ease-out;
 }
-.toast.error   { background-color: #d9534f; }
-.toast.success { background-color: #28a745; }
+.toast.error {
+  background-color: #d9534f;
+}
+.toast.success {
+  background-color: #28a745;
+}
 
 @keyframes slide-up {
-  from { transform: translate(-50%, 100%); opacity: 0 }
-  to   { transform: translate(-50%, 0);     opacity: 1 }
+  from {
+    transform: translate(-50%, 100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
 }
 </style>

@@ -10,27 +10,24 @@ const route = useRoute()
 
 const newPassword = ref('')
 const confirmPassword = ref('')
-const newPasswordError = ref<string|null>(null)
-const confirmError = ref<string|null>(null)
+const newPasswordError = ref<string | null>(null)
+const confirmError = ref<string | null>(null)
 const isLoading = ref(false)
-const message = ref<string|null>(null)
-const messageType = ref<'success'|'error'|null>(null)
+const message = ref<string | null>(null)
+const messageType = ref<'success' | 'error' | null>(null)
 
 // read token and email from query params
 const token = (route.query.token as string) || ''
 const email = (route.query.email as string) || ''
 
-const passwordPatternValid = computed(() =>
-  /(?=.*[A-Z])(?=.*\d).+/.test(newPassword.value)
-)
-const passwordsMatch = computed(() =>
-  newPassword.value === confirmPassword.value
-)
-const formValid = computed(() =>
-  newPassword.value &&
-  confirmPassword.value &&
-  passwordPatternValid.value &&
-  passwordsMatch.value
+const passwordPatternValid = computed(() => /(?=.*[A-Z])(?=.*\d).+/.test(newPassword.value))
+const passwordsMatch = computed(() => newPassword.value === confirmPassword.value)
+const formValid = computed(
+  () =>
+    newPassword.value &&
+    confirmPassword.value &&
+    passwordPatternValid.value &&
+    passwordsMatch.value,
 )
 
 function validateNewPassword() {
@@ -40,9 +37,7 @@ function validateNewPassword() {
 }
 
 function validateConfirm() {
-  confirmError.value = passwordsMatch.value
-    ? null
-    : 'Passwords do not match'
+  confirmError.value = passwordsMatch.value ? null : 'Passwords do not match'
 }
 
 async function handleSubmit() {
@@ -59,18 +54,19 @@ async function handleSubmit() {
       {
         email,
         token,
-        newPassword: newPassword.value
+        newPassword: newPassword.value,
       },
-      { withCredentials: true }
+      { withCredentials: true },
     )
     messageType.value = 'success'
     message.value = 'Password reset successfully. Redirecting to login…'
     setTimeout(() => router.push('/login'), 2000)
   } catch (err) {
     messageType.value = 'error'
-    message.value = axios.isAxiosError(err) && err.response?.data?.message
-      ? err.response.data.message
-      : 'Failed to reset password.'
+    message.value =
+      axios.isAxiosError(err) && err.response?.data?.message
+        ? err.response.data.message
+        : 'Failed to reset password.'
   } finally {
     isLoading.value = false
   }
@@ -116,7 +112,7 @@ async function handleSubmit() {
         class="submit-btn"
       />
 
-      <div v-if="message" :class="['message', messageType==='error'?'error':'success']">
+      <div v-if="message" :class="['message', messageType === 'error' ? 'error' : 'success']">
         {{ message }}
       </div>
     </form>

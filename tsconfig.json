@@ -13,6 +13,9 @@
   ],
   "compilerOptions": {
     "module": "NodeNext",
-    "types": ["cypress"]
+    "types": ["cypress"],
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "skipLibCheck": true,
+    "maxNodeModuleJsDepth": 1
   }
 }

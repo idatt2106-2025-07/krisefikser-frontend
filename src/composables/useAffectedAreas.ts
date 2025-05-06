@@ -275,7 +275,6 @@ export function useMapLayers(
     circleLayers.value = []
   }
 
-
   /**
    * Attempts to initialize map layers once the map style is loaded.
    * Implements a retry mechanism to handle cases where the map style isn't immediately available.

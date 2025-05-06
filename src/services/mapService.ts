@@ -1,7 +1,6 @@
 import axiosInstance from '@/services/axiosService'
 
 class MapService {
-
   /**
    * Fetches points of interest from the server based on the provided filters.
    *
@@ -15,7 +14,6 @@ class MapService {
     })
     return response.data
   }
-
 
   /**
    * Fetches the list of affected areas from the server.

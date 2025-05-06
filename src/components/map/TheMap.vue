@@ -44,7 +44,6 @@ const getEnabledFilters = (filters: Record<string, boolean>) => {
 const needsMarkerUpdate = ref(false)
 const initialLoaded = ref(false)
 
-
 /**
  * Asynchronously fetches points of interest based on the specified filters.
  *
@@ -138,7 +137,6 @@ const fetchAffectedAreas = async () => {
 
 const isDebouncing = ref(false)
 
-
 /**
  * Watcher that watches for changes in the filters and fetches new Points of interests based on filters.
  */
@@ -174,16 +172,12 @@ const { map, isMapLoaded, isStyleLoaded } = useMapInitialization(mapContainer)
 const {
   markers,
   initializeMarkers,
-  updateMarkers
+  updateMarkers,
 }: {
-  markers: any;
-  initializeMarkers: () => void;
-  updateMarkers: () => void;
-} = useMarkerManagement(
-  map,
-  locationData,
-  filtersRef,
-)
+  markers: any
+  initializeMarkers: () => void
+  updateMarkers: () => void
+} = useMarkerManagement(map, locationData, filtersRef)
 const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(map, locationData, filtersRef)
 const { initializeSearch } = useSearchGeocoder(map, locationData, markers)
 

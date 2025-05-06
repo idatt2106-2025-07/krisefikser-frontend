@@ -34,14 +34,8 @@ export function useMapInitialization(containerRef: Ref<HTMLElement | null, HTMLE
       isMapLoaded.value = true
     })
 
-    map.value.on('click', (e) => {
-      const coordinates = e.lngLat
-      console.log('[' + coordinates.lng + ', ' + coordinates.lat + ']')
-    })
-
     map.value.on('style.load', () => {
       isStyleLoaded.value = true
-      console.log('Map style loaded')
     })
   })
 

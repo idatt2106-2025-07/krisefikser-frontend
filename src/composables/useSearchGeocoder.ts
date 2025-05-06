@@ -92,9 +92,9 @@ export function useSearchGeocoder(
       const description = (feature.properties?.description || '').toLowerCase()
 
       if (title.includes(lowerQuery) || description.includes(lowerQuery)) {
-        // @ts-ignore
+        // @ts-expect-error fix
         feature.place_name = feature.properties?.title || 'Location'
-        // @ts-ignore
+        // @ts-expect-error fix
         feature.text = feature.properties?.title || 'Location'
         return true
       }

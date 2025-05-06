@@ -9,7 +9,6 @@ interface MapInitializationReturn {
   isStyleLoaded: Ref<boolean>
 }
 
-// @ts-ignore
 export function useMapInitialization(
   containerRef: Ref<HTMLElement | null>,
 ): MapInitializationReturn {
@@ -37,15 +36,12 @@ export function useMapInitialization(
       zoom: mapboxConfig.defaultZoom,
     })
 
-    // @ts-ignore
     map.value.addControl(new mapboxgl.NavigationControl())
 
-    // @ts-ignore
     map.value.on('load', () => {
       isMapLoaded.value = true
     })
 
-    // @ts-ignore
     map.value.on('style.load', () => {
       isStyleLoaded.value = true
     })
@@ -56,9 +52,9 @@ export function useMapInitialization(
       map.value.remove()
     }
   })
-  // @ts-ignore
+  // @ts-expect-error fix
   return {
-    // @ts-ignore
+    // @ts-expect-error fix
     map,
     isMapLoaded,
     isStyleLoaded,

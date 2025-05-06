@@ -15,7 +15,6 @@ const filters = ref({
 
 const emit = defineEmits(['filter-change'])
 
-// Use watch instead of manual toggle
 watch(
   filters,
   (newValue) => {

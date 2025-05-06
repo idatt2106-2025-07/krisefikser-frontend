@@ -12,10 +12,17 @@ export function useSearchGeocoder(
 ) {
   const geocoder = ref<MapboxGeocoder | null>(null)
 
+  /**
+   * Initializes the search functionality on the map using Mapbox Geocoder.
+   *
+   * This function sets up a custom geocoder with a local geocoding function,
+   * custom rendering for search results, and integrates it with the map.
+   * It also handles the selection of a point of interest (POI) by zooming
+   * to the location and toggling the popup for the corresponding marker.
+   */
   const initializeSearch = () => {
     if (!map.value) return
 
-    // Create custom geocoder
     geocoder.value = new MapboxGeocoder({
       accessToken: mapboxgl.accessToken,
       mapboxgl: mapboxgl,
@@ -23,7 +30,6 @@ export function useSearchGeocoder(
       localGeocoder: (query) => customGeocoder(query, locationData.value),
       render: (item) => {
         if (item.properties && item.properties.title) {
-          // Custom POI result
           const name = item.properties.title
           const category = item.properties.description || ''
           return `<div class="geocoder-result">
@@ -34,7 +40,6 @@ export function useSearchGeocoder(
           const name = item.text || ''
           const placeName = item.place_name || ''
 
-          // Show more details for global results
           return `<div class="geocoder-result global-location">
             <strong>${name}</strong>
             <span class="location-details">${placeName}</span>
@@ -44,17 +49,13 @@ export function useSearchGeocoder(
       localGeocoderOnly: false,
     })
 
-    // Add geocoder to map
     map.value.addControl(geocoder.value, 'top-left')
 
-    // Handle selection of a point of interest
     geocoder.value.on('result', (event) => {
-      // If it's our custom result, zoom to it
       if (event.result && event.result.properties && event.result.properties.id) {
         const id = event.result.properties.id.toString()
         const coordinates = event.result.geometry.coordinates
 
-        // Find and open popup for this marker
         markers.value.forEach((marker) => {
           const element = marker.getElement()
           if (element.getAttribute('data-id') === id) {
@@ -62,7 +63,6 @@ export function useSearchGeocoder(
           }
         })
 
-        // Fly to the location
         map.value.flyTo({
           center: coordinates,
           zoom: 15,
@@ -72,7 +72,13 @@ export function useSearchGeocoder(
     })
   }
 
-  // Custom geocoder to search our points of interest
+  /**
+   * Filters and returns a list of GeoJSON features that match the given query string.
+   *
+   * @param query - The search string to filter GeoJSON features. Must be at least 2 characters long.
+   * @param data - The location data used to create a searchable GeoJSON object.
+   * @returns An array of GeoJSON features whose `title` or `description` properties contain the query string.
+   */
   const customGeocoder = (query: string, data: LocationData) => {
     if (!query || query.length < 2) return []
 
@@ -92,7 +98,6 @@ export function useSearchGeocoder(
     })
   }
 
-  // Update search when data changes
   watch(
     () => locationData.value,
     () => {

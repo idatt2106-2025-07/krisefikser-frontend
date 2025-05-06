@@ -30,16 +30,17 @@ function validateEmail() {
 
 const passwordsMatch = computed(() => password.value === confirmpassword.value)
 
-const formValid = computed(
-  () =>
+const formValid = computed(() =>
+  !!(
     name.value &&
     email.value &&
     password.value &&
     confirmpassword.value &&
     agreeToTerms.value &&
     passwordsMatch.value &&
-    !emailError.value,
-  hcaptchaToken.value,
+    !emailError.value &&
+    hcaptchaToken.value
+  )
 )
 
 async function handleSubmit() {

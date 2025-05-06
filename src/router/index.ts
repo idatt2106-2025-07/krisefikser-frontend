@@ -82,9 +82,6 @@ const router = createRouter({
       component: QuizCreator,
     },
     {
-      path: '/map',
-      name: 'map',
-      component: MapView,
       path: '/verify-email',
       name: 'verifyEmail',
       component: VerifyEmailView,

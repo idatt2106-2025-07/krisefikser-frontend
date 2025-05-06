@@ -5,12 +5,19 @@ import { getTypeDisplayName } from '@/utils/mapUtils'
 import type { LocationData, Filters, PointOfInterest } from '@/types/mapTypes'
 import MapIcon from '@/components/map/MapIcon.vue'
 
+interface SimpleMarker {
+  remove(): void;
+  addTo(map: mapboxgl.Map): this;
+  setLngLat(lngLat: [number, number]): this;
+  setPopup(popup?: mapboxgl.Popup): this;
+}
+
 export function useMarkerManagement(
   map: Ref<mapboxgl.Map | null>,
   locationData: Ref<LocationData>,
   filters: Ref<Filters>,
 ) {
-  const markers = ref<mapboxgl.Marker[]>([])
+  const markers = ref<SimpleMarker[]>([])
 
   const typeToFilterKey: Record<string, keyof Filters> = {
     HOSPITAL: 'hospital',

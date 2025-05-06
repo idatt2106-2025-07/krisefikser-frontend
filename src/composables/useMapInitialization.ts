@@ -28,12 +28,15 @@ export function useMapInitialization(containerRef: Ref<HTMLElement | null, HTMLE
       zoom: mapboxConfig.defaultZoom,
     })
 
+    // @ts-ignore
     map.value.addControl(new mapboxgl.NavigationControl())
 
+    // @ts-ignore
     map.value.on('load', () => {
       isMapLoaded.value = true
     })
 
+    // @ts-ignore
     map.value.on('style.load', () => {
       isStyleLoaded.value = true
     })

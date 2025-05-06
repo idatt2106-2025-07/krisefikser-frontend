@@ -2,6 +2,7 @@
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { ref, onMounted, watch, computed, nextTick, shallowRef } from 'vue'
+import type { Ref } from 'vue'
 import { useMapInitialization } from '@/composables/useMapInitialization'
 import { useMarkerManagement } from '@/composables/usePointsOfInterest'
 import { useMapLayers } from '@/composables/useAffectedAreas'
@@ -177,9 +178,9 @@ const {
   markers: any
   initializeMarkers: () => void
   updateMarkers: () => void
-} = useMarkerManagement(map, locationData, filtersRef)
-const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(map, locationData, filtersRef)
-const { initializeSearch } = useSearchGeocoder(map, locationData, markers)
+} = useMarkerManagement(map as Ref<mapboxgl.Map | null>, locationData, filtersRef)
+const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(map as Ref<mapboxgl.Map | null>, locationData, filtersRef)
+const { initializeSearch } = useSearchGeocoder(map as Ref<mapboxgl.Map | null>, locationData, markers)
 
 /**
  * Watcher that checks if the markers need updating.

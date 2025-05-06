@@ -4,13 +4,15 @@ import type { Ref } from 'vue'
 import { mapboxConfig } from '@/config/mapboxConfig'
 
 interface MapInitializationReturn {
-  map: Ref<mapboxgl.Map | null>;
-  isMapLoaded: Ref<boolean>;
-  isStyleLoaded: Ref<boolean>;
+  map: Ref<mapboxgl.Map | null>
+  isMapLoaded: Ref<boolean>
+  isStyleLoaded: Ref<boolean>
 }
 
 // @ts-ignore
-export function useMapInitialization(containerRef: Ref<HTMLElement | null>): MapInitializationReturn {
+export function useMapInitialization(
+  containerRef: Ref<HTMLElement | null>,
+): MapInitializationReturn {
   const map = ref<mapboxgl.Map | null>(null)
   const isMapLoaded = ref(false)
   const isStyleLoaded = ref(false)
@@ -54,7 +56,7 @@ export function useMapInitialization(containerRef: Ref<HTMLElement | null>): Map
       map.value.remove()
     }
   })
-// @ts-ignore
+  // @ts-ignore
   return {
     // @ts-ignore
     map,

@@ -179,8 +179,16 @@ const {
   initializeMarkers: () => void
   updateMarkers: () => void
 } = useMarkerManagement(map as Ref<mapboxgl.Map | null>, locationData, filtersRef)
-const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(map as Ref<mapboxgl.Map | null>, locationData, filtersRef)
-const { initializeSearch } = useSearchGeocoder(map as Ref<mapboxgl.Map | null>, locationData, markers)
+const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(
+  map as Ref<mapboxgl.Map | null>,
+  locationData,
+  filtersRef,
+)
+const { initializeSearch } = useSearchGeocoder(
+  map as Ref<mapboxgl.Map | null>,
+  locationData,
+  markers,
+)
 
 /**
  * Watcher that checks if the markers need updating.

@@ -6,10 +6,10 @@ import type { LocationData, Filters, PointOfInterest } from '@/types/mapTypes'
 import MapIcon from '@/components/map/MapIcon.vue'
 
 interface SimpleMarker {
-  remove(): void;
-  addTo(map: mapboxgl.Map): this;
-  setLngLat(lngLat: [number, number]): this;
-  setPopup(popup?: mapboxgl.Popup): this;
+  remove(): void
+  addTo(map: mapboxgl.Map): this
+  setLngLat(lngLat: [number, number]): this
+  setPopup(popup?: mapboxgl.Popup): this
 }
 
 export function useMarkerManagement(

@@ -1,119 +1,167 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import SearchBar from '@/components/common/SearchBar.vue'
 import SortDropdown from '@/components/common/SortDropdown.vue'
 import DaysCircle from '@/components/common/DaysCircle.vue'
 import FilterSidebar from '@/components/storage/FilterSidebar.vue'
 import threeDots from '@/assets/three-dots-horizontal.svg'
+import { useStorageItemStore } from '@/stores/storageItem'
+import { useRouter } from 'vue-router'
 
-interface StorageItem {
-  id: number
-  name: string
-  expirationDays: number
-  quantity: number
-  unit: string
-  calories?: number
-  category: string
-}
+const storageItemStore = useStorageItemStore()
+const router = useRouter()
 
 const categories = [
-  { id: 'liquid', name: 'Liquid' },
-  { id: 'food', name: 'Food' },
-  { id: 'tools', name: 'Tools' },
-  { id: 'medicine', name: 'Medicine' },
-  { id: 'other', name: 'Other' },
+  { id: 'DRINK', name: 'Drink' },
+  { id: 'FOOD', name: 'Food' },
+  { id: 'ACCESSORIES', name: 'Accessories' },
 ]
 
 const sortOptions = [
   { value: '', label: 'Sort by...' },
-  { value: 'name', label: 'Name' },
-  { value: 'expiration', label: 'Expiration date' },
-  { value: 'quantity', label: 'Quantity' },
+  { value: 'name_asc', label: 'Name (A-Z)' },
+  { value: 'name_desc', label: 'Name (Z-A)' },
+  { value: 'expirationDate_asc', label: 'Expiration date (earliest first)' },
+  { value: 'expirationDate_desc', label: 'Expiration date (latest first)' },
+  { value: 'quantity_asc', label: 'Quantity (lowest first)' },
+  { value: 'quantity_desc', label: 'Quantity (highest first)' },
 ]
 
 const SUSTAIN_DAYS_GOAL = 21
 
-const items = ref<StorageItem[]>([
-  {
-    id: 1,
-    name: 'Water',
-    expirationDays: 253,
-    quantity: 35,
-    unit: 'liters',
-    calories: 0,
-    category: 'liquid',
-  },
-  {
-    id: 2,
-    name: 'Crisp bread',
-    expirationDays: 7,
-    quantity: 6,
-    unit: 'pcs',
-    calories: 1000,
-    category: 'food',
-  },
-  {
-    id: 3,
-    name: 'Oatmeal',
-    expirationDays: 23,
-    quantity: 2,
-    unit: 'kg',
-    calories: 1500,
-    category: 'food',
-  },
-  {
-    id: 4,
-    name: 'Canned food',
-    expirationDays: 460,
-    quantity: 5,
-    unit: 'pcs',
-    calories: 2000,
-    category: 'food',
-  },
-  {
-    id: 5,
-    name: 'Matchsticks',
-    expirationDays: Infinity,
-    quantity: 1,
-    unit: 'box',
-    calories: 0,
-    category: 'tools',
-  },
-])
+const navigateToAddItem = () => {
+  router.push('/storage/add')
+}
 
-const selectedSort = ref('')
+const selectedSortOption = ref('')
 const searchQuery = ref('')
 const checkedCategories = ref<string[]>([])
 
-// Handler for filter clear event
-const handleFilterClear = () => {
-  console.log('Filters cleared')
-  // Add any additional logic here
+// Add a debounce timer ref - only for search
+const searchDebounceTimeout = ref<number | null>(null)
+
+const selectedSort = computed(() => {
+  if (!selectedSortOption.value) return ''
+
+  // Extract everything before the last underscore
+  const lastUnderscoreIndex = selectedSortOption.value.lastIndexOf('_')
+  if (lastUnderscoreIndex === -1) return selectedSortOption.value
+
+  return selectedSortOption.value.substring(0, lastUnderscoreIndex)
+})
+
+const sortDirection = computed(() => {
+  if (!selectedSortOption.value) return 'asc'
+  const parts = selectedSortOption.value.split('_')
+  return parts.length > 1 ? parts[1] : 'asc'
+})
+
+// Get items with expiration days calculated
+const items = computed(() => {
+  return storageItemStore.aggregatedItems.map(item => {
+    // Calculate days until expiration
+    const expirationDate = new Date(item.earliestExpirationDate)
+    const today = new Date()
+    const diffTime = expirationDate.getTime() - today.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+    return {
+      id: item.itemId,
+      name: item.item.name,
+      expirationDays: diffDays > 0 ? diffDays : 0,
+      quantity: item.totalQuantity,
+      unit: item.item.unit,
+      calories: item.item.calories,
+      category: item.item.type,
+    }
+  })
+})
+
+// Placeholder for days left calculation
+// In a real implementation, this would be calculated based on water and food quantities
+const daysLeft = ref(13)
+
+// Watch ONLY the search query with debounce
+watch(searchQuery, () => {
+  if (searchDebounceTimeout.value) {
+    clearTimeout(searchDebounceTimeout.value)
+  }
+
+  searchDebounceTimeout.value = setTimeout(() => {
+    applyFiltersSearchAndSort()
+  }, 500) as unknown as number
+})
+
+// Watch category and sort changes immediately
+watch([checkedCategories, selectedSortOption], () => {
+  applyFiltersSearchAndSort()
+})
+
+// Function to handle search input
+const handleSearch = (value: string | Event) => {
+  if (typeof value === 'object' && value !== null && 'target' in value &&
+    value.target instanceof HTMLInputElement) {
+    searchQuery.value = value.target.value
+  } else if (typeof value === 'string') {
+    searchQuery.value = value
+  }
 }
 
-// Placeholder value, will be calculated by API later
-const daysLeft = ref(13)
+// Add the handleSort function back to fix the template error
+const handleSort = (value: string) => {
+  selectedSortOption.value = value
+}
+
+// Handler for filter clear event
+const handleFilterClear = () => {
+  checkedCategories.value = []
+}
+
+// Combined function to apply filters, search, and sort
+const applyFiltersSearchAndSort = () => {
+  const hasSearchTerm = typeof searchQuery.value === 'string' && searchQuery.value.trim() !== ''
+  const hasCategories = checkedCategories.value.length > 0
+  const hasSort = selectedSort.value && selectedSort.value !== ''
+
+  // If we have a search term, use the search endpoint with all parameters
+  if (hasSearchTerm) {
+    storageItemStore.searchAggregatedItems(
+      searchQuery.value as string,
+      hasCategories ? checkedCategories.value : undefined,
+      hasSort ? selectedSort.value : undefined,
+      hasSort ? sortDirection.value : 'asc'
+    )
+    return
+  }
+
+  // No search term, but we have categories and/or sort
+  if (hasCategories && hasSort) {
+    storageItemStore.filterAndSortAggregatedItems(
+      checkedCategories.value,
+      selectedSort.value,
+      sortDirection.value
+    )
+  } else if (hasCategories) {
+    storageItemStore.filterByItemType(checkedCategories.value)
+  } else if (hasSort) {
+    storageItemStore.sortAggregatedItems(selectedSort.value, sortDirection.value)
+  } else {
+    storageItemStore.fetchAggregatedItems()
+  }
+}
 
 const getExpirationClass = (days: number) => {
   if (days === Infinity) return 'status-good'
   if (days > 61) return 'status-good'
   if (days > 14) return 'status-warning'
-  return 'status-danger'
+  if (days > 0) return 'status-danger'
+  return 'status-expired'
 }
 
-// Function to handle search
-const handleSearch = (value: string) => {
-  searchQuery.value = value
-  // Add search logic here
-  console.log('Searching for:', value)
-}
-
-// Function to handle sort selection
-const handleSort = (value: string) => {
-  selectedSort.value = value
-  // Add sorting logic here
-  console.log('Sorting by:', value)
-}
+// Fetch data on component mount
+onMounted(async () => {
+  await storageItemStore.fetchAggregatedItems()
+})
 </script>
 
 <template>
@@ -143,7 +191,7 @@ const handleSort = (value: string) => {
             />
             <SortDropdown
               :options="sortOptions"
-              v-model:value="selectedSort"
+              v-model:value="selectedSortOption"
               @sort="handleSort"
               container-class="my-dropdown-container"
               select-class="my-dropdown-select"
@@ -160,10 +208,18 @@ const handleSort = (value: string) => {
             />
           </div>
 
-          <button class="add-button">Add item</button>
+          <button class="add-button" @click="navigateToAddItem" >Add item</button>
         </div>
 
-        <div class="items-container">
+        <div v-if="storageItemStore.loading" class="loading-indicator">
+          Loading storage items...
+        </div>
+
+        <div v-else-if="storageItemStore.error" class="error-message">
+          {{ storageItemStore.error }}
+        </div>
+
+        <div v-else class="items-container">
           <div class="item-header">
             <div class="item-name-header">Item</div>
             <div class="item-expiration-header">Earliest expiration</div>
@@ -172,6 +228,10 @@ const handleSort = (value: string) => {
           </div>
 
           <div class="items-list">
+            <div v-if="items.length === 0" class="no-items-message">
+              No items found. Try changing your search or filters.
+            </div>
+
             <div v-for="item in items" :key="item.id" class="item-card">
               <div class="item-info">
                 <div class="item-name">{{ item.name }}</div>
@@ -180,7 +240,9 @@ const handleSort = (value: string) => {
               <div class="item-expiration">
                 <div :class="['status-pill', getExpirationClass(item.expirationDays)]">
                   {{
-                    item.expirationDays === Infinity ? 'Infinite' : `${item.expirationDays} days`
+                    item.expirationDays === Infinity ? 'Infinite' :
+                      item.expirationDays <= 0 ? 'Expired' :
+                        `${item.expirationDays} days`
                   }}
                 </div>
               </div>
@@ -244,6 +306,14 @@ const handleSort = (value: string) => {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  width: 300px;
+}
+
+:deep(.my-dropdown-select) {
+  width: 300px;
+}
+
+:deep(.my-dropdown-container) {
   width: 300px;
 }
 
@@ -338,6 +408,10 @@ const handleSort = (value: string) => {
   background-color: #ff5c5f;
 }
 
+.status-expired {
+  background-color:lightgrey;
+}
+
 .status-pill {
   border-radius: 9999px;
   padding: 0.5rem 0;
@@ -369,5 +443,18 @@ const handleSort = (value: string) => {
 
 .options-button:hover {
   background-color: lightgrey;
+}
+
+.loading-indicator,
+.error-message,
+.no-items-message {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error-message {
+  color: #ff5c5f;
 }
 </style>

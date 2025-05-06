@@ -1,4 +1,3 @@
-// src/composables/useMapLayers.ts
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 import mapboxgl from 'mapbox-gl'
@@ -27,13 +26,21 @@ export function useMapLayers(
     }
   }
 
+  /**
+   * Initializes and renders affected area layers on the map.
+   *
+   * This function creates visual representations of affected areas with different danger levels
+   * (high, medium, low) as concentric circles on the map. Each danger level has its own color:
+   * - High: Red (innermost circle)
+   * - Medium: Orange (middle ring)
+   * - Low: Yellow (outer ring)
+   */
   const initializeLayers = () => {
     if (!map.value) {
       console.warn('Map not initialized when adding layers')
       return
     }
 
-    // If layers are already initialized, remove them first
     if (layersInitialized.value) {
       removeAllLayers()
     }
@@ -45,7 +52,6 @@ export function useMapLayers(
 
         const areaId = `affected-area-${index}`
 
-        // Create a single popup for the entire affected area
         const addPopupHandler = (layerId: string) => {
           mapInstance.on('click', layerId, (e) => {
             if (e.features && e.features.length > 0) {
@@ -66,13 +72,10 @@ export function useMapLayers(
           })
         }
 
-        // Create non-overlapping rings for each danger level
-        // High danger (red) - innermost ring
         if (area.highDangerRadiusKm) {
           const highLayerId = `${areaId}-high`
           circleLayers.value.push(highLayerId)
 
-          // High danger zone - solid circle
           const highCircle = turf.circle([area.longitude, area.latitude], area.highDangerRadiusKm, {
             steps: 64,
             units: 'kilometers',
@@ -95,21 +98,18 @@ export function useMapLayers(
               visibility: filters.value.affected_areas !== false ? 'visible' : 'none',
             },
             paint: {
-              'fill-color': 'rgba(255, 0, 0, 0.4)', // Red
+              'fill-color': 'rgba(255, 0, 0, 0.4)',
               'fill-outline-color': '#ff0000',
             },
           })
 
-          // Add popup handler
           addPopupHandler(highLayerId)
         }
 
-        // Medium danger (orange) - middle ring (donut shape)
         if (area.mediumDangerRadiusKm && area.highDangerRadiusKm) {
           const mediumLayerId = `${areaId}-medium`
           circleLayers.value.push(mediumLayerId)
 
-          // Create donut shape - outer circle minus inner circle
           const outerCircle = turf.circle(
             [area.longitude, area.latitude],
             area.mediumDangerRadiusKm,
@@ -122,15 +122,14 @@ export function useMapLayers(
             { steps: 64, units: 'kilometers' },
           )
 
-          // Then in your code where you create the donut:
           const donut: Feature<Polygon, GeoJsonProperties> = {
-            type: 'Feature', // Use literal "Feature" instead of 'Feature'
+            type: 'Feature',
             properties: {},
             geometry: {
-              type: 'Polygon', // Use literal "Polygon" instead of 'Polygon'
+              type: 'Polygon',
               coordinates: [
-                outerCircle.geometry.coordinates[0], // Outer ring
-                [...innerCircle.geometry.coordinates[0]].reverse(), // Inner ring (hole)
+                outerCircle.geometry.coordinates[0],
+                [...innerCircle.geometry.coordinates[0]].reverse(),
               ],
             },
           }
@@ -148,21 +147,18 @@ export function useMapLayers(
               visibility: filters.value.affected_areas !== false ? 'visible' : 'none',
             },
             paint: {
-              'fill-color': 'rgba(255, 165, 0, 0.3)', // Orange
+              'fill-color': 'rgba(255, 165, 0, 0.3)',
               'fill-outline-color': '#ffa500',
             },
           })
 
-          // Add popup handler
           addPopupHandler(mediumLayerId)
         }
 
-        // Low danger (yellow) - outermost ring (donut shape)
         if (area.lowDangerRadiusKm && area.mediumDangerRadiusKm) {
           const lowLayerId = `${areaId}-low`
           circleLayers.value.push(lowLayerId)
 
-          // Create donut shape - outer circle minus medium circle
           const outerCircle = turf.circle([area.longitude, area.latitude], area.lowDangerRadiusKm, {
             steps: 64,
             units: 'kilometers',
@@ -174,15 +170,14 @@ export function useMapLayers(
             { steps: 64, units: 'kilometers' },
           )
 
-          // Create the donut as a polygon with hole
           const donut: Feature<Polygon, GeoJsonProperties> = {
             type: 'Feature',
             properties: {},
             geometry: {
               type: 'Polygon',
               coordinates: [
-                outerCircle.geometry.coordinates[0], // Outer ring
-                [...innerCircle.geometry.coordinates[0]].reverse(), // Inner ring (hole) - note the reversal
+                outerCircle.geometry.coordinates[0],
+                [...innerCircle.geometry.coordinates[0]].reverse(),
               ],
             },
           }
@@ -200,16 +195,14 @@ export function useMapLayers(
               visibility: filters.value.affected_areas !== false ? 'visible' : 'none',
             },
             paint: {
-              'fill-color': 'rgba(255, 255, 0, 0.2)', // Yellow
+              'fill-color': 'rgba(255, 255, 0, 0.2)',
               'fill-outline-color': '#ffff00',
             },
           })
 
-          // Add popup handler
           addPopupHandler(lowLayerId)
         }
 
-        // Add border lines between the danger zones
         ;['high', 'medium', 'low'].forEach((level, i) => {
           const radius = getDangerRadius(area, level)
           if (radius) {
@@ -249,6 +242,16 @@ export function useMapLayers(
     layersInitialized.value = true
   }
 
+  /**
+   * Removes all circle layers and their associated resources from the map.
+   *
+   * This function:
+   * - Removes each circle layer from the map
+   * - Removes each circle layer's outline from the map
+   * - Removes the source data associated with each layer
+   * - Catches and logs any errors that occur during removal
+   * - Clears the circleLayers array when complete
+   */
   const removeAllLayers = () => {
     if (!map.value) return
     const mapInstance = map.value
@@ -272,7 +275,16 @@ export function useMapLayers(
     circleLayers.value = []
   }
 
-  // Return a tryInitializeLayers function that will attempt to initialize with retry logic
+
+  /**
+   * Attempts to initialize map layers once the map style is loaded.
+   * Implements a retry mechanism to handle cases where the map style isn't immediately available.
+   *
+   * @param maxAttempts - The maximum number of attempts to initialize layers. Defaults to 5.
+   * @remarks
+   * The function checks if the map style is loaded. If it is, it initializes the layers immediately.
+   * If not, it will retry every 200ms until either the style loads or the maximum number of attempts is reached.
+   */
   const tryInitializeLayers = (maxAttempts = 5) => {
     let attempts = 0
 
@@ -280,7 +292,6 @@ export function useMapLayers(
       if (!map.value) return
 
       if (map.value.isStyleLoaded()) {
-        console.log('Map style is loaded, initializing layers now')
         initializeLayers()
       } else if (attempts < maxAttempts) {
         attempts++
@@ -292,11 +303,14 @@ export function useMapLayers(
         console.error('Failed to initialize layers after max attempts')
       }
     }
-
-    // Start the attempt process
     attemptInit()
   }
 
+  /**
+   * Updates the visibility of affected area layers and their outlines on the map.
+   *
+   * @param showAffectedAreas - Boolean flag that determines whether to show (true) or hide (false) the affected areas
+   */
   const updateLayerVisibility = (showAffectedAreas: boolean) => {
     if (!map.value) return
     const mapInstance = map.value
@@ -305,7 +319,6 @@ export function useMapLayers(
       if (mapInstance.getLayer(layerId)) {
         mapInstance.setLayoutProperty(layerId, 'visibility', showAffectedAreas ? 'visible' : 'none')
 
-        // Also update outline layers
         const outlineLayerId = `${layerId}-outline`
         if (mapInstance.getLayer(outlineLayerId)) {
           mapInstance.setLayoutProperty(

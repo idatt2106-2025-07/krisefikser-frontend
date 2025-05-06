@@ -10,15 +10,12 @@ import { useSearchGeocoder } from '@/composables/useSearchGeocoder'
 import type { LocationData } from '@/types/mapTypes'
 import mapService from '@/services/mapService'
 
-// Use shallowRef to prevent deep reactivity
 const locationData = shallowRef<LocationData>({
   pointsOfInterest: [],
   affectedAreas: [],
 })
 
-// This flag prevents user actions while loading
 const isLoading = ref(false)
-// Track previous filters to prevent duplicate calls
 const prevFilters = ref<string[]>([])
 
 const props = defineProps({
@@ -35,15 +32,27 @@ const props = defineProps({
 
 const filtersRef = computed(() => props.filters)
 
+/**
+ * Returns a subset of filters where the value is true (enabled).
+ *
+ * @param {Record<string, boolean>} filters - An object with filter names as keys and their enabled status as boolean values
+ * @returns {Record<string, boolean>} Object containing only the enabled filters
+ */
 const getEnabledFilters = (filters: Record<string, boolean>) => {
   return Object.keys(filters).filter((key) => filters[key] === true)
 }
 
-// Flags to coordinate data loading and map updates
 const needsMarkerUpdate = ref(false)
 const initialLoaded = ref(false)
 
-// Define this function separately from the watcher
+
+/**
+ * Asynchronously fetches points of interest based on the specified filters.
+ *
+ * @param {string[]} filters - An array of filter strings to apply when fetching points of interest
+ * @returns {Promise<any>} A promise that resolves with the fetched points of interest data
+ * @throws {Error} Potentially throws errors if the fetch operation fails
+ */
 const fetchPointsOfInterest = async (filters: string[]) => {
   if (filters.length === 0) return
 
@@ -52,13 +61,11 @@ const fetchPointsOfInterest = async (filters: string[]) => {
     console.log('Fetching POIs with filters:', filters)
     const response = await mapService.getPointsOfInterest(filters)
 
-    // Create a new object to replace the old one
     const newData = {
       pointsOfInterest: response,
       affectedAreas: locationData.value.affectedAreas,
     }
 
-    // Replace the entire object
     locationData.value = newData
     needsMarkerUpdate.value = true
 
@@ -70,12 +77,22 @@ const fetchPointsOfInterest = async (filters: string[]) => {
   }
 }
 
+/**
+ * Fetches all points of interest from the API
+ *
+ * This asynchronous function retrieves all points of interest data
+ * that will be displayed on the map. It makes an API request and
+ * likely updates the component's state with the fetched data.
+ *
+ * @async
+ * @returns {Promise<Array>} A promise that resolves to an array of point of interest objects
+ * @throws {Error} If the API request fails
+ */
 const fetchAllPointsOfInterest = async () => {
   try {
     isLoading.value = true
     console.log('Home page: Fetching all POIs')
 
-    // Get all POIs without any filters
     const response = await mapService.getAllPointsOfInterest()
 
     locationData.value = {
@@ -90,22 +107,28 @@ const fetchAllPointsOfInterest = async () => {
   }
 }
 
+/**
+ * Fetches data for affected areas to display on the map.
+ * This async function retrieves geographical information about crisis-affected regions
+ * from the backend service.
+ *
+ * @async
+ * @function fetchAffectedAreas
+ * @returns {Promise<Array>} A promise that resolves to an array of affected area objects
+ */
 const fetchAffectedAreas = async () => {
   try {
     console.log('Fetching affected areas')
     const response = await mapService.getAffectedAreas()
 
-    // Create a new object to replace the old one
     const newData = {
       pointsOfInterest: locationData.value.pointsOfInterest,
       affectedAreas: response,
     }
 
-    // Replace the entire object
     locationData.value = newData
     console.log('Affected areas updated')
 
-    // Make sure layers update
     if (map.value && isStyleLoaded.value) {
       tryInitializeLayers(3)
     }
@@ -116,17 +139,17 @@ const fetchAffectedAreas = async () => {
 
 const isDebouncing = ref(false)
 
-// Use a watcher with immediate false
+
+/**
+ * Watcher that watches for changes in the filters and fetches new Points of interests based on filters.
+ */
 watch(
   filtersRef,
   (newFilters) => {
-    // Skip if loading
     if (isLoading.value || isDebouncing.value) return
 
-    // Get filters except affected_areas
     const poiFilters = getEnabledFilters(newFilters).filter((f) => f !== 'affected_areas')
 
-    // Skip if filters haven't changed
     const filtersStr = poiFilters.sort().join(',')
     const prevFiltersStr = prevFilters.value.sort().join(',')
 
@@ -135,7 +158,6 @@ watch(
       return
     }
 
-    // Update prev filters now
     prevFilters.value = [...poiFilters]
 
     isDebouncing.value = true
@@ -143,7 +165,6 @@ watch(
       isDebouncing.value = false
     }, 300)
 
-    // Call fetch outside the watcher body
     fetchPointsOfInterest(poiFilters)
   },
   { deep: true },
@@ -156,7 +177,7 @@ const {
   initializeMarkers,
   updateMarkers
 }: {
-  markers: any;  // Use 'any' temporarily to bypass complex typing
+  markers: any;
   initializeMarkers: () => void;
   updateMarkers: () => void;
 } = useMarkerManagement(
@@ -167,47 +188,48 @@ const {
 const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(map, locationData, filtersRef)
 const { initializeSearch } = useSearchGeocoder(map, locationData, markers)
 
-// Watch for data changes to update markers
+/**
+ * Watcher that checks if the markers need updating.
+ */
 watch(needsMarkerUpdate, async (needsUpdate) => {
   if (needsUpdate && isMapLoaded.value) {
-    console.log('Updating markers with new data')
     await nextTick()
     updateMarkers()
     needsMarkerUpdate.value = false
   }
 })
 
+/**
+ * Watcher that checks the filter for affected areas, and toggles visibility.
+ */
 watch(
   () => filtersRef.value.affected_areas,
   (showAffectedAreas) => {
     if (!map.value || !isMapLoaded.value) return
-
-    console.log('Toggling affected areas visibility:', showAffectedAreas)
     updateLayerVisibility(showAffectedAreas)
   },
 )
 
+/**
+ * onMounted function that initializes POI markers and affected area layers.
+ * Waits for the map to be loaded.
+ */
 onMounted(() => {
-  // Wait for both the map AND style to load before initializing
   watch([isMapLoaded, isStyleLoaded], ([mapLoaded, styleLoaded]) => {
     if (mapLoaded && styleLoaded) {
       console.log('Map and style loaded, initializing components')
 
-      // Add a slight delay to ensure everything is ready
       setTimeout(() => {
-        // Use the retry logic instead of direct initialization
-        tryInitializeLayers(5) // Try up to 5 times with 200ms intervals
+        tryInitializeLayers(5)
         initializeMarkers()
         if (!props.isHomePage) {
           initializeSearch()
         }
 
-        // Initial load if we have filters
         if (!initialLoaded.value) {
           initialLoaded.value = true
           fetchAffectedAreas()
 
-          // Simple conditional for home vs map page
           if (props.isHomePage) {
             fetchAllPointsOfInterest()
           } else {

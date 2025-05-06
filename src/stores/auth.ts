@@ -8,7 +8,7 @@ export const useAuthStore = defineStore('auth', {
     user: ((): string | null => {
       const stored = localStorage.getItem('auth.user')
       return stored ? JSON.parse(stored) : null
-    })()
+    })(),
   }),
   actions: {
     async fetchUser() {

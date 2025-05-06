@@ -18,7 +18,10 @@
         </button>
       </div>
 
-      <p v-if="resendMessage" :class="['verify-email__message', resendMessage.startsWith('Failed') ? 'error' : 'success']">
+      <p
+        v-if="resendMessage"
+        :class="['verify-email__message', resendMessage.startsWith('Failed') ? 'error' : 'success']"
+      >
         {{ resendMessage }}
       </p>
     </div>
@@ -43,7 +46,7 @@ const loading = ref(true)
 const success = ref(false)
 const message = ref('')
 const resendLoading = ref(false)
-const resendMessage = ref<string|null>(null)
+const resendMessage = ref<string | null>(null)
 
 onMounted(async () => {
   if (!token) {

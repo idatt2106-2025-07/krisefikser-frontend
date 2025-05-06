@@ -16,11 +16,7 @@ const navigateToProfile = () => {
 
 const logout = async () => {
   try {
-    await axios.post(
-      '/api/auth/logout',
-      {},
-      { withCredentials: true }
-    )
+    await axios.post('/api/auth/logout', {}, { withCredentials: true })
   } catch (err) {
     console.warn('Logout error:', err)
   }

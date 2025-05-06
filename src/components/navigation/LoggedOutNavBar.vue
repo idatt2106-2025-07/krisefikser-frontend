@@ -23,7 +23,6 @@ function navigateTo(path: string) {
   router.push(path)
   isMenuOpen.value = false
 }
-
 </script>
 
 <template>

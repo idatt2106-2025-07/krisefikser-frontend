@@ -16,8 +16,9 @@ const isLoading = ref(false)
 const message = ref<string|null>(null)
 const messageType = ref<'success'|'error'|null>(null)
 
-// token from query param
+// read token and email from query params
 const token = (route.query.token as string) || ''
+const email = (route.query.email as string) || ''
 
 const passwordPatternValid = computed(() =>
   /(?=.*[A-Z])(?=.*\d).+/.test(newPassword.value)
@@ -55,7 +56,11 @@ async function handleSubmit() {
   try {
     await axios.post(
       '/api/auth/reset-password',
-      { token, newPassword: newPassword.value },
+      {
+        email,
+        token,
+        newPassword: newPassword.value
+      },
       { withCredentials: true }
     )
     messageType.value = 'success'

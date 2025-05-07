@@ -20,18 +20,16 @@ const mockFunctions = vi.hoisted(() => ({
     { id: 1, type: 'HOSPITAL', latitude: 10, longitude: 20, description: 'Test Hospital' },
     { id: 2, type: 'SHELTER', latitude: 11, longitude: 21, description: 'Test Shelter' },
   ]),
-  getAffectedAreas: vi
-    .fn()
-    .mockResolvedValue([
-      {
-        id: 1,
-        latitude: 30,
-        longitude: 40,
-        description: 'Flood',
-        severityLevel: 'High',
-        startDate: '2023-01-01',
-      },
-    ]),
+  getAffectedAreas: vi.fn().mockResolvedValue([
+    {
+      id: 1,
+      latitude: 30,
+      longitude: 40,
+      description: 'Flood',
+      severityLevel: 'High',
+      startDate: '2023-01-01',
+    },
+  ]),
 }))
 
 // Mock all the imports using the hoisted functions

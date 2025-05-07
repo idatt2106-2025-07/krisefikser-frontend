@@ -101,6 +101,7 @@ export function useMarkerManagement(
               <p>${poi.description}</p>
               ${poi.opensAt ? `<h4>Open: ${poi.opensAt} - ${poi.closesAt}</h4>` : ''}
               ${poi.contactNumber ? `<h4>Contact: ${poi.contactNumber}</h4>` : ''}
+              <button class="directions-btn" data-lng="${poi.longitude}" data-lat="${poi.latitude}">Get Directions</button>
             </div>
           `),
           )

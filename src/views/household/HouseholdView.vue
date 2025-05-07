@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import householdService from '@/services/HouseholdService'
 import SidebarContent from '@/components/navigation/SidebarContent.vue'
 
 /**
@@ -50,6 +51,10 @@ const activePopupMember = ref<string | null>(null)
  */
 const handleItemSelected = (item: SidebarItem, index: number) => {
   console.log('Selected item:', item.title, 'at index:', index)
+  householdTitle.value = item.title
+  if (item.id === 'household') {
+    fetchMembers()
+  }
 }
 
 /**
@@ -57,6 +62,8 @@ const handleItemSelected = (item: SidebarItem, index: number) => {
  * @type {Ref<Member[]>}
  */
 const members = ref<Member[]>([])
+
+const householdTitle = ref();
 
 /**
  * Reactive state to track the loading status.
@@ -80,24 +87,14 @@ const fetchMembers = async () => {
   error.value = null
 
   try {
-    //TODO: fix to use endpoint later
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    const data = await householdService.getMyHouseholdDetails()
 
-    // Populate members with mock data
-    members.value = [
-      { name: 'Anders Lundemo' },
-      { name: 'Lukas' },
-      { name: 'Johan' },
-      { name: 'john doe' },
-      { name: 'Vetle' },
-      { name: 'Florian' },
-    ]
+    members.value = data.members || []
+    householdTitle.value = data.name
   } catch (e) {
-    // Handle errors and set error message
     error.value = 'Failed to load household members'
     console.log(e)
   } finally {
-    // Set loading state to false
     isLoading.value = false
   }
 }
@@ -151,7 +148,8 @@ onBeforeUnmount(() => {
     <div class="content-container">
       <div class="sidebar-wrapper">
         <SidebarContent
-          sidebar-title="Household"
+          :content-title="householdTitle"
+          sidebar-title="household"
           :sidebar-items="menuItems"
           @item-selected="handleItemSelected"
           class="sidebar-component"
@@ -159,7 +157,7 @@ onBeforeUnmount(() => {
           <!-- Define content for each sidebar item using named slots -->
           <template #household>
             <button>Invite user</button>
-            <h1></h1>
+           <h1></h1>
             <button>Add member without user</button>
             <div class="household-content">
               <h3>Members ⋅ {{ members.length }}</h3>

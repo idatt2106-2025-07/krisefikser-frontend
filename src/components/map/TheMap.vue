@@ -169,7 +169,7 @@ watch(
 )
 
 const mapContainer = ref<HTMLElement | null>(null)
-const { map, isMapLoaded, isStyleLoaded } = useMapInitialization(mapContainer)
+const { map, isMapLoaded, isStyleLoaded, showDirections, clearDirections } = useMapInitialization(mapContainer)
 const {
   markers,
   initializeMarkers,
@@ -189,6 +189,32 @@ const { initializeSearch } = useSearchGeocoder(
   locationData,
   markers,
 )
+
+const navigateToPOI = async (poi) => {
+  // Get user's current location if available
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const origin: [number, number] = [position.coords.longitude, position.coords.latitude];
+        const destination: [number, number] = [poi.longitude, poi.latitude];
+
+        showDirections(origin, destination).then(result => {
+          if (result) {
+            console.log(`Directions loaded: ${result.distance/1000}km, ${Math.round(result.duration/60)} minutes`);
+          }
+        });
+      },
+      (error) => {
+        console.error("Error getting user location:", error);
+        // If user location fails, just focus on the POI
+        map.value?.flyTo({ center: [poi.longitude, poi.latitude], zoom: 15 });
+      }
+    );
+  } else {
+    // If geolocation not supported, just focus on the POI
+    map.value?.flyTo({ center: [poi.longitude, poi.latitude], zoom: 15 });
+  }
+};
 
 /**
  * Watcher that checks if the markers need updating.
@@ -245,6 +271,27 @@ onMounted(() => {
           }
         }
       }, 100)
+
+      document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target.classList.contains('directions-btn')) {
+        console.log('Direction button clicked via document listener');
+        const lngAttr = target.getAttribute('data-lng') || '0';
+        const latAttr = target.getAttribute('data-lat') || '0';
+
+        const lng = parseFloat(lngAttr);
+        const lat = parseFloat(latAttr);
+
+        navigateToPOI({
+          longitude: lng,
+          latitude: lat
+        });
+
+        // Prevent any additional handling
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
     }
   })
 })

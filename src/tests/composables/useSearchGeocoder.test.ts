@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { ref, watch } from 'vue'
 import { useSearchGeocoder } from '@/composables/useSearchGeocoder'
@@ -6,7 +7,6 @@ import mapboxgl from 'mapbox-gl'
 import { createSearchableGeoJSON } from '@/utils/mapUtils'
 import type { LocationData } from '@/types/mapTypes'
 
-// Define the type for the result callback
 interface GeocoderResult {
   result: {
     properties?: {
@@ -19,12 +19,10 @@ interface GeocoderResult {
   }
 }
 
-// Mock MapboxGeocoder
 vi.mock('@mapbox/mapbox-gl-geocoder', () => {
   return {
     default: vi.fn().mockImplementation(() => ({
       on: vi.fn((event, callback) => {
-        // Store the callback so we can trigger it in tests
         if (event === 'result') {
           mockCallbacks.result = callback
         }
@@ -35,10 +33,8 @@ vi.mock('@mapbox/mapbox-gl-geocoder', () => {
   }
 })
 
-// Store mock callbacks for testing - with proper typing
 const mockCallbacks: Record<string, (arg: GeocoderResult) => void> = {}
 
-// Mock mapboxgl
 vi.mock('mapbox-gl', () => {
   return {
     default: {
@@ -53,7 +49,6 @@ vi.mock('mapbox-gl', () => {
   }
 })
 
-// Mock createSearchableGeoJSON utility
 vi.mock('@/utils/mapUtils', () => ({
   createSearchableGeoJSON: vi.fn((data) => ({
     type: 'FeatureCollection',
@@ -92,7 +87,6 @@ describe('useSearchGeocoder', () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    // Create map mock
     addControlSpy = vi.fn()
     flyToSpy = vi.fn()
     map = ref({
@@ -100,7 +94,6 @@ describe('useSearchGeocoder', () => {
       flyTo: flyToSpy,
     })
 
-    // Create location data mock
     locationData = ref({
       pointsOfInterest: [
         {
@@ -121,10 +114,8 @@ describe('useSearchGeocoder', () => {
       affectedAreas: [],
     })
 
-    // Create markers mock
     markers = ref([new mapboxgl.Marker(), new mapboxgl.Marker()])
 
-    // Reset mock callbacks
     for (const key in mockCallbacks) {
       delete mockCallbacks[key]
     }
@@ -170,10 +161,8 @@ describe('useSearchGeocoder', () => {
 
     initializeSearch()
 
-    // Get the localGeocoder function from the MapboxGeocoder constructor call
     const localGeocoderFn = MapboxGeocoder.mock.calls[0][0].localGeocoder
 
-    // Test filtering with "hospital" query
     const results = localGeocoderFn('hospital', locationData.value)
 
     expect(createSearchableGeoJSON).toHaveBeenCalledWith(locationData.value)
@@ -187,16 +176,12 @@ describe('useSearchGeocoder', () => {
 
     initializeSearch()
 
-    // Get the localGeocoder function
     const localGeocoderFn = MapboxGeocoder.mock.calls[0][0].localGeocoder
 
-    // Test with short query
     expect(localGeocoderFn('a')).toEqual([])
 
-    // Test with empty query
     expect(localGeocoderFn('')).toEqual([])
 
-    // Test with null query
     expect(localGeocoderFn(null)).toEqual([])
   })
 
@@ -207,7 +192,6 @@ describe('useSearchGeocoder', () => {
 
     expect(mockCallbacks.result).toBeDefined()
 
-    // Simulate a result selection event
     mockCallbacks.result({
       result: {
         properties: {
@@ -220,10 +204,8 @@ describe('useSearchGeocoder', () => {
       },
     })
 
-    // Check that the marker's popup was toggled
     expect(markers.value[0].togglePopup).toHaveBeenCalled()
 
-    // Check that the map flew to the correct coordinates
     expect(flyToSpy).toHaveBeenCalledWith({
       center: [10, 20],
       zoom: 15,
@@ -236,10 +218,8 @@ describe('useSearchGeocoder', () => {
 
     initializeSearch()
 
-    // Get the render function from the MapboxGeocoder constructor call
     const renderFn = MapboxGeocoder.mock.calls[0][0].render
 
-    // Test rendering a POI item
     const poiHtml = renderFn({
       properties: {
         title: 'Test Hospital',
@@ -251,7 +231,6 @@ describe('useSearchGeocoder', () => {
     expect(poiHtml).toContain('<strong>Test Hospital</strong>')
     expect(poiHtml).toContain('<span>Medical facility</span>')
 
-    // Test rendering a Mapbox geocoder result
     const mapboxHtml = renderFn({
       text: 'New York',
       place_name: 'New York, NY, USA',

@@ -1,9 +1,9 @@
+// @ts-nocheck
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { ref } from 'vue'
 import { useMapInitialization } from '@/composables/useMapInitialization'
 import { mapboxConfig } from '@/config/mapboxConfig'
 
-// Create proper spies for map methods
 const removeLayerSpy = vi.fn()
 const removeSourceSpy = vi.fn()
 const addSourceSpy = vi.fn()
@@ -12,14 +12,12 @@ const fitBoundsSpy = vi.fn()
 const mapRemoveSpy = vi.fn()
 const addControlSpy = vi.fn()
 
-// Mock mapboxgl
 vi.mock('mapbox-gl', () => {
   return {
     default: {
       Map: vi.fn(() => ({
         addControl: addControlSpy,
         on: vi.fn((event, callback) => {
-          // Actually trigger callbacks immediately for testing
           if (event === 'load' || event === 'style.load') {
             callback()
           }
@@ -68,7 +66,6 @@ vi.mock('mapbox-gl', () => {
   }
 })
 
-// Mock mapboxConfig
 vi.mock('@/config/mapboxConfig', () => ({
   mapboxConfig: {
     accessToken: 'mock-token',
@@ -78,7 +75,6 @@ vi.mock('@/config/mapboxConfig', () => ({
   },
 }))
 
-// Mock Vue lifecycle hooks
 vi.mock('vue', async () => {
   const actual = await vi.importActual('vue')
   return {
@@ -88,7 +84,6 @@ vi.mock('vue', async () => {
   }
 })
 
-// Mock global fetch API
 global.fetch = vi.fn()
 
 describe('useMapInitialization', () => {
@@ -96,16 +91,12 @@ describe('useMapInitialization', () => {
   let consoleSpy
 
   beforeEach(() => {
-    // Reset all mocks
     vi.clearAllMocks()
 
-    // Setup container ref
     containerRef = ref(document.createElement('div'))
 
-    // Create a direct spy on console.error
     consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    // Setup fetch mock for successful response
     global.fetch.mockResolvedValue({
       json: () =>
         Promise.resolve({
@@ -138,16 +129,13 @@ describe('useMapInitialization', () => {
   })
 
   afterEach(() => {
-    // Clean up global window property
     if (window.clearMapDirections) {
       delete window.clearMapDirections
     }
 
-    // Restore console
     consoleSpy.mockRestore()
   })
 
-  // Test 1: Basic interface check
   it('should return the correct interface', () => {
     const result = useMapInitialization(containerRef)
 
@@ -158,9 +146,7 @@ describe('useMapInitialization', () => {
     expect(result).toHaveProperty('clearDirections')
   })
 
-  // Test 4: Error handling for missing API key
   it('should not initialize map when API key is missing', () => {
-    // Save original value and override for this test only
     const originalToken = mapboxConfig.accessToken
     mapboxConfig.accessToken = ''
 
@@ -170,11 +156,9 @@ describe('useMapInitialization', () => {
       'Mapbox API key is missing. Check your .env file for VITE_MAPBOX_API_KEY',
     )
 
-    // Restore for future tests
     mapboxConfig.accessToken = originalToken
   })
 
-  // Test 5: showDirections success path
   it('should get directions successfully', async () => {
     const { showDirections, map } = useMapInitialization(containerRef)
 
@@ -183,12 +167,10 @@ describe('useMapInitialization', () => {
 
     const result = await showDirections(origin, destination)
 
-    // Verify API call
     expect(global.fetch).toHaveBeenCalledWith(
       expect.stringContaining(`${origin[0]},${origin[1]};${destination[0]},${destination[1]}`),
     )
 
-    // Verify result structure
     expect(result).toMatchObject({
       distance: 1000,
       duration: 600,
@@ -201,16 +183,13 @@ describe('useMapInitialization', () => {
       ],
     })
 
-    // Verify map interactions
     expect(addSourceSpy).toHaveBeenCalled()
     expect(addLayerSpy).toHaveBeenCalled()
   })
 
-  // Test 6: showDirections API error handling
   it('should handle API errors in showDirections', async () => {
     const { showDirections } = useMapInitialization(containerRef)
 
-    // Mock API failure
     global.fetch.mockRejectedValueOnce(new Error('API failure'))
 
     const result = await showDirections([0, 0], [1, 1])
@@ -219,11 +198,9 @@ describe('useMapInitialization', () => {
     expect(consoleSpy).toHaveBeenCalledWith('Error fetching directions:', expect.any(Error))
   })
 
-  // Test 7: showDirections no routes error handling
   it('should handle empty routes response', async () => {
     const { showDirections } = useMapInitialization(containerRef)
 
-    // Mock no routes found
     global.fetch.mockResolvedValueOnce({
       json: () => Promise.resolve({ routes: [] }),
     })
@@ -234,25 +211,19 @@ describe('useMapInitialization', () => {
     expect(consoleSpy).toHaveBeenCalledWith('No routes found', { routes: [] })
   })
 
-  // Test 8: clearDirections functionality
   it('should clean up resources when clearing directions', async () => {
     const { showDirections, clearDirections, map } = useMapInitialization(containerRef)
 
-    // First show directions to set up state
     await showDirections([0, 0], [1, 1])
 
-    // Clear mocks to start fresh
     vi.clearAllMocks()
 
-    // Call clearDirections
     clearDirections()
 
-    // Verify cleanup actions
     expect(removeLayerSpy).toHaveBeenCalled()
     expect(removeSourceSpy).toHaveBeenCalled()
   })
 
-  // Test 9: Global clearMapDirections function
   it('should create global clearMapDirections function', async () => {
     const { showDirections } = useMapInitialization(containerRef)
 

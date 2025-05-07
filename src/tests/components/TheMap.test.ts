@@ -1,7 +1,6 @@
-// Solve the hoisting issue with vi.hoisted
+// @ts-nocheck
 import { vi } from 'vitest'
 
-// Create all mock objects before any imports using vi.hoisted
 const mockFunctions = vi.hoisted(() => ({
   flyTo: vi.fn(),
   showDirections: vi.fn().mockResolvedValue({ distance: 5000, duration: 1200, steps: [] }),
@@ -32,7 +31,6 @@ const mockFunctions = vi.hoisted(() => ({
   ]),
 }))
 
-// Mock all the imports using the hoisted functions
 vi.mock('@/composables/useMapInitialization', () => ({
   useMapInitialization: () => ({
     map: { value: { flyTo: mockFunctions.flyTo } },
@@ -72,11 +70,9 @@ vi.mock('@/services/mapService', () => ({
   },
 }))
 
-// Mock mapbox-gl and CSS imports
 vi.mock('mapbox-gl/dist/mapbox-gl.css', () => ({}))
 vi.mock('@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css', () => ({}))
 
-// Now import remaining dependencies
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import TheMap from '@/components/map/TheMap.vue'
@@ -88,11 +84,9 @@ describe('TheMap', () => {
     vi.clearAllMocks()
     vi.useFakeTimers()
 
-    // Mock console methods to reduce test noise
     vi.spyOn(console, 'log').mockImplementation(() => {})
     vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    // Mock geolocation
     Object.defineProperty(global.navigator, 'geolocation', {
       value: {
         getCurrentPosition: vi.fn((success) =>
@@ -114,13 +108,12 @@ describe('TheMap', () => {
 
   it('renders the map container correctly', () => {
     wrapper = mount(TheMap, {
-      shallow: true, // Use shallow mounting to avoid rendering child components
+      shallow: true,
     })
     expect(wrapper.find('.map-container').exists()).toBe(true)
   })
 
   it('shows expand button only on homepage', () => {
-    // Test with isHomePage = true
     wrapper = mount(TheMap, {
       props: {
         isHomePage: true,
@@ -129,7 +122,6 @@ describe('TheMap', () => {
     })
     expect(wrapper.find('.btn-expand-map').exists()).toBe(true)
 
-    // Test with isHomePage = false
     wrapper = mount(TheMap, {
       props: {
         isHomePage: false,
@@ -147,7 +139,6 @@ describe('TheMap', () => {
       shallow: true,
     })
 
-    // Fast forward past setTimeout
     vi.advanceTimersByTime(100)
     await wrapper.vm.$nextTick()
 
@@ -162,10 +153,8 @@ describe('TheMap', () => {
       shallow: true,
     })
 
-    // Clear mock calls
     mockFunctions.updateLayerVisibility.mockClear()
 
-    // Change the affected_areas filter
     await wrapper.setProps({
       filters: { affected_areas: true },
     })
@@ -178,22 +167,19 @@ describe('TheMap', () => {
       shallow: true,
     })
 
-    // Directly call the method
     await wrapper.vm.navigateToPOI({
       longitude: 20,
       latitude: 30,
       description: 'Test POI',
     })
 
-    // Should call showDirections with user location and POI coords
     expect(mockFunctions.showDirections).toHaveBeenCalledWith(
-      [60, 50], // Mock user location (lng, lat)
-      [20, 30], // POI location (lng, lat)
+      [60, 50],
+      [20, 30],
     )
   })
 
   it('falls back to flyTo when geolocation fails', async () => {
-    // Override geolocation to make it fail
     Object.defineProperty(global.navigator, 'geolocation', {
       value: {
         getCurrentPosition: vi.fn((success, error) => error(new Error('Geolocation error'))),

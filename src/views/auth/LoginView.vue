@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { Ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import InputText from 'primevue/inputtext'
@@ -30,16 +31,19 @@ const resetError = ref<string | null>(null)
 const isAdminMode = ref(false)
 const adminEmail = ref('')
 const adminPassword = ref('')
-const adminEmailError = ref(false)
+const adminEmailError: Ref<boolean> = ref(false)
 const adminTouched = ref(false)
 const adminError = ref<string | null>(null)
 
 // Validation functions
-function validateEmail(value: string, errorRef: typeof emailError) {
+function validateEmail(value: string, errorRef: Ref<boolean> | boolean) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  errorRef.value = !emailRegex.test(value)
+  if (typeof errorRef === 'boolean') {
+    return !emailRegex.test(value)
+  } else {
+    errorRef.value = !emailRegex.test(value)
+  }
 }
-
 function validateResetEmail() {
   resetTouched.value = true
   validateEmail(resetEmail.value, resetEmailError)

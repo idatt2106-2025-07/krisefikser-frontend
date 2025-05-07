@@ -170,19 +170,20 @@ async function onSubmit() {
     const { data } = await axios.post<string>('/api/admin/register', form)
     addToast(data, 'success')
     setTimeout(() => router.push('/login'), 1500)
-  } catch (err: any) {
-    if (axios.isAxiosError(err) && err.response?.data?.message) {
-      const message = err.response.data.message
+  } catch (err: unknown) {
+    // Update the error handling in the onSubmit function
+    if (axios.isAxiosError(err)) {
+      const message = err.response?.data?.message || 'Registration failed. Please try again.'
 
       // Parse the validation errors from the message
-      if (message.includes('Validation failed')) {
+      if (typeof message === 'string' && message.includes('Validation failed')) {
         const validationErrors = message.split(':')[1].trim()
         const errorList = validationErrors
           .replace(/\[|\]/g, '')
           .split(',')
-          .map((e) => e.trim())
+          .map((e: string) => e.trim())
 
-        errorList.forEach((error) => {
+        errorList.forEach((error: string) => {
           if (error.includes('Token')) {
             errors.token = error
             addToast(error, 'error')
@@ -195,6 +196,8 @@ async function onSubmit() {
       } else {
         addToast(message, 'error')
       }
+    } else if (err instanceof Error) {
+      addToast(err.message, 'error')
     } else {
       addToast('Registration failed. Please try again.', 'error')
     }

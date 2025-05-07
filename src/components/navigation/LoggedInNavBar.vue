@@ -56,6 +56,7 @@ const navigateTo = (path: string) => {
         <li class="dropdown-item" @click="navigateTo('/storage')">Emergency storage</li>
         <li class="dropdown-item" @click="navigateTo('/info')">General info</li>
         <li class="dropdown-item" @click="navigateTo('/quiz')">Quiz</li>
+        <li class="dropdown-item" @click="navigateTo('/household')">Household</li>
       </ul>
     </div>
 

@@ -10,6 +10,9 @@ import AdminView from '@/views/admin/AdminView.vue'
 import GeneralInfo from '@/views/general/GeneralInfoView.vue'
 import News from '@/views/home/NewsView.vue'
 import RegisterAdmin from '@/views/RegisterAdmin.vue'
+import AddStorageItemView from '@/views/storage/AddStorageItemView.vue'
+import UpdateItemView from '@/views/storage/UpdateItemView.vue'
+import AddItemView from '@/views/storage/AddItemView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -48,6 +51,21 @@ const router = createRouter({
       path: '/storage',
       name: 'storage',
       component: StorageView,
+    },
+    {
+      path: '/storage/add-storage-item',
+      name: 'add-storage-item',
+      component: AddStorageItemView,
+    },
+    {
+      path: '/storage/add-item',
+      name: 'add-item',
+      component: AddItemView,
+    },
+    {
+      path: '/storage/update/:itemId',
+      name: 'update-item',
+      component: UpdateItemView,
     },
     {
       path: '/admin',

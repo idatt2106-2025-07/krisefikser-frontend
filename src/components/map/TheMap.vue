@@ -335,4 +335,22 @@ onMounted(() => {
 :deep(.popup-content h3:first-of-type) {
   margin-top: 0;
 }
+
+:deep(.mapboxgl-ctrl-geocoder--input) {
+  width: 100%;
+  max-width: 240px !important;
+  max-height: 36px !important;
+}
+
+:deep(.mapboxgl-ctrl-geocoder.mapboxgl-ctrl) {
+  max-width: 240px !important;
+  max-height: 36px !important;
+}
+
+:deep(.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search) {
+  max-width: 20px;
+  max-height: 20px;
+  top: 8px;
+}
+
 </style>

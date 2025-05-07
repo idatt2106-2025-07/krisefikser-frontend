@@ -374,11 +374,6 @@ onMounted(() => {
   font-size: 14px;
 }
 
-:deep(.popup-content p:last-of-type),
-:deep(.popup-content h4:last-of-type) {
-  margin-bottom: 0;
-}
-
 :deep(.popup-content h3:first-of-type) {
   margin-top: 0;
 }

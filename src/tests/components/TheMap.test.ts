@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
+/* eslint-enable @typescript-eslint/ban-ts-comment */
 import { vi } from 'vitest'
 
 const mockFunctions = vi.hoisted(() => ({

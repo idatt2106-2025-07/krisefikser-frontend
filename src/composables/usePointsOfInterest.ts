@@ -84,9 +84,9 @@ export function useMarkerManagement(
     removeAllMarkers()
 
     if (!locationData.value || !Array.isArray(locationData.value.pointsOfInterest)) {
-    console.warn('POI data is not available or not an array');
-    return;
-  }
+      console.warn('POI data is not available or not an array')
+      return
+    }
 
     locationData.value.pointsOfInterest.forEach((poi: PointOfInterest) => {
       const filterKey = typeToFilterKey[poi.type]

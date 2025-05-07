@@ -31,11 +31,7 @@ onMounted(() => {
       @filter-change="handleFilterChange"
     />
     <div class="map-wrapper">
-      <button
-        v-if="screenWidth < 768"
-        class="filter-toggle-button"
-        @click="toggleFilterVisibility"
-      >
+      <button v-if="screenWidth < 768" class="filter-toggle-button" @click="toggleFilterVisibility">
         {{ isFilterVisible ? 'Hide Filters' : 'Show Filters' }}
       </button>
       <TheMap :filters="activeFilters" />

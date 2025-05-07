@@ -10,35 +10,35 @@ vi.mock('vue', async () => {
   return {
     ...actual,
     createApp: vi.fn(() => ({
-      mount: vi.fn()
-    }))
+      mount: vi.fn(),
+    })),
   }
 })
 
 // Mock mapboxgl
 vi.mock('mapbox-gl', () => {
   const PopupMock = vi.fn(() => ({
-    setHTML: vi.fn().mockReturnThis()
+    setHTML: vi.fn().mockReturnThis(),
   }))
 
   const MarkerMock = vi.fn(() => ({
     setLngLat: vi.fn().mockReturnThis(),
     setPopup: vi.fn().mockReturnThis(),
     addTo: vi.fn().mockReturnThis(),
-    remove: vi.fn()
+    remove: vi.fn(),
   }))
 
   return {
     default: {
       Marker: MarkerMock,
-      Popup: PopupMock
-    }
+      Popup: PopupMock,
+    },
   }
 })
 
 // Mock getTypeDisplayName utility
 vi.mock('@/utils/mapUtils', () => ({
-  getTypeDisplayName: vi.fn((type) => `Mocked ${type} Display Name`)
+  getTypeDisplayName: vi.fn((type) => `Mocked ${type} Display Name`),
 }))
 
 describe('useMarkerManagement', () => {
@@ -54,7 +54,7 @@ describe('useMarkerManagement', () => {
     // Create a mock map instance
     mockMapInstance = {
       addLayer: vi.fn(),
-      on: vi.fn()
+      on: vi.fn(),
     }
 
     // Create refs with test data
@@ -70,7 +70,7 @@ describe('useMarkerManagement', () => {
           description: 'City Hospital',
           opensAt: '08:00',
           closesAt: '20:00',
-          contactNumber: '123-456-7890'
+          contactNumber: '123-456-7890',
         },
         {
           id: 2,
@@ -80,7 +80,7 @@ describe('useMarkerManagement', () => {
           description: 'Emergency Shelter',
           opensAt: '24/7',
           closesAt: '',
-          contactNumber: '123-456-7891'
+          contactNumber: '123-456-7891',
         },
         {
           id: 3,
@@ -90,9 +90,9 @@ describe('useMarkerManagement', () => {
           description: 'Water Supply Station',
           opensAt: '',
           closesAt: '',
-          contactNumber: ''
-        }
-      ]
+          contactNumber: '',
+        },
+      ],
     })
 
     filters = ref({
@@ -101,12 +101,12 @@ describe('useMarkerManagement', () => {
       defibrillator: true,
       water_station: true,
       food_central: true,
-      meeting_place: true
+      meeting_place: true,
     })
 
     // Mock document.createElement
     document.createElement = vi.fn().mockReturnValue({
-      setAttribute: vi.fn()
+      setAttribute: vi.fn(),
     })
   })
 
@@ -151,7 +151,7 @@ describe('useMarkerManagement', () => {
 
     // Verify marker was created with correct element
     expect(mapboxgl.Marker).toHaveBeenCalledWith({
-      element: expect.any(Object)
+      element: expect.any(Object),
     })
 
     // Verify setLngLat was called with correct coordinates
@@ -162,10 +162,10 @@ describe('useMarkerManagement', () => {
     expect(mapboxgl.Popup).toHaveBeenCalled()
     const popupInstance = mapboxgl.Popup.mock.results[0].value
     expect(popupInstance.setHTML).toHaveBeenCalledWith(
-      expect.stringContaining(firstPOI.description)
+      expect.stringContaining(firstPOI.description),
     )
     expect(popupInstance.setHTML).toHaveBeenCalledWith(
-      expect.stringContaining(firstPOI.contactNumber)
+      expect.stringContaining(firstPOI.contactNumber),
     )
   })
 
@@ -182,7 +182,7 @@ describe('useMarkerManagement', () => {
 
   it('should handle missing or invalid POI data', () => {
     const emptyData = ref({
-      pointsOfInterest: null
+      pointsOfInterest: null,
     })
 
     const { initializeMarkers } = useMarkerManagement(map, emptyData, filters)
@@ -208,166 +208,170 @@ describe('useMarkerManagement', () => {
     expect(markerElement.setAttribute).toHaveBeenCalledWith('data-type', 'HOSPITAL')
   })
 
-    // Fix test 1: "should remove all markers when removeAllMarkers is called"
-    it('should remove all markers when removeAllMarkers is called', () => {
-      // Create a separate spy for the remove method
-      const removeSpy = vi.fn();
+  // Fix test 1: "should remove all markers when removeAllMarkers is called"
+  it('should remove all markers when removeAllMarkers is called', () => {
+    // Create a separate spy for the remove method
+    const removeSpy = vi.fn()
 
-      // Update marker mock to track removal
-      vi.mocked(mapboxgl.Marker).mockImplementation(() => ({
-        setLngLat: vi.fn().mockReturnThis(),
-        setPopup: vi.fn().mockReturnThis(),
-        addTo: vi.fn().mockReturnThis(),
-        remove: removeSpy
-      }));
+    // Update marker mock to track removal
+    vi.mocked(mapboxgl.Marker).mockImplementation(() => ({
+      setLngLat: vi.fn().mockReturnThis(),
+      setPopup: vi.fn().mockReturnThis(),
+      addTo: vi.fn().mockReturnThis(),
+      remove: removeSpy,
+    }))
 
-      const { initializeMarkers, markers, updateMarkers } = useMarkerManagement(map, locationData, filters);
+    const { initializeMarkers, markers, updateMarkers } = useMarkerManagement(
+      map,
+      locationData,
+      filters,
+    )
 
-      // First initialize markers
-      initializeMarkers();
+    // First initialize markers
+    initializeMarkers()
 
-      // Store initial length
-      const initialLength = markers.value.length;
-      expect(initialLength).toBe(3);
+    // Store initial length
+    const initialLength = markers.value.length
+    expect(initialLength).toBe(3)
 
-      // Clear mocks to track removals
-      vi.clearAllMocks();
+    // Clear mocks to track removals
+    vi.clearAllMocks()
 
-      // Call updateMarkers which internally calls removeAllMarkers
-      updateMarkers();
+    // Call updateMarkers which internally calls removeAllMarkers
+    updateMarkers()
 
-      // Each marker's remove method should have been called
-      // We had 3 markers, so remove should be called 3 times
-      expect(removeSpy).toHaveBeenCalledTimes(3);
-    });
+    // Each marker's remove method should have been called
+    // We had 3 markers, so remove should be called 3 times
+    expect(removeSpy).toHaveBeenCalledTimes(3)
+  })
 
-    // Fix test 2: "should update markers when filters change"
-    it('should update markers when filters change', async () => {
-      // Create a separate spy for the remove method
-      const removeSpy = vi.fn();
+  // Fix test 2: "should update markers when filters change"
+  it('should update markers when filters change', async () => {
+    // Create a separate spy for the remove method
+    const removeSpy = vi.fn()
 
-      // Update marker mock to track removal
-      vi.mocked(mapboxgl.Marker).mockImplementation(() => ({
-        setLngLat: vi.fn().mockReturnThis(),
-        setPopup: vi.fn().mockReturnThis(),
-        addTo: vi.fn().mockReturnThis(),
-        remove: removeSpy
-      }));
+    // Update marker mock to track removal
+    vi.mocked(mapboxgl.Marker).mockImplementation(() => ({
+      setLngLat: vi.fn().mockReturnThis(),
+      setPopup: vi.fn().mockReturnThis(),
+      addTo: vi.fn().mockReturnThis(),
+      remove: removeSpy,
+    }))
 
-      const { initializeMarkers, markers } = useMarkerManagement(map, locationData, filters);
+    const { initializeMarkers, markers } = useMarkerManagement(map, locationData, filters)
 
-      // First initialize markers
-      initializeMarkers();
+    // First initialize markers
+    initializeMarkers()
 
-      // Verify initial markers
-      expect(markers.value.length).toBe(3);
+    // Verify initial markers
+    expect(markers.value.length).toBe(3)
 
-      // Clear mocks
-      vi.clearAllMocks();
+    // Clear mocks
+    vi.clearAllMocks()
 
-      // Change a filter - this should trigger the watch callback
-      filters.value = {
-        ...filters.value,
-        hospital: false
-      };
+    // Change a filter - this should trigger the watch callback
+    filters.value = {
+      ...filters.value,
+      hospital: false,
+    }
 
-      // Call initializeMarkers again - this simulates what would happen in the watch callback
-      initializeMarkers();
+    // Call initializeMarkers again - this simulates what would happen in the watch callback
+    initializeMarkers()
 
-      // Markers should have been removed
-      expect(removeSpy).toHaveBeenCalled();
+    // Markers should have been removed
+    expect(removeSpy).toHaveBeenCalled()
 
-      // Should have created 2 markers (SHELTER and WATER_STATION)
-      expect(mapboxgl.Marker).toHaveBeenCalledTimes(2);
-    });
+    // Should have created 2 markers (SHELTER and WATER_STATION)
+    expect(mapboxgl.Marker).toHaveBeenCalledTimes(2)
+  })
 
-    // Fix test 3: "should update markers when locationData changes"
-    it('should update markers when locationData changes', async () => {
-      // Create a separate spy for the remove method
-      const removeSpy = vi.fn();
+  // Fix test 3: "should update markers when locationData changes"
+  it('should update markers when locationData changes', async () => {
+    // Create a separate spy for the remove method
+    const removeSpy = vi.fn()
 
-      // Update marker mock to track removal
-      vi.mocked(mapboxgl.Marker).mockImplementation(() => ({
-        setLngLat: vi.fn().mockReturnThis(),
-        setPopup: vi.fn().mockReturnThis(),
-        addTo: vi.fn().mockReturnThis(),
-        remove: removeSpy
-      }));
+    // Update marker mock to track removal
+    vi.mocked(mapboxgl.Marker).mockImplementation(() => ({
+      setLngLat: vi.fn().mockReturnThis(),
+      setPopup: vi.fn().mockReturnThis(),
+      addTo: vi.fn().mockReturnThis(),
+      remove: removeSpy,
+    }))
 
-      const { initializeMarkers, markers } = useMarkerManagement(map, locationData, filters);
+    const { initializeMarkers, markers } = useMarkerManagement(map, locationData, filters)
 
-      // First initialize markers
-      initializeMarkers();
+    // First initialize markers
+    initializeMarkers()
 
-      // Verify initial markers
-      expect(markers.value.length).toBe(3);
+    // Verify initial markers
+    expect(markers.value.length).toBe(3)
 
-      // Clear mocks
-      vi.clearAllMocks();
+    // Clear mocks
+    vi.clearAllMocks()
 
-      // Change locationData
-      locationData.value = {
-        pointsOfInterest: [
-          {
-            id: 4,
-            type: 'FOOD_CENTRAL',
-            latitude: 40.715,
-            longitude: -74.008,
-            description: 'Food Distribution Center',
-            opensAt: '09:00',
-            closesAt: '17:00',
-            contactNumber: ''
-          }
-        ]
-      };
+    // Change locationData
+    locationData.value = {
+      pointsOfInterest: [
+        {
+          id: 4,
+          type: 'FOOD_CENTRAL',
+          latitude: 40.715,
+          longitude: -74.008,
+          description: 'Food Distribution Center',
+          opensAt: '09:00',
+          closesAt: '17:00',
+          contactNumber: '',
+        },
+      ],
+    }
 
-      // Call initializeMarkers again - this simulates what would happen in the watch callback
-      initializeMarkers();
+    // Call initializeMarkers again - this simulates what would happen in the watch callback
+    initializeMarkers()
 
-      // Markers should have been removed
-      expect(removeSpy).toHaveBeenCalled();
+    // Markers should have been removed
+    expect(removeSpy).toHaveBeenCalled()
 
-      // Should have created 1 marker (FOOD_CENTRAL)
-      expect(mapboxgl.Marker).toHaveBeenCalledTimes(1);
-    });
+    // Should have created 1 marker (FOOD_CENTRAL)
+    expect(mapboxgl.Marker).toHaveBeenCalledTimes(1)
+  })
 
-    // Fix test 4: "should correctly handle markers with missing optional fields"
-    it('should correctly handle markers with missing optional fields', () => {
-      // Mock the setHTML function to capture the HTML content
-      const setHTMLSpy = vi.fn().mockReturnThis();
+  // Fix test 4: "should correctly handle markers with missing optional fields"
+  it('should correctly handle markers with missing optional fields', () => {
+    // Mock the setHTML function to capture the HTML content
+    const setHTMLSpy = vi.fn().mockReturnThis()
 
-      // Update the Popup mock to capture the HTML
-      vi.mocked(mapboxgl.Popup).mockImplementation(() => ({
-        setHTML: setHTMLSpy,
-        setLngLat: vi.fn().mockReturnThis(),
-        addTo: vi.fn().mockReturnThis(),
-        remove: vi.fn()
-      }));
+    // Update the Popup mock to capture the HTML
+    vi.mocked(mapboxgl.Popup).mockImplementation(() => ({
+      setHTML: setHTMLSpy,
+      setLngLat: vi.fn().mockReturnThis(),
+      addTo: vi.fn().mockReturnThis(),
+      remove: vi.fn(),
+    }))
 
-      // Create POI with minimal data
-      locationData.value = {
-        pointsOfInterest: [
-          {
-            id: 5,
-            type: 'MEETING_PLACE',
-            latitude: 40.716,
-            longitude: -74.009,
-            description: 'Meeting Point'
-          }
-        ]
-      };
+    // Create POI with minimal data
+    locationData.value = {
+      pointsOfInterest: [
+        {
+          id: 5,
+          type: 'MEETING_PLACE',
+          latitude: 40.716,
+          longitude: -74.009,
+          description: 'Meeting Point',
+        },
+      ],
+    }
 
-      const { initializeMarkers } = useMarkerManagement(map, locationData, filters);
+    const { initializeMarkers } = useMarkerManagement(map, locationData, filters)
 
-      initializeMarkers();
+    initializeMarkers()
 
-      // Verify marker was created
-      expect(mapboxgl.Marker).toHaveBeenCalledTimes(1);
+    // Verify marker was created
+    expect(mapboxgl.Marker).toHaveBeenCalledTimes(1)
 
-      // Verify popup HTML doesn't include empty fields
-      expect(setHTMLSpy).toHaveBeenCalled();
-      const popupHTML = setHTMLSpy.mock.calls[0][0];
-      expect(popupHTML).not.toContain('<h4>Open:');
-      expect(popupHTML).not.toContain('<h4>Contact:');
-    });
+    // Verify popup HTML doesn't include empty fields
+    expect(setHTMLSpy).toHaveBeenCalled()
+    const popupHTML = setHTMLSpy.mock.calls[0][0]
+    expect(popupHTML).not.toContain('<h4>Open:')
+    expect(popupHTML).not.toContain('<h4>Contact:')
+  })
 })

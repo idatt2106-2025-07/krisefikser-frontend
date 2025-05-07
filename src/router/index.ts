@@ -17,6 +17,9 @@ import RegisterAdmin from '@/views/admin/RegisterAdmin.vue'
 import TwoFactorAuthView from '@/views/2fa/TwoFactorAuthView.vue'
 import TwoFactorNotifyView from '@/views/2fa/TwoFactorNotifyView.vue'
 import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
+import AddStorageItemView from '@/views/storage/AddStorageItemView.vue'
+import UpdateItemView from '@/views/storage/UpdateItemView.vue'
+import AddItemView from '@/views/storage/AddItemView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -60,6 +63,21 @@ const router = createRouter({
       path: '/storage',
       name: 'storage',
       component: StorageView,
+    },
+    {
+      path: '/storage/add-storage-item',
+      name: 'add-storage-item',
+      component: AddStorageItemView,
+    },
+    {
+      path: '/storage/add-item',
+      name: 'add-item',
+      component: AddItemView,
+    },
+    {
+      path: '/storage/update/:itemId',
+      name: 'update-item',
+      component: UpdateItemView,
     },
     {
       path: '/admin',

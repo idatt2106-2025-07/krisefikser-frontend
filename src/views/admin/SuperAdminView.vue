@@ -5,15 +5,8 @@
     <div class="invite-section">
       <h3>Invite New Admin</h3>
       <form @submit.prevent="invite">
-        <input
-          v-model="inviteEmail"
-          type="email"
-          placeholder="Admin email"
-          required
-        />
-        <button type="submit">
-          Send Invite
-        </button>
+        <input v-model="inviteEmail" type="email" placeholder="Admin email" required />
+        <button type="submit">Send Invite</button>
       </form>
     </div>
 
@@ -32,12 +25,8 @@
             <td>{{ admin.id }}</td>
             <td>{{ admin.email }}</td>
             <td class="actions">
-              <button @click="deleteAdmin(admin.id)" class="delete-btn">
-                Delete
-              </button>
-              <button @click="sendResetLink(admin.email)" class="reset-btn">
-                Reset Password
-              </button>
+              <button @click="deleteAdmin(admin.id)" class="delete-btn">Delete</button>
+              <button @click="sendResetLink(admin.email)" class="reset-btn">Reset Password</button>
             </td>
           </tr>
         </tbody>
@@ -46,11 +35,7 @@
     </div>
 
     <div class="toast-container">
-      <div
-        v-for="t in toasts"
-        :key="t.id"
-        :class="['toast', t.type]"
-      >
+      <div v-for="t in toasts" :key="t.id" :class="['toast', t.type]">
         {{ t.message }}
       </div>
     </div>
@@ -90,7 +75,7 @@ function addToast(message: string, type: 'success' | 'error' = 'success') {
   const id = Date.now()
   toasts.value.push({ id, message, type })
   setTimeout(() => {
-    toasts.value = toasts.value.filter(t => t.id !== id)
+    toasts.value = toasts.value.filter((t) => t.id !== id)
   }, 3000)
 }
 
@@ -117,11 +102,9 @@ const deleteAdmin = async (id: number) => {
 
 const sendResetLink = async (email: string) => {
   try {
-    await axios.post(
-      '/api/super-admin/admins/new-password-link',
-      email,
-      { headers: { 'Content-Type': 'text/plain' } }
-    )
+    await axios.post('/api/super-admin/admins/new-password-link', email, {
+      headers: { 'Content-Type': 'text/plain' },
+    })
     addToast('Reset link sent to ' + email, 'success')
   } catch (err: any) {
     addToast('Error: ' + (err.response?.data || err.message), 'error')
@@ -217,7 +200,8 @@ table {
   overflow: hidden;
 }
 
-th, td {
+th,
+td {
   padding: 1rem;
   text-align: left;
   border-bottom: 1px solid #e2e8f0;
@@ -242,7 +226,8 @@ tr:hover {
   justify-content: flex-end;
 }
 
-.delete-btn, .reset-btn {
+.delete-btn,
+.reset-btn {
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 6px;
@@ -331,7 +316,8 @@ tr:hover {
     gap: 0.5rem;
   }
 
-  th, td {
+  th,
+  td {
     padding: 0.75rem 0.5rem;
   }
 }

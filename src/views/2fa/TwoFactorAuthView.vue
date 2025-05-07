@@ -27,53 +27,52 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios'
 
-const route = useRoute();
-const router = useRouter();
-const loading = ref(true);
-const error = ref<string | null>(null);
-const success = ref(false);
+const route = useRoute()
+const router = useRouter()
+const loading = ref(true)
+const error = ref<string | null>(null)
+const success = ref(false)
 
 async function verifyToken() {
-  loading.value = true;
-  error.value = null;
+  loading.value = true
+  error.value = null
 
-  const token = route.query.token as string;
+  const token = route.query.token as string
 
   if (!token) {
-    error.value = 'Authentication token is missing. Please try again.';
-    loading.value = false;
-    return;
+    error.value = 'Authentication token is missing. Please try again.'
+    loading.value = false
+    return
   }
 
   try {
-    await axios.post('/api/admin/2fa', { token });
-    success.value = true;
-    loading.value = false;
+    await axios.post('/api/admin/2fa', { token })
+    success.value = true
+    loading.value = false
 
     // Redirect after successful authentication with a slight delay for better UX
     setTimeout(() => {
-      router.push({ name: 'admin' });
-    }, 1000);
-
+      router.push({ name: 'admin' })
+    }, 1000)
   } catch (err: any) {
-    error.value = err.response?.data?.message ||
-                 'Verification failed. Please check your token and try again.';
-    loading.value = false;
+    error.value =
+      err.response?.data?.message || 'Verification failed. Please check your token and try again.'
+    loading.value = false
   }
 }
 
 function tryAgain() {
   // Clear the error and restart verification process
-  const currentUrl = new URL(window.location.href);
-  currentUrl.searchParams.delete('token');
-  window.location.href = currentUrl.toString();
+  const currentUrl = new URL(window.location.href)
+  currentUrl.searchParams.delete('token')
+  window.location.href = currentUrl.toString()
 }
 
-onMounted(verifyToken);
+onMounted(verifyToken)
 </script>
 
 <style scoped>
@@ -91,7 +90,9 @@ onMounted(verifyToken);
   max-width: 400px;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 5px 10px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.05),
+    0 5px 10px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
 
@@ -118,7 +119,9 @@ onMounted(verifyToken);
   min-height: 150px;
 }
 
-.twofa-loading, .twofa-error, .twofa-success {
+.twofa-loading,
+.twofa-error,
+.twofa-success {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -138,7 +141,9 @@ onMounted(verifyToken);
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-icon {

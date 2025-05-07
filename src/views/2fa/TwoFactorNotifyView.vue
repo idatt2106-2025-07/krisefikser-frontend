@@ -8,8 +8,19 @@
 
       <div class="notify-content">
         <div class="email-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="icon-svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            class="icon-svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            />
           </svg>
         </div>
 
@@ -21,12 +32,8 @@
         </div>
 
         <div class="notify-actions">
-          <router-link to="/" class="notify-button secondary">
-            Back to Home
-          </router-link>
-          <button @click="resendEmail" class="notify-button primary">
-            Resend Email
-          </button>
+          <router-link to="/" class="notify-button secondary"> Back to Home </router-link>
+          <button @click="resendEmail" class="notify-button primary">Resend Email</button>
         </div>
       </div>
     </div>
@@ -34,29 +41,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 
-const isResending = ref(false);
-const resendSuccess = ref(false);
-const resendError = ref(false);
+const isResending = ref(false)
+const resendSuccess = ref(false)
+const resendError = ref(false)
 
 // Simulated function to resend verification email
 // Replace this with your actual API call
 function resendEmail() {
-  isResending.value = true;
-  resendSuccess.value = false;
-  resendError.value = false;
+  isResending.value = true
+  resendSuccess.value = false
+  resendError.value = false
 
   // Simulate API call
   setTimeout(() => {
-    isResending.value = false;
-    resendSuccess.value = true;
+    isResending.value = false
+    resendSuccess.value = true
 
     // Hide success message after a few seconds
     setTimeout(() => {
-      resendSuccess.value = false;
-    }, 3000);
-  }, 1000);
+      resendSuccess.value = false
+    }, 3000)
+  }, 1000)
 }
 </script>
 
@@ -75,7 +82,9 @@ function resendEmail() {
   max-width: 450px;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 5px 10px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.05),
+    0 5px 10px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
 

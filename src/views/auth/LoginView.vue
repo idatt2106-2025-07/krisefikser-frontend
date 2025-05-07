@@ -49,7 +49,9 @@ function validateResetEmail() {
 // Computed properties
 const formValid = computed(() => email.value && password.value && !emailError.value)
 const resetValid = computed(() => !!resetEmail.value && !resetEmailError.value)
-const adminValid = computed(() => !!adminEmail.value && !!adminPassword.value && !adminEmailError.value)
+const adminValid = computed(
+  () => !!adminEmail.value && !!adminPassword.value && !adminEmailError.value,
+)
 
 // Form handlers
 async function handleLogin() {
@@ -63,7 +65,7 @@ async function handleLogin() {
     await axios.post(
       '/api/auth/login',
       { email: email.value, password: password.value },
-      { withCredentials: true }
+      { withCredentials: true },
     )
     await authStore.fetchUser()
     loginSuccess.value = 'Login successful, redirecting...'
@@ -86,7 +88,7 @@ async function handleReset() {
     const response = await axios.post(
       '/api/auth/new-password-link',
       { email: resetEmail.value },
-      { withCredentials: true }
+      { withCredentials: true },
     )
     resetSuccess.value = response.data?.message || 'Password reset link sent. Check your email.'
   } catch (err) {
@@ -106,7 +108,7 @@ async function handleAdminLogin() {
     await axios.post(
       '/api/auth/login',
       { email: adminEmail.value, password: adminPassword.value },
-      { withCredentials: true }
+      { withCredentials: true },
     )
     router.push('/admin/2fa-notify')
   } catch (err) {
@@ -177,9 +179,7 @@ function getErrorMessage(error: unknown, defaultMsg: string): string {
           </small>
         </div>
 
-        <button type="submit" :disabled="!adminValid" class="auth-button">
-          Send 2FA Link
-        </button>
+        <button type="submit" :disabled="!adminValid" class="auth-button">Send 2FA Link</button>
 
         <div class="auth-footer">
           <a href="#" @click.prevent="isAdminMode = false" class="auth-link">
@@ -209,19 +209,11 @@ function getErrorMessage(error: unknown, defaultMsg: string): string {
           </small>
         </div>
 
-        <button
-          type="submit"
-          :disabled="!resetValid || isResetLoading"
-          class="auth-button"
-        >
+        <button type="submit" :disabled="!resetValid || isResetLoading" class="auth-button">
           {{ isResetLoading ? 'Sending...' : 'Reset Password' }}
         </button>
 
-        <button
-          type="button"
-          @click="isResetMode = false"
-          class="auth-button secondary"
-        >
+        <button type="button" @click="isResetMode = false" class="auth-button secondary">
           Cancel
         </button>
       </form>
@@ -255,26 +247,18 @@ function getErrorMessage(error: unknown, defaultMsg: string): string {
             :class="{ 'input-error': touched && !password }"
             @blur="touched = true"
           />
-          <small v-if="touched && !password" class="error-message">
-            Password is required
-          </small>
+          <small v-if="touched && !password" class="error-message"> Password is required </small>
         </div>
 
-        <button type="submit" :disabled="!formValid" class="auth-button">
-          Login
-        </button>
+        <button type="submit" :disabled="!formValid" class="auth-button">Login</button>
 
         <div class="auth-footer">
           <p>
             Don't have an account?
             <router-link to="/register" class="auth-link">Register</router-link>
           </p>
-          <a href="#" @click.prevent="isResetMode = true" class="auth-link">
-            Forgot password?
-          </a>
-          <a href="#" @click.prevent="isAdminMode = true" class="auth-link admin">
-            Admin login
-          </a>
+          <a href="#" @click.prevent="isResetMode = true" class="auth-link"> Forgot password? </a>
+          <a href="#" @click.prevent="isAdminMode = true" class="auth-link admin"> Admin login </a>
         </div>
       </form>
     </div>

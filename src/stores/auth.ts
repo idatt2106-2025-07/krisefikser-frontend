@@ -10,7 +10,7 @@ export interface AuthUser {
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null as AuthUser | null
+    user: null as AuthUser | null,
   }),
   actions: {
     async fetchUser() {
@@ -23,11 +23,11 @@ export const useAuthStore = defineStore('auth', {
     },
     clearToken() {
       this.user = null
-    }
+    },
   },
   getters: {
-    isLoggedIn:   state => !!state.user,
-    isAdmin:      state => state.user?.role === 'ROLE_ADMIN',
-    isSuperAdmin: state => state.user?.role === 'ROLE_SUPER_ADMIN',
-  }
+    isLoggedIn: (state) => !!state.user,
+    isAdmin: (state) => state.user?.role === 'ROLE_ADMIN',
+    isSuperAdmin: (state) => state.user?.role === 'ROLE_SUPER_ADMIN',
+  },
 })

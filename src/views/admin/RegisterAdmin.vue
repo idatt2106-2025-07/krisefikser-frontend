@@ -32,23 +32,23 @@
             :class="{ 'input-error': errors.password }"
           />
           <div class="password-requirements">
-            <p class="requirement" :class="{ 'met': hasMinLength }">
+            <p class="requirement" :class="{ met: hasMinLength }">
               <span class="icon">{{ hasMinLength ? '✓' : '•' }}</span>
               Minimum 8 characters
             </p>
-            <p class="requirement" :class="{ 'met': hasUpperCase }">
+            <p class="requirement" :class="{ met: hasUpperCase }">
               <span class="icon">{{ hasUpperCase ? '✓' : '•' }}</span>
               At least one uppercase letter
             </p>
-            <p class="requirement" :class="{ 'met': hasLowerCase }">
+            <p class="requirement" :class="{ met: hasLowerCase }">
               <span class="icon">{{ hasLowerCase ? '✓' : '•' }}</span>
               At least one lowercase letter
             </p>
-            <p class="requirement" :class="{ 'met': hasNumber }">
+            <p class="requirement" :class="{ met: hasNumber }">
               <span class="icon">{{ hasNumber ? '✓' : '•' }}</span>
               At least one number
             </p>
-            <p class="requirement" :class="{ 'met': hasSpecialChar }">
+            <p class="requirement" :class="{ met: hasSpecialChar }">
               <span class="icon">{{ hasSpecialChar ? '✓' : '•' }}</span>
               At least one special character
             </p>
@@ -64,11 +64,7 @@
     </div>
 
     <div class="toast-container">
-      <div
-        v-for="t in toasts"
-        :key="t.id"
-        :class="['toast-message', t.type]"
-      >
+      <div v-for="t in toasts" :key="t.id" :class="['toast-message', t.type]">
         {{ t.message }}
       </div>
     </div>
@@ -127,7 +123,7 @@ function addToast(message: string, type: 'success' | 'error') {
   const id = Date.now()
   toasts.value.push({ id, message, type })
   setTimeout(() => {
-    toasts.value = toasts.value.filter(t => t.id !== id)
+    toasts.value = toasts.value.filter((t) => t.id !== id)
   }, 3000)
 }
 
@@ -142,7 +138,13 @@ function validatePassword() {
 
   if (!pass) {
     errors.password = 'Password is required'
-  } else if (!hasMinLength.value || !hasUpperCase.value || !hasLowerCase.value || !hasNumber.value || !hasSpecialChar.value) {
+  } else if (
+    !hasMinLength.value ||
+    !hasUpperCase.value ||
+    !hasLowerCase.value ||
+    !hasNumber.value ||
+    !hasSpecialChar.value
+  ) {
     errors.password = 'Password does not meet all requirements'
   } else {
     errors.password = undefined
@@ -178,9 +180,9 @@ async function onSubmit() {
         const errorList = validationErrors
           .replace(/\[|\]/g, '')
           .split(',')
-          .map(e => e.trim())
+          .map((e) => e.trim())
 
-        errorList.forEach(error => {
+        errorList.forEach((error) => {
           if (error.includes('Token')) {
             errors.token = error
             addToast(error, 'error')

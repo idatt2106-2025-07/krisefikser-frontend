@@ -65,18 +65,10 @@ const navigateTo = (path: string) => {
         <li class="dropdown-item" @click="navigateTo('/storage')">Emergency storage</li>
         <li class="dropdown-item" @click="navigateTo('/info')">General info</li>
         <li class="dropdown-item" @click="navigateTo('/quiz')">Quiz</li>
-        <li
-          v-if="authStore.isAdmin"
-          class="dropdown-item"
-          @click="navigateTo('/admin')"
-        >
+        <li v-if="authStore.isAdmin" class="dropdown-item" @click="navigateTo('/admin')">
           Admin Dashboard
         </li>
-        <li
-          v-if="authStore.isSuperAdmin"
-          class="dropdown-item"
-          @click="navigateTo('/super-admin')"
-        >
+        <li v-if="authStore.isSuperAdmin" class="dropdown-item" @click="navigateTo('/super-admin')">
           SuperAdmin Dashboard
         </li>
       </ul>

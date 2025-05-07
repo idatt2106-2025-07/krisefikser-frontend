@@ -8,6 +8,7 @@ const router = useRouter()
 const lng = Number(route.query.lng)
 const lat = Number(route.query.lat)
 
+const name = ref('')
 const highDangerRadius = ref('')
 const mediumDangerRadius = ref('')
 const lowDangerRadius = ref('')
@@ -17,6 +18,7 @@ const timeStarted = ref('')
 
 async function saveIncident() {
   if (
+    !name.value ||
     !highDangerRadius.value ||
     !mediumDangerRadius.value ||
     !lowDangerRadius.value ||
@@ -31,6 +33,7 @@ async function saveIncident() {
   const payload = {
     longitude: lng,
     latitude: lat,
+    name: name.value,
     highDangerRadiusKm: Number(highDangerRadius.value),
     mediumDangerRadiusKm: Number(mediumDangerRadius.value),
     lowDangerRadiusKm: Number(lowDangerRadius.value),
@@ -55,6 +58,7 @@ async function saveIncident() {
     <h2>Add Affected Area / Incident</h2>
     <p>Longitude: {{ lng }}</p>
     <p>Latitude: {{ lat }}</p>
+    <InputText v-model="name" placeholder="Name" />
     <InputText v-model="highDangerRadius" placeholder="High Danger Radius (km)" />
     <InputText v-model="mediumDangerRadius" placeholder="Medium Danger Radius (km)" />
     <InputText v-model="lowDangerRadius" placeholder="Low Danger Radius (km)" />

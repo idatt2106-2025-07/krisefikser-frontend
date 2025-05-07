@@ -128,12 +128,12 @@ export function useMapInitialization(
       const startMarker = new mapboxgl.Marker({ color: '#00cc00' })
         .setLngLat(origin)
         .setPopup(new mapboxgl.Popup().setHTML('<strong>Starting Point</strong>'))
-        .addTo(map.value)
+        .addTo(map.value as unknown as mapboxgl.Map)
 
       const endMarker = new mapboxgl.Marker({ color: '#ff3300' })
         .setLngLat(destination)
         .setPopup(new mapboxgl.Popup().setHTML('<strong>Destination</strong>'))
-        .addTo(map.value)
+        .addTo(map.value as unknown as mapboxgl.Map)
 
       currentMarkers.value.push(startMarker, endMarker)
 
@@ -152,7 +152,7 @@ export function useMapInitialization(
         routeGeometry,
         distance: route.distance,
         duration: route.duration,
-        steps: route.legs[0].steps.map((step) => ({
+        steps: route.legs[0].steps.map((step: { maneuver: { instruction: string }; distance: number; duration: number }) => ({
           instruction: step.maneuver.instruction,
           distance: step.distance,
           duration: step.duration,
@@ -174,7 +174,7 @@ export function useMapInitialization(
           </div>
         `,
         )
-        .addTo(map.value)
+        .addTo(map.value as unknown as mapboxgl.Map)
 
       window.clearMapDirections = clearDirections
       return result

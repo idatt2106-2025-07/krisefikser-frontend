@@ -57,7 +57,6 @@ const fetchPointsOfInterest = async (filters: string[]) => {
 
   try {
     isLoading.value = true
-    console.log('Fetching POIs with filters:', filters)
     const response = await mapService.getPointsOfInterest(filters)
 
     const newData = {
@@ -68,7 +67,6 @@ const fetchPointsOfInterest = async (filters: string[]) => {
     locationData.value = newData
     needsMarkerUpdate.value = true
 
-    console.log('Data updated, will refresh markers on next tick')
   } catch (error) {
     console.error('Error fetching POIs:', error)
   } finally {
@@ -90,7 +88,6 @@ const fetchPointsOfInterest = async (filters: string[]) => {
 const fetchAllPointsOfInterest = async () => {
   try {
     isLoading.value = true
-    console.log('Home page: Fetching all POIs')
 
     const response = await mapService.getAllPointsOfInterest()
 
@@ -117,7 +114,6 @@ const fetchAllPointsOfInterest = async () => {
  */
 const fetchAffectedAreas = async () => {
   try {
-    console.log('Fetching affected areas')
     const response = await mapService.getAffectedAreas()
 
     const newData = {
@@ -126,7 +122,6 @@ const fetchAffectedAreas = async () => {
     }
 
     locationData.value = newData
-    console.log('Affected areas updated')
 
     if (map.value && isStyleLoaded.value) {
       tryInitializeLayers(3)
@@ -152,7 +147,6 @@ watch(
     const prevFiltersStr = prevFilters.value.sort().join(',')
 
     if (filtersStr === prevFiltersStr) {
-      console.log('Skipping duplicate request with same filters')
       return
     }
 
@@ -192,7 +186,6 @@ const { initializeSearch } = useSearchGeocoder(
 )
 
 const navigateToPOI = async (poi: { longitude: number; latitude: number; description?: string; id?: number; type?: string }) => {
-  // Get user's current location if available
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -201,20 +194,15 @@ const navigateToPOI = async (poi: { longitude: number; latitude: number; descrip
 
         showDirections(origin, destination).then((result) => {
           if (result) {
-            console.log(
-              `Directions loaded: ${result.distance / 1000}km, ${Math.round(result.duration / 60)} minutes`,
-            )
           }
         })
       },
       (error) => {
         console.error('Error getting user location:', error)
-        // If user location fails, just focus on the POI
         map.value?.flyTo({ center: [poi.longitude, poi.latitude], zoom: 15 })
       },
     )
   } else {
-    // If geolocation not supported, just focus on the POI
     map.value?.flyTo({ center: [poi.longitude, poi.latitude], zoom: 15 })
   }
 }
@@ -248,7 +236,6 @@ watch(
 onMounted(() => {
   watch([isMapLoaded, isStyleLoaded], ([mapLoaded, styleLoaded]) => {
     if (mapLoaded && styleLoaded) {
-      console.log('Map and style loaded, initializing components')
 
       setTimeout(() => {
         tryInitializeLayers(5)
@@ -278,7 +265,6 @@ onMounted(() => {
       document.addEventListener('click', (e) => {
         const target = e.target as HTMLElement
         if (target.classList.contains('directions-btn')) {
-          console.log('Direction button clicked via document listener')
           const lngAttr = target.getAttribute('data-lng') || '0'
           const latAttr = target.getAttribute('data-lat') || '0'
 

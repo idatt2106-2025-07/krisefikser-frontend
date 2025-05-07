@@ -11,8 +11,11 @@ import AdminView from '@/views/admin/AdminView.vue'
 import GeneralInfo from '@/views/general/GeneralInfoView.vue'
 import News from '@/views/home/NewsView.vue'
 import MapView from '@/views/map/MapView.vue'
-import RegisterAdmin from '@/views/RegisterAdmin.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
+import SuperAdminView from '@/views/admin/SuperAdminView.vue'
+import RegisterAdmin from '@/views/admin/RegisterAdmin.vue'
+import TwoFactorAuthView from '@/views/2fa/TwoFactorAuthView.vue'
+import TwoFactorNotifyView from '@/views/2fa/TwoFactorNotifyView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -96,6 +99,26 @@ const router = createRouter({
       path: '/reset-password',
       name: 'reset-password',
       component: ResetPasswordView,
+    },
+    {
+      path: '/super-admin',
+      name: 'super-admin',
+      component: SuperAdminView,
+    },
+    {
+      path: '/register-admin',
+      name: 'register-admin',
+      component: RegisterAdmin,
+    },
+    {
+      path: '/verify-admin',
+      name: 'two-factor-auth',
+      component: TwoFactorAuthView,
+    },
+    {
+      path: '/admin/2fa-notify',
+      name: 'TwoFactorNotify',
+      component: TwoFactorNotifyView,
     },
   ],
 })

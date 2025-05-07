@@ -191,7 +191,7 @@ const { initializeSearch } = useSearchGeocoder(
   markers,
 )
 
-const navigateToPOI = async (poi) => {
+const navigateToPOI = async (poi: { longitude: number; latitude: number; description?: string; id?: number; type?: string }) => {
   // Get user's current location if available
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(

@@ -57,7 +57,6 @@ const fetchPointsOfInterest = async (filters: string[]) => {
 
   try {
     isLoading.value = true
-    console.log('Fetching POIs with filters:', filters)
     const response = await mapService.getPointsOfInterest(filters)
 
     const newData = {
@@ -67,8 +66,6 @@ const fetchPointsOfInterest = async (filters: string[]) => {
 
     locationData.value = newData
     needsMarkerUpdate.value = true
-
-    console.log('Data updated, will refresh markers on next tick')
   } catch (error) {
     console.error('Error fetching POIs:', error)
   } finally {
@@ -90,7 +87,6 @@ const fetchPointsOfInterest = async (filters: string[]) => {
 const fetchAllPointsOfInterest = async () => {
   try {
     isLoading.value = true
-    console.log('Home page: Fetching all POIs')
 
     const response = await mapService.getAllPointsOfInterest()
 
@@ -117,7 +113,6 @@ const fetchAllPointsOfInterest = async () => {
  */
 const fetchAffectedAreas = async () => {
   try {
-    console.log('Fetching affected areas')
     const response = await mapService.getAffectedAreas()
 
     const newData = {
@@ -126,7 +121,6 @@ const fetchAffectedAreas = async () => {
     }
 
     locationData.value = newData
-    console.log('Affected areas updated')
 
     if (map.value && isStyleLoaded.value) {
       tryInitializeLayers(3)
@@ -152,7 +146,6 @@ watch(
     const prevFiltersStr = prevFilters.value.sort().join(',')
 
     if (filtersStr === prevFiltersStr) {
-      console.log('Skipping duplicate request with same filters')
       return
     }
 
@@ -169,7 +162,8 @@ watch(
 )
 
 const mapContainer = ref<HTMLElement | null>(null)
-const { map, isMapLoaded, isStyleLoaded } = useMapInitialization(mapContainer)
+const { map, isMapLoaded, isStyleLoaded, showDirections, clearDirections } =
+  useMapInitialization(mapContainer)
 const {
   markers,
   initializeMarkers,
@@ -189,6 +183,34 @@ const { initializeSearch } = useSearchGeocoder(
   locationData,
   markers,
 )
+
+const navigateToPOI = async (poi: {
+  longitude: number
+  latitude: number
+  description?: string
+  id?: number
+  type?: string
+}) => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const origin: [number, number] = [position.coords.longitude, position.coords.latitude]
+        const destination: [number, number] = [poi.longitude, poi.latitude]
+
+        showDirections(origin, destination).then((result) => {
+          if (result) {
+          }
+        })
+      },
+      (error) => {
+        console.error('Error getting user location:', error)
+        map.value?.flyTo({ center: [poi.longitude, poi.latitude], zoom: 15 })
+      },
+    )
+  } else {
+    map.value?.flyTo({ center: [poi.longitude, poi.latitude], zoom: 15 })
+  }
+}
 
 /**
  * Watcher that checks if the markers need updating.
@@ -219,8 +241,6 @@ watch(
 onMounted(() => {
   watch([isMapLoaded, isStyleLoaded], ([mapLoaded, styleLoaded]) => {
     if (mapLoaded && styleLoaded) {
-      console.log('Map and style loaded, initializing components')
-
       setTimeout(() => {
         tryInitializeLayers(5)
         initializeMarkers()
@@ -245,6 +265,26 @@ onMounted(() => {
           }
         }
       }, 100)
+
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement
+        if (target.classList.contains('directions-btn')) {
+          const lngAttr = target.getAttribute('data-lng') || '0'
+          const latAttr = target.getAttribute('data-lat') || '0'
+
+          const lng = parseFloat(lngAttr)
+          const lat = parseFloat(latAttr)
+
+          navigateToPOI({
+            longitude: lng,
+            latitude: lat,
+          })
+
+          // Prevent any additional handling
+          e.preventDefault()
+          e.stopPropagation()
+        }
+      })
     }
   })
 })
@@ -327,12 +367,24 @@ onMounted(() => {
   font-size: 14px;
 }
 
-:deep(.popup-content p:last-of-type),
-:deep(.popup-content h4:last-of-type) {
-  margin-bottom: 0;
-}
-
 :deep(.popup-content h3:first-of-type) {
   margin-top: 0;
+}
+
+:deep(.mapboxgl-ctrl-geocoder--input) {
+  width: 100%;
+  max-width: 240px !important;
+  max-height: 36px !important;
+}
+
+:deep(.mapboxgl-ctrl-geocoder.mapboxgl-ctrl) {
+  max-width: 240px !important;
+  max-height: 36px !important;
+}
+
+:deep(.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search) {
+  max-width: 20px;
+  max-height: 20px;
+  top: 8px;
 }
 </style>

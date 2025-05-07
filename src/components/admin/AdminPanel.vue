@@ -6,11 +6,16 @@ import Dropdown from 'primevue/dropdown'
 import TheMap from '@/components/map/TheMap.vue'
 import GameificationSettings from '@/components/admin/CRUDActivities.vue'
 
-interface Props {
-  type: 'Map' | 'User' | 'Gameification'
-}
-
-const props = defineProps<Props>()
+const props = defineProps({
+  type: {
+    type: String,
+    required: true,
+  },
+  isAdminPage: {
+    type: Boolean,
+    default: false,
+  },
+})
 
 const showAddIconForm = ref(false)
 const iconType = ref('')
@@ -38,8 +43,8 @@ function save() {
   alert(`${props.type} settings saved!`)
 }
 
-function handleMapClick(event: CustomEvent) {
-  const { lng, lat } = event.detail
+function handleMapClick({ lng, lat }: { lng: number; lat: number }) {
+  console.log('Map clicked at:', lng, lat)
   router.push({ name: 'AddPOI', query: { lng, lat } })
 }
 </script>
@@ -47,7 +52,7 @@ function handleMapClick(event: CustomEvent) {
 <template>
   <div class="admin-panel">
     <div v-if="props.type === 'Map'" class="map-panel">
-      <TheMap @map-click="handleMapClick" />
+      <TheMap :isAdminPage="props.isAdminPage" @map-click="handleMapClick" />
       <div class="buttons">
         <Button label="Add Icon" @click="showAddIconForm = true" />
         <Button label="Save Changes" @click="save" class="mt-2" />
@@ -81,6 +86,8 @@ function handleMapClick(event: CustomEvent) {
 .gameification-panel,
 .user-panel {
   text-align: center;
+  height: 600px;
+  position: relative;
 }
 
 .buttons {

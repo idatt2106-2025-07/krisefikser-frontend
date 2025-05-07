@@ -14,6 +14,7 @@
           <AdminPanel
             v-if="tab.type !== 'InviteAdmin'"
             :type="tab.type === 'Users' ? 'User' : tab.type"
+            :isAdminPage="tab.type === 'Map'"
           />
           <div v-else>
             <h2>Invite Admin</h2>

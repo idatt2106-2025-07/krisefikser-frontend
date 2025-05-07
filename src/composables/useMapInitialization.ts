@@ -3,7 +3,6 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import type { Ref } from 'vue'
 import { mapboxConfig } from '@/config/mapboxConfig'
 
-// Extend the Window interface to include clearMapDirections
 declare global {
   interface Window {
     clearMapDirections: () => void;
@@ -36,7 +35,6 @@ export function useMapInitialization(
   const isMapLoaded = ref(false)
   const isStyleLoaded = ref(false)
 
-  // Track current directions data
   const currentRouteId = ref<string | null>(null)
   const currentMarkers = ref<mapboxgl.Marker[]>([])
   const directionsPopup = ref<mapboxgl.Popup | null>(null)
@@ -47,7 +45,6 @@ export function useMapInitialization(
   const clearDirections = () => {
     if (!map.value) return;
 
-    // Remove existing route layer and source
     if (currentRouteId.value) {
       if (map.value.getLayer(`${currentRouteId.value}-layer`)) {
         map.value.removeLayer(`${currentRouteId.value}-layer`);
@@ -58,11 +55,9 @@ export function useMapInitialization(
       currentRouteId.value = null;
     }
 
-    // Remove existing markers
     currentMarkers.value.forEach(marker => marker.remove());
     currentMarkers.value = [];
 
-    // Remove directions popup
     if (directionsPopup.value) {
       directionsPopup.value.remove();
       directionsPopup.value = null;
@@ -82,14 +77,10 @@ export function useMapInitialization(
     if (!map.value) return null;
 
     try {
-      // Clear any existing directions
       clearDirections();
 
-      // Create a new ID for this route
       currentRouteId.value = `route-${Date.now()}`;
 
-      // Call Mapbox Directions API
-      // Available profiles: driving, walking, cycling, driving-traffic
       const profile = 'walking';
       const url = `https://api.mapbox.com/directions/v5/mapbox/${profile}/` +
                  `${origin[0]},${origin[1]};${destination[0]},${destination[1]}` +
@@ -98,7 +89,6 @@ export function useMapInitialization(
       const response = await fetch(url);
       const data = await response.json();
 
-      // Handle API errors
       if (!data.routes || data.routes.length === 0) {
         console.error('No routes found', data);
         return null;
@@ -107,7 +97,6 @@ export function useMapInitialization(
       const route = data.routes[0];
       const routeGeometry = route.geometry;
 
-      // Add the route line to the map
       map.value.addSource(currentRouteId.value, {
         type: 'geojson',
         data: {
@@ -132,7 +121,6 @@ export function useMapInitialization(
         }
       });
 
-      // Add start and end markers
       const startMarker = new mapboxgl.Marker({ color: '#00cc00' })
         .setLngLat(origin)
         .setPopup(new mapboxgl.Popup().setHTML('<strong>Starting Point</strong>'))
@@ -145,12 +133,10 @@ export function useMapInitialization(
 
       currentMarkers.value.push(startMarker, endMarker);
 
-      // Fit the map to the route
       const bounds = new mapboxgl.LngLatBounds()
         .extend(origin)
         .extend(destination);
 
-      // Extend bounds with all points on the route
       for (const coord of routeGeometry.coordinates) {
         bounds.extend(coord as [number, number]);
       }
@@ -160,11 +146,10 @@ export function useMapInitialization(
         maxZoom: 15
       });
 
-      // Create a structured result object with directions info
       const result: DirectionsResult = {
         routeGeometry,
-        distance: route.distance, // in meters
-        duration: route.duration, // in seconds
+        distance: route.distance,
+        duration: route.duration,
         steps: route.legs[0].steps.map(step => ({
           instruction: step.maneuver.instruction,
           distance: step.distance,
@@ -172,7 +157,6 @@ export function useMapInitialization(
         }))
       };
 
-      // Create a directions summary popup (optional)
       const minutes = Math.round(route.duration / 60);
       const distance = (route.distance / 1000).toFixed(1);
 
@@ -234,14 +218,6 @@ export function useMapInitialization(
 
     map.value.on('style.load', () => {
       isStyleLoaded.value = true
-    })
-
-    map.value?.on('click', () => {
-      // Optionally close the directions popup when clicking elsewhere on the map
-      if (directionsPopup.value) {
-        directionsPopup.value.remove();
-        directionsPopup.value = null;
-      }
     })
   })
 

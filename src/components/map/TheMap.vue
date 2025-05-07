@@ -66,7 +66,6 @@ const fetchPointsOfInterest = async (filters: string[]) => {
 
     locationData.value = newData
     needsMarkerUpdate.value = true
-
   } catch (error) {
     console.error('Error fetching POIs:', error)
   } finally {
@@ -185,7 +184,13 @@ const { initializeSearch } = useSearchGeocoder(
   markers,
 )
 
-const navigateToPOI = async (poi: { longitude: number; latitude: number; description?: string; id?: number; type?: string }) => {
+const navigateToPOI = async (poi: {
+  longitude: number
+  latitude: number
+  description?: string
+  id?: number
+  type?: string
+}) => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -236,7 +241,6 @@ watch(
 onMounted(() => {
   watch([isMapLoaded, isStyleLoaded], ([mapLoaded, styleLoaded]) => {
     if (mapLoaded && styleLoaded) {
-
       setTimeout(() => {
         tryInitializeLayers(5)
         initializeMarkers()

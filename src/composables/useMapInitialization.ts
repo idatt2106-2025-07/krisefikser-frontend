@@ -152,11 +152,13 @@ export function useMapInitialization(
         routeGeometry,
         distance: route.distance,
         duration: route.duration,
-        steps: route.legs[0].steps.map((step: { maneuver: { instruction: string }; distance: number; duration: number }) => ({
-          instruction: step.maneuver.instruction,
-          distance: step.distance,
-          duration: step.duration,
-        })),
+        steps: route.legs[0].steps.map(
+          (step: { maneuver: { instruction: string }; distance: number; duration: number }) => ({
+            instruction: step.maneuver.instruction,
+            distance: step.distance,
+            duration: step.duration,
+          }),
+        ),
       }
 
       const minutes = Math.round(route.duration / 60)

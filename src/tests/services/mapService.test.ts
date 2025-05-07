@@ -4,8 +4,8 @@ import axiosInstance from '@/services/axiosService'
 
 vi.mock('@/services/axiosService', () => ({
   default: {
-    get: vi.fn()
-  }
+    get: vi.fn(),
+  },
 }))
 
 describe('MapService', () => {
@@ -18,8 +18,8 @@ describe('MapService', () => {
       const mockResponse = {
         data: [
           { id: 1, type: 'HOSPITAL', latitude: 10, longitude: 20 },
-          { id: 2, type: 'SHELTER', latitude: 30, longitude: 40 }
-        ]
+          { id: 2, type: 'SHELTER', latitude: 30, longitude: 40 },
+        ],
       }
 
       vi.mocked(axiosInstance.get).mockResolvedValueOnce(mockResponse)
@@ -29,7 +29,7 @@ describe('MapService', () => {
       const result = await mapService.getPointsOfInterest(filters)
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/point-of-interest', {
-        params: { types: 'hospital,shelter' }
+        params: { types: 'hospital,shelter' },
       })
 
       expect(result).toEqual(mockResponse.data)
@@ -42,7 +42,7 @@ describe('MapService', () => {
       const result = await mapService.getPointsOfInterest([])
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/point-of-interest', {
-        params: { types: '' }
+        params: { types: '' },
       })
 
       expect(result).toEqual(mockResponse.data)
@@ -54,8 +54,8 @@ describe('MapService', () => {
       const mockResponse = {
         data: [
           { id: 1, latitude: 10, longitude: 20, description: 'Flood', severityLevel: 'High' },
-          { id: 2, latitude: 30, longitude: 40, description: 'Wildfire', severityLevel: 'Medium' }
-        ]
+          { id: 2, latitude: 30, longitude: 40, description: 'Wildfire', severityLevel: 'Medium' },
+        ],
       }
 
       vi.mocked(axiosInstance.get).mockResolvedValueOnce(mockResponse)
@@ -74,8 +74,8 @@ describe('MapService', () => {
         data: [
           { id: 1, type: 'HOSPITAL', latitude: 10, longitude: 20 },
           { id: 2, type: 'SHELTER', latitude: 30, longitude: 40 },
-          { id: 3, type: 'DEFIBRILLATOR', latitude: 50, longitude: 60 }
-        ]
+          { id: 3, type: 'DEFIBRILLATOR', latitude: 50, longitude: 60 },
+        ],
       }
 
       vi.mocked(axiosInstance.get).mockResolvedValueOnce(mockResponse)
@@ -84,8 +84,8 @@ describe('MapService', () => {
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/point-of-interest', {
         params: {
-          types: 'hospital,shelter,defibrillator,water_station,food_central,meeting_place'
-        }
+          types: 'hospital,shelter,defibrillator,water_station,food_central,meeting_place',
+        },
       })
 
       expect(result).toEqual(mockResponse.data)

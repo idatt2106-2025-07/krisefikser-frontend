@@ -175,10 +175,7 @@ describe('TheMap', () => {
       description: 'Test POI',
     })
 
-    expect(mockFunctions.showDirections).toHaveBeenCalledWith(
-      [60, 50],
-      [20, 30],
-    )
+    expect(mockFunctions.showDirections).toHaveBeenCalledWith([60, 50], [20, 30])
   })
 
   it('falls back to flyTo when geolocation fails', async () => {

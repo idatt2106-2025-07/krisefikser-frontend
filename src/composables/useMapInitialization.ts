@@ -3,6 +3,13 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import type { Ref } from 'vue'
 import { mapboxConfig } from '@/config/mapboxConfig'
 
+// Extend the Window interface to include clearMapDirections
+declare global {
+  interface Window {
+    clearMapDirections: () => void;
+  }
+}
+
 interface DirectionsResult {
   routeGeometry: GeoJSON.LineString;
   distance: number;
@@ -174,12 +181,14 @@ export function useMapInitialization(
         .setHTML(`
           <div class="directions-summary">
             <h3>Directions</h3>
-            <p><strong>Distance:</strong> ${distance} km</p>
-            <p><strong>Duration:</strong> ${minutes} minutes</p>
+            <h4>Distance:</strong> ${distance} km</h4>
+            <h4>Duration:</strong> ${minutes} minutes</h4>
+            <button class="close-directions-btn" onclick="window.clearMapDirections()">Close Directions</button>
           </div>
         `)
         .addTo(map.value);
 
+        window.clearMapDirections = clearDirections;
       return result;
     } catch (error) {
       console.error('Error fetching directions:', error);

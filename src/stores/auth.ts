@@ -2,9 +2,10 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
+// stores/auth.ts
 export interface AuthUser {
   email: string
-  role: 'ROLE_NORMAL' | 'ROLE_ADMIN' | 'ROLE_SUPER'
+  role: 'ROLE_NORMAL' | 'ROLE_ADMIN' | 'ROLE_SUPER_ADMIN' | 'ROLE_UNKNOWN'
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -27,6 +28,6 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isLoggedIn:   state => !!state.user,
     isAdmin:      state => state.user?.role === 'ROLE_ADMIN',
-    isSuperAdmin: state => state.user?.role === 'ROLE_SUPER'
+    isSuperAdmin: state => state.user?.role === 'ROLE_SUPER_ADMIN',
   }
 })

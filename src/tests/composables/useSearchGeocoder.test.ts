@@ -6,6 +6,19 @@ import mapboxgl from 'mapbox-gl'
 import { createSearchableGeoJSON } from '@/utils/mapUtils'
 import type { LocationData } from '@/types/mapTypes'
 
+// Define the type for the result callback
+interface GeocoderResult {
+  result: {
+    properties?: {
+      id?: number
+      title?: string
+    }
+    geometry?: {
+      coordinates: [number, number]
+    }
+  }
+}
+
 // Mock MapboxGeocoder
 vi.mock('@mapbox/mapbox-gl-geocoder', () => {
   return {
@@ -13,17 +26,17 @@ vi.mock('@mapbox/mapbox-gl-geocoder', () => {
       on: vi.fn((event, callback) => {
         // Store the callback so we can trigger it in tests
         if (event === 'result') {
-          mockCallbacks.result = callback;
+          mockCallbacks.result = callback
         }
-        return this;
+        return this
       }),
       setProximity: vi.fn(),
     })),
   }
-});
+})
 
-// Store mock callbacks for testing
-const mockCallbacks: Record<string, Function> = {};
+// Store mock callbacks for testing - with proper typing
+const mockCallbacks: Record<string, (arg: GeocoderResult) => void> = {}
 
 // Mock mapboxgl
 vi.mock('mapbox-gl', () => {
@@ -32,13 +45,13 @@ vi.mock('mapbox-gl', () => {
       accessToken: 'mock-token',
       Marker: vi.fn(() => ({
         getElement: vi.fn(() => ({
-          getAttribute: vi.fn((attr) => attr === 'data-id' ? '1' : null),
+          getAttribute: vi.fn((attr) => (attr === 'data-id' ? '1' : null)),
         })),
         togglePopup: vi.fn(),
       })),
-    }
-  };
-});
+    },
+  }
+})
 
 // Mock createSearchableGeoJSON utility
 vi.mock('@/utils/mapUtils', () => ({
@@ -53,7 +66,7 @@ vi.mock('@/utils/mapUtils', () => ({
           title: 'Test Hospital',
           description: 'Medical facility',
           category: 'HOSPITAL',
-        }
+        },
       },
       {
         type: 'Feature',
@@ -63,29 +76,29 @@ vi.mock('@/utils/mapUtils', () => ({
           title: 'Test Shelter',
           description: 'Emergency shelter',
           category: 'SHELTER',
-        }
-      }
-    ]
-  }))
-}));
+        },
+      },
+    ],
+  })),
+}))
 
 describe('useSearchGeocoder', () => {
-  let map;
-  let locationData;
-  let markers;
-  let addControlSpy;
-  let flyToSpy;
+  let map
+  let locationData
+  let markers
+  let addControlSpy
+  let flyToSpy
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.clearAllMocks()
 
     // Create map mock
-    addControlSpy = vi.fn();
-    flyToSpy = vi.fn();
+    addControlSpy = vi.fn()
+    flyToSpy = vi.fn()
     map = ref({
       addControl: addControlSpy,
       flyTo: flyToSpy,
-    });
+    })
 
     // Create location data mock
     locationData = ref({
@@ -103,34 +116,31 @@ describe('useSearchGeocoder', () => {
           latitude: 21,
           longitude: 11,
           description: 'Emergency shelter',
-        }
+        },
       ],
-      affectedAreas: []
-    });
+      affectedAreas: [],
+    })
 
     // Create markers mock
-    markers = ref([
-      new mapboxgl.Marker(),
-      new mapboxgl.Marker(),
-    ]);
+    markers = ref([new mapboxgl.Marker(), new mapboxgl.Marker()])
 
     // Reset mock callbacks
     for (const key in mockCallbacks) {
-      delete mockCallbacks[key];
+      delete mockCallbacks[key]
     }
-  });
+  })
 
   it('should return the correct interface', () => {
-    const result = useSearchGeocoder(map, locationData, markers);
+    const result = useSearchGeocoder(map, locationData, markers)
 
-    expect(result).toHaveProperty('geocoder');
-    expect(result).toHaveProperty('initializeSearch');
-  });
+    expect(result).toHaveProperty('geocoder')
+    expect(result).toHaveProperty('initializeSearch')
+  })
 
   it('should initialize geocoder with correct options', () => {
-    const { initializeSearch, geocoder } = useSearchGeocoder(map, locationData, markers);
+    const { initializeSearch, geocoder } = useSearchGeocoder(map, locationData, markers)
 
-    initializeSearch();
+    initializeSearch()
 
     expect(MapboxGeocoder).toHaveBeenCalledWith({
       accessToken: 'mock-token',
@@ -139,63 +149,63 @@ describe('useSearchGeocoder', () => {
       localGeocoder: expect.any(Function),
       render: expect.any(Function),
       localGeocoderOnly: false,
-    });
+    })
 
-    expect(addControlSpy).toHaveBeenCalledWith(expect.any(Object), 'top-left');
-    expect(geocoder.value).not.toBeNull();
-  });
+    expect(addControlSpy).toHaveBeenCalledWith(expect.any(Object), 'top-left')
+    expect(geocoder.value).not.toBeNull()
+  })
 
   it('should not initialize geocoder when map is null', () => {
-    const nullMap = ref(null);
-    const { initializeSearch, geocoder } = useSearchGeocoder(nullMap, locationData, markers);
+    const nullMap = ref(null)
+    const { initializeSearch, geocoder } = useSearchGeocoder(nullMap, locationData, markers)
 
-    initializeSearch();
+    initializeSearch()
 
-    expect(MapboxGeocoder).not.toHaveBeenCalled();
-    expect(geocoder.value).toBeNull();
-  });
+    expect(MapboxGeocoder).not.toHaveBeenCalled()
+    expect(geocoder.value).toBeNull()
+  })
 
   it('should filter search results correctly in custom geocoder', () => {
-    const { initializeSearch } = useSearchGeocoder(map, locationData, markers);
+    const { initializeSearch } = useSearchGeocoder(map, locationData, markers)
 
-    initializeSearch();
+    initializeSearch()
 
     // Get the localGeocoder function from the MapboxGeocoder constructor call
-    const localGeocoderFn = MapboxGeocoder.mock.calls[0][0].localGeocoder;
+    const localGeocoderFn = MapboxGeocoder.mock.calls[0][0].localGeocoder
 
     // Test filtering with "hospital" query
-    const results = localGeocoderFn('hospital', locationData.value);
+    const results = localGeocoderFn('hospital', locationData.value)
 
-    expect(createSearchableGeoJSON).toHaveBeenCalledWith(locationData.value);
-    expect(results.length).toBe(1);
-    expect(results[0].properties.title).toBe('Test Hospital');
-    expect(results[0].place_name).toBe('Test Hospital');
-  });
+    expect(createSearchableGeoJSON).toHaveBeenCalledWith(locationData.value)
+    expect(results.length).toBe(1)
+    expect(results[0].properties.title).toBe('Test Hospital')
+    expect(results[0].place_name).toBe('Test Hospital')
+  })
 
   it('should return empty array for short or empty queries', () => {
-    const { initializeSearch } = useSearchGeocoder(map, locationData, markers);
+    const { initializeSearch } = useSearchGeocoder(map, locationData, markers)
 
-    initializeSearch();
+    initializeSearch()
 
     // Get the localGeocoder function
-    const localGeocoderFn = MapboxGeocoder.mock.calls[0][0].localGeocoder;
+    const localGeocoderFn = MapboxGeocoder.mock.calls[0][0].localGeocoder
 
     // Test with short query
-    expect(localGeocoderFn('a')).toEqual([]);
+    expect(localGeocoderFn('a')).toEqual([])
 
     // Test with empty query
-    expect(localGeocoderFn('')).toEqual([]);
+    expect(localGeocoderFn('')).toEqual([])
 
     // Test with null query
-    expect(localGeocoderFn(null)).toEqual([]);
-  });
+    expect(localGeocoderFn(null)).toEqual([])
+  })
 
   it('should handle result selection and fly to location', () => {
-    const { initializeSearch } = useSearchGeocoder(map, locationData, markers);
+    const { initializeSearch } = useSearchGeocoder(map, locationData, markers)
 
-    initializeSearch();
+    initializeSearch()
 
-    expect(mockCallbacks.result).toBeDefined();
+    expect(mockCallbacks.result).toBeDefined()
 
     // Simulate a result selection event
     mockCallbacks.result({
@@ -205,50 +215,50 @@ describe('useSearchGeocoder', () => {
           title: 'Test Hospital',
         },
         geometry: {
-          coordinates: [10, 20]
-        }
-      }
-    });
+          coordinates: [10, 20],
+        },
+      },
+    })
 
     // Check that the marker's popup was toggled
-    expect(markers.value[0].togglePopup).toHaveBeenCalled();
+    expect(markers.value[0].togglePopup).toHaveBeenCalled()
 
     // Check that the map flew to the correct coordinates
     expect(flyToSpy).toHaveBeenCalledWith({
       center: [10, 20],
       zoom: 15,
       essential: true,
-    });
-  });
+    })
+  })
 
   it('should render custom templates for search results', () => {
-    const { initializeSearch } = useSearchGeocoder(map, locationData, markers);
+    const { initializeSearch } = useSearchGeocoder(map, locationData, markers)
 
-    initializeSearch();
+    initializeSearch()
 
     // Get the render function from the MapboxGeocoder constructor call
-    const renderFn = MapboxGeocoder.mock.calls[0][0].render;
+    const renderFn = MapboxGeocoder.mock.calls[0][0].render
 
     // Test rendering a POI item
     const poiHtml = renderFn({
       properties: {
         title: 'Test Hospital',
-        description: 'Medical facility'
-      }
-    });
+        description: 'Medical facility',
+      },
+    })
 
-    expect(poiHtml).toContain('<div class="geocoder-result">');
-    expect(poiHtml).toContain('<strong>Test Hospital</strong>');
-    expect(poiHtml).toContain('<span>Medical facility</span>');
+    expect(poiHtml).toContain('<div class="geocoder-result">')
+    expect(poiHtml).toContain('<strong>Test Hospital</strong>')
+    expect(poiHtml).toContain('<span>Medical facility</span>')
 
     // Test rendering a Mapbox geocoder result
     const mapboxHtml = renderFn({
       text: 'New York',
-      place_name: 'New York, NY, USA'
-    });
+      place_name: 'New York, NY, USA',
+    })
 
-    expect(mapboxHtml).toContain('<div class="geocoder-result global-location">');
-    expect(mapboxHtml).toContain('<strong>New York</strong>');
-    expect(mapboxHtml).toContain('<span class="location-details">New York, NY, USA</span>');
-  });
-});
+    expect(mapboxHtml).toContain('<div class="geocoder-result global-location">')
+    expect(mapboxHtml).toContain('<strong>New York</strong>')
+    expect(mapboxHtml).toContain('<span class="location-details">New York, NY, USA</span>')
+  })
+})

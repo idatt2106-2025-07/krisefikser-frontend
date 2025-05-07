@@ -10,11 +10,15 @@ import StorageView from '@/views/storage/StorageView.vue'
 import AdminView from '@/views/admin/AdminView.vue'
 import GeneralInfo from '@/views/general/GeneralInfoView.vue'
 import News from '@/views/home/NewsView.vue'
+import MapView from '@/views/map/MapView.vue'
+import RegisterAdmin from '@/views/RegisterAdmin.vue'
 import AddPOIView from '@/views/admin/AddPOIView.vue'
 import AddAffectedAreaView from '@/views/admin/AddAffectedAreaView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
+
+import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +42,11 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: UserSettingsView,
+    },
+    {
+      path: '/map',
+      name: 'map',
+      component: MapView,
     },
     {
       path: '/household',
@@ -73,6 +82,16 @@ const router = createRouter({
       path: '/quiz',
       name: 'quiz',
       component: QuizCreator,
+    },
+    {
+      path: '/verify-email',
+      name: 'verifyEmail',
+      component: VerifyEmailView,
+    },
+    {
+      path: '/register-admin',
+      name: 'register-admin',
+      component: RegisterAdmin,
     },
     {
       path: '/admin/add/poi',

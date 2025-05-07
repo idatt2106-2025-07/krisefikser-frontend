@@ -13,4 +13,13 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    host: 'dev.krisefikser.com',
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080', // Backend URL
+        changeOrigin: true,
+      },
+    },
+  },
 })

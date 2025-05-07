@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
@@ -9,6 +10,7 @@ const email = ref('')
 const password = ref('')
 const emailError = ref(false)
 const touched = ref(false)
+const router = useRouter()
 const authStore = useAuthStore()
 
 function validateEmail() {
@@ -25,17 +27,20 @@ async function handleLogin() {
   if (!formValid.value) return
 
   try {
-    const response = await axios.post('http://localhost:8080/api/auth/login', {
-      email: email.value,
-      password: password.value,
-    })
-
-    // Store the token using Pinia and localStorage
-    authStore.setToken(response.data.token)
+    const response = await axios.post(
+      'http://localhost:8080/api/auth/login',
+      {
+        email: email.value,
+        password: password.value,
+      },
+      {
+        withCredentials: true,
+      },
+    )
 
     alert(`Login successful: ${response.data.message}`)
-    // Optionally, redirect the user after login
-    // e.g., use router.push('/dashboard')
+    await authStore.fetchUser()
+    router.push('/')
   } catch (error) {
     console.error('Error during login:', error)
     alert('Login failed. Please check your credentials and try again.')
@@ -61,7 +66,7 @@ async function handleLogin() {
       <div class="field">
         <label for="password">Password</label>
         <Password
-          id="password"
+          inputId="password"
           v-model="password"
           toggleMask
           :feedback="false"
@@ -103,7 +108,6 @@ async function handleLogin() {
   flex-direction: column;
 }
 
-/* make PrimeVue inputs 100% wide */
 .field :deep(.p-inputtext),
 .field :deep(.p-password-input) {
   width: 100%;

@@ -2,22 +2,36 @@
 /**
  * Reusable notification bar component for displaying alerts and warnings
  */
-import { defineProps } from 'vue'
+import { ref, onMounted } from 'vue'
+import notificationService from '@/services/notificationService'
 
 interface Notification {
   type: 'danger' | 'warning' | 'info'
   message: string
 }
 
-defineProps({
-  /**
-   * Array of notification objects to display
-   */
-  notifications: {
-    type: Array as () => Notification[],
-    default: () => [],
-  },
-})
+interface Item {
+  id: number
+  name: string
+  unit: string
+  calories: number
+  type: string
+}
+
+interface ExpiringItem {
+  id: number
+  expirationDate: string
+  quantity: number
+  householdId: number
+  itemId: number
+  item: Item
+}
+
+interface Incident {
+  message: string
+}
+
+const notifications = ref<Notification[]>([])
 
 /**
  * Gets the appropriate CSS class based on notification type
@@ -32,6 +46,170 @@ const getNotificationClass = (type: string) => {
 const getIconClass = (type: string) => {
   return `notification-${type}-icon`
 }
+
+/**
+ * Fetches incidents from the notification service and converts them to notifications
+ */
+const fetchIncidents = async () => {
+  try {
+    const response = await notificationService.getIncidents()
+
+    if (!response || response.length === 0) {
+      return []
+    }
+
+    const incidentNotifications = response.map((incident: Incident) => {
+      return {
+        type: 'danger' as const,
+        message: incident.message,
+      }
+    })
+
+    return incidentNotifications
+  } catch (error) {
+    console.error('Error fetching incidents:', error)
+    return [
+      {
+        type: 'danger',
+        message: 'Error loading incident information',
+      },
+    ]
+  }
+}
+
+/**
+ * Fetches expiring storage items and converts them to notifications
+ */
+const fetchExpiringStorageItems = async () => {
+  try {
+    const response = await notificationService.getExpiringStorageItems()
+
+    if (response.length === 0) {
+      return []
+    }
+
+    const typeGroups = {
+      FOOD: { count: 0, earliestItem: null as ExpiringItem | null, earliestDays: Infinity },
+      DRINK: { count: 0, earliestItem: null as ExpiringItem | null, earliestDays: Infinity },
+      ACCESSORIES: { count: 0, earliestItem: null as ExpiringItem | null, earliestDays: Infinity },
+    }
+
+    response.forEach((item: ExpiringItem) => {
+      const type = item.item.type.toUpperCase()
+      const daysUntil = getDaysUntilExpiry(item.expirationDate)
+
+      let groupKey = 'OTHER'
+      if (typeGroups.hasOwnProperty(type)) {
+        groupKey = type
+      }
+
+      typeGroups[groupKey].count++
+
+      if (daysUntil < typeGroups[groupKey].earliestDays) {
+        typeGroups[groupKey].earliestDays = daysUntil
+        typeGroups[groupKey].earliestItem = item
+      }
+    })
+
+    const typeNotifications: Notification[] = []
+
+    if (typeGroups.FOOD.count > 0) {
+      if (typeGroups.FOOD.count == 1) {
+        typeNotifications.push({
+          type: 'warning',
+          message: `${typeGroups.FOOD.earliestItem?.item.name} expires in ${typeGroups.FOOD.earliestDays} days`,
+        })
+      } else {
+        typeNotifications.push({
+          type: 'warning',
+          message: `${typeGroups.FOOD.count} food items expires within 7 days, first item in ${typeGroups.FOOD.earliestDays} days`,
+        })
+      }
+    }
+
+    if (typeGroups.DRINK.count > 0) {
+      if (typeGroups.DRINK.count == 1) {
+        typeNotifications.push({
+          type: 'warning',
+          message: `${typeGroups.DRINK.earliestItem?.item.name} needs to be changed in ${typeGroups.DRINK.earliestDays} days`,
+        })
+      } else {
+        typeNotifications.push({
+          type: 'warning',
+          message: `${typeGroups.DRINK.count} drinks needs to be changed in 7 days, first item in ${typeGroups.DRINK.earliestDays} days`,
+        })
+      }
+    }
+
+    if (typeGroups.ACCESSORIES.count > 0) {
+      if (typeGroups.ACCESSORIES.count > 0) {
+        typeNotifications.push({
+          type: 'warning',
+          message: `${typeGroups.ACCESSORIES.earliestItem?.item.name} needs your attention in ${typeGroups.ACCESSORIES.earliestDays} days`,
+        })
+      } else {
+        typeNotifications.push({
+          type: 'warning',
+          message: `${typeGroups.ACCESSORIES.count} accessories needs your attention within 7 days, first item in ${typeGroups.ACCESSORIES.earliestDays} days`,
+        })
+      }
+    }
+
+    notifications.value = typeNotifications
+    return typeNotifications
+  } catch (error) {
+    console.error('Error fetching expiring items:', error)
+    return []
+  }
+}
+
+/**
+ * Calculates the number of days until an item expires
+ *
+ * @param {string} expiryDateStr - The expiration date in string format
+ * @returns {number} The number of days until the item expires
+ */
+const getDaysUntilExpiry = (expiryDateStr: string): number => {
+  const expiryDate = new Date(expiryDateStr)
+  const today = new Date()
+
+  expiryDate.setHours(0, 0, 0, 0)
+  today.setHours(0, 0, 0, 0)
+
+  const diffTime = expiryDate.getTime() - today.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+  return diffDays
+}
+
+/**
+ * Fetches all notifications by calling the incident and expiring items fetch functions
+ */
+const fetchAllNotifications = async () => {
+  try {
+    const [incidentNotifications, expiringItemsNotifications] = await Promise.all([
+      fetchIncidents(),
+      fetchExpiringStorageItems(),
+    ])
+
+    notifications.value = [...incidentNotifications, ...expiringItemsNotifications]
+  } catch (error) {
+    console.error('Error fetching notifications:', error)
+    notifications.value = [
+      {
+        type: 'danger',
+        message: 'Error loading notifications',
+      },
+    ]
+  }
+}
+
+/**
+ * Fetches all notifications when the component is mounted
+ */
+onMounted(() => {
+  fetchAllNotifications()
+})
 </script>
 
 <template>
@@ -69,7 +247,7 @@ const getIconClass = (type: string) => {
 
 .notification-danger {
   background-color: white;
-  border-left: 4px solid #ff3b30;
+  border-left: 4px solid #d70b00;
 }
 
 .notification-warning {
@@ -95,16 +273,16 @@ const getIconClass = (type: string) => {
 }
 
 .notification-danger-icon {
-  background-color: #ff3b30;
+  background-color: #d70b00;
 }
 
 .notification-danger-icon:before {
-  content: '!';
+  content: '⚠️';
   color: white;
   font-weight: bold;
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 40%;
   transform: translate(-50%, -50%);
 }
 
@@ -132,7 +310,7 @@ const getIconClass = (type: string) => {
   font-weight: bold;
   font-style: italic;
   position: absolute;
-  left: 50%;
+  left: 45%;
   top: 50%;
   transform: translate(-50%, -50%);
 }

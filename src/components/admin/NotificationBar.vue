@@ -27,6 +27,19 @@ interface ExpiringItem {
   item: Item
 }
 
+interface TypeGroupData {
+  count: number
+  earliestItem: ExpiringItem | null
+  earliestDays: number
+}
+
+interface TypeGroups {
+  FOOD: TypeGroupData
+  DRINK: TypeGroupData
+  ACCESSORIES: TypeGroupData
+  [key: string]: TypeGroupData
+}
+
 interface Incident {
   message: string
 }
@@ -88,10 +101,11 @@ const fetchExpiringStorageItems = async () => {
       return []
     }
 
-    const typeGroups = {
-      FOOD: { count: 0, earliestItem: null as ExpiringItem | null, earliestDays: Infinity },
-      DRINK: { count: 0, earliestItem: null as ExpiringItem | null, earliestDays: Infinity },
-      ACCESSORIES: { count: 0, earliestItem: null as ExpiringItem | null, earliestDays: Infinity },
+    const typeGroups: TypeGroups = {
+      FOOD: { count: 0, earliestItem: null, earliestDays: Infinity },
+      DRINK: { count: 0, earliestItem: null, earliestDays: Infinity },
+      ACCESSORIES: { count: 0, earliestItem: null, earliestDays: Infinity },
+      OTHER: { count: 0, earliestItem: null, earliestDays: Infinity },
     }
 
     response.forEach((item: ExpiringItem) => {

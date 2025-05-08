@@ -41,6 +41,7 @@ const emit = defineEmits(['map-click'])
 const router = useRouter()
 
 const filtersRef = computed(() => props.filters)
+const isAdminPageRef = computed(() => props.isAdminPage)
 
 /**
  * Returns a subset of filters where the value is true (enabled).
@@ -188,7 +189,7 @@ const {
   markers: any
   initializeMarkers: () => void
   updateMarkers: () => void
-} = useMarkerManagement(map as Ref<mapboxgl.Map | null>, locationData, filtersRef)
+} = useMarkerManagement(map as Ref<mapboxgl.Map | null>, locationData, filtersRef, isAdminPageRef, router)
 const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(
   map as Ref<mapboxgl.Map | null>,
   locationData,

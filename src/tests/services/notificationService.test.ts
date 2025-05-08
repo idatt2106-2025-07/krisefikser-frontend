@@ -5,8 +5,8 @@ import axiosInstance from '@/services/axiosService'
 // Mock the axios instance
 vi.mock('@/services/axiosService', () => ({
   default: {
-    get: vi.fn()
-  }
+    get: vi.fn(),
+  },
 }))
 
 describe('notificationService', () => {
@@ -33,8 +33,8 @@ describe('notificationService', () => {
         {
           id: 1,
           expirationDate: '2023-01-01',
-          item: { name: 'Test Item', type: 'FOOD' }
-        }
+          item: { name: 'Test Item', type: 'FOOD' },
+        },
       ]
 
       // Mock the axios response

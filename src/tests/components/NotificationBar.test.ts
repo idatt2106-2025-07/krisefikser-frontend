@@ -7,8 +7,8 @@ import notificationService from '@/services/notificationService'
 vi.mock('@/services/notificationService', () => ({
   default: {
     getIncidents: vi.fn(),
-    getExpiringStorageItems: vi.fn()
-  }
+    getExpiringStorageItems: vi.fn(),
+  },
 }))
 
 describe('NotificationBar.vue', () => {
@@ -33,7 +33,7 @@ describe('NotificationBar.vue', () => {
     // Mock incident response
     vi.mocked(notificationService.getIncidents).mockResolvedValue([
       { message: 'Test incident 1' },
-      { message: 'Test incident 2' }
+      { message: 'Test incident 2' },
     ])
     vi.mocked(notificationService.getExpiringStorageItems).mockResolvedValue([])
 
@@ -73,9 +73,9 @@ describe('NotificationBar.vue', () => {
           name: 'Test Food',
           unit: 'kg',
           calories: 200,
-          type: 'FOOD'
-        }
-      }
+          type: 'FOOD',
+        },
+      },
     ])
 
     const wrapper = mount(NotificationBar)
@@ -117,8 +117,8 @@ describe('NotificationBar.vue', () => {
           name: 'Test Food 1',
           unit: 'kg',
           calories: 200,
-          type: 'FOOD'
-        }
+          type: 'FOOD',
+        },
       },
       {
         id: 2,
@@ -131,8 +131,8 @@ describe('NotificationBar.vue', () => {
           name: 'Test Food 2',
           unit: 'kg',
           calories: 300,
-          type: 'FOOD'
-        }
+          type: 'FOOD',
+        },
       },
       {
         id: 3,
@@ -145,9 +145,9 @@ describe('NotificationBar.vue', () => {
           name: 'Test Drink',
           unit: 'liter',
           calories: 0,
-          type: 'DRINK'
-        }
-      }
+          type: 'DRINK',
+        },
+      },
     ])
 
     const wrapper = mount(NotificationBar)

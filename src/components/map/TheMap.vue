@@ -141,7 +141,9 @@ watch(
   (newFilters) => {
     if (isLoading.value || isDebouncing.value) return
 
-    const poiFilters = getEnabledFilters(newFilters).filter((f) => f !== 'affected_areas' && f !== 'household')
+    const poiFilters = getEnabledFilters(newFilters).filter(
+      (f) => f !== 'affected_areas' && f !== 'household',
+    )
 
     const filtersStr = poiFilters.sort().join(',')
     const prevFiltersStr = prevFilters.value.sort().join(',')
@@ -189,7 +191,7 @@ const {
   isHouseholdVisible,
   navigateToHousehold,
   createHouseholdMarker,
-  initialize: initializeHouseholdMarker
+  initialize: initializeHouseholdMarker,
 } = useHouseholdMarker(map, isMapLoaded, isStyleLoaded)
 
 const navigateToPOI = async (poi: {
@@ -245,7 +247,7 @@ watch(
 /**
  * Watcher that checks the filter for household and toggles filter
  */
- watch(
+watch(
   () => filtersRef.value.household,
   (showHousehold) => {
     if (!map.value || !isMapLoaded.value) return
@@ -258,7 +260,7 @@ watch(
         isHouseholdVisible.value = false
       }
     }
-  }
+  },
 )
 
 /**
@@ -284,8 +286,8 @@ onMounted(() => {
             fetchAllPointsOfInterest()
           } else {
             const poiFilters = getEnabledFilters(filtersRef.value).filter(
-              (f) => f !== 'affected_areas' && f !== 'household'
-)
+              (f) => f !== 'affected_areas' && f !== 'household',
+            )
 
             if (poiFilters.length > 0) {
               fetchPointsOfInterest(poiFilters)

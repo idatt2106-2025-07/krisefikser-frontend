@@ -95,7 +95,7 @@ describe('TheMap', () => {
       name: 'Test User',
       role: 'ROLE_NORMAL',
       householdLatitude: 59.9139,
-      householdLongitude: 10.7522
+      householdLongitude: 10.7522,
     }
 
     vi.clearAllMocks()

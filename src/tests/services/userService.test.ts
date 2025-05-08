@@ -16,12 +16,12 @@ describe('UserService', () => {
         name: 'Test User',
         role: 'ROLE_NORMAL',
         householdLatitude: 59.9139,
-        householdLongitude: 10.7522
+        householdLongitude: 10.7522,
       }
 
       vi.mocked(axios.get).mockResolvedValueOnce({
         data: mockUserData,
-        status: 200
+        status: 200,
       })
 
       const result = await userService.getUserInfo()
@@ -42,7 +42,7 @@ describe('UserService', () => {
     it('should handle empty response data', async () => {
       vi.mocked(axios.get).mockResolvedValueOnce({
         data: null,
-        status: 200
+        status: 200,
       })
 
       const result = await userService.getUserInfo()
@@ -54,8 +54,8 @@ describe('UserService', () => {
       const error = {
         response: {
           status: 401,
-          data: { message: 'Unauthorized' }
-        }
+          data: { message: 'Unauthorized' },
+        },
       }
       vi.mocked(axios.get).mockRejectedValueOnce(error)
 

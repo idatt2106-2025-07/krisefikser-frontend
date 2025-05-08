@@ -22,7 +22,7 @@ export const useUserStore = defineStore('user', {
       if (!state.userInfo) return null
       return {
         latitude: state.userInfo.householdLatitude,
-        longitude: state.userInfo.householdLongitude
+        longitude: state.userInfo.householdLongitude,
       }
     },
   },
@@ -42,10 +42,9 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-
     clearUserInfo() {
       this.userInfo = null
       this.error = null
     },
-  }
+  },
 })

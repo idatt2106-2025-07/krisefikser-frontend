@@ -6,37 +6,36 @@ import { h, render } from 'vue'
 import MapIcon from '@/components/map/MapIcon.vue'
 
 interface HouseholdMarkerReturn {
-  householdMarker: Ref<any>;
-  isHouseholdVisible: Ref<boolean>;
-  createHouseholdMarker: () => void;
-  navigateToHousehold: () => void;
-  initialize: () => Promise<void>;
+  householdMarker: Ref<any>
+  isHouseholdVisible: Ref<boolean>
+  createHouseholdMarker: () => void
+  navigateToHousehold: () => void
+  initialize: () => Promise<void>
 }
 
 export function useHouseholdMarker(
   map: Ref<mapboxgl.Map | null>,
   isMapLoaded: Ref<boolean>,
-  isStyleLoaded: Ref<boolean>
+  isStyleLoaded: Ref<boolean>,
 ): HouseholdMarkerReturn {
   const userStore = useUserStore()
   const householdMarker = ref<mapboxgl.Marker | null>(null)
   const isHouseholdVisible = ref(false)
 
   const createHouseholdMarker = () => {
+    if (!userStore.getHouseholdLocation) {
+      userStore.fetchUserInfo()
+    }
 
-  if(!userStore.getHouseholdLocation) {
-    userStore.fetchUserInfo()
-  }
+    const location = userStore.getHouseholdLocation
 
-  const location = userStore.getHouseholdLocation
-
-  if (!location || !map.value) {
-    console.error('Cannot create marker: location or map missing', {
-      hasLocation: !!location,
-      hasMap: !!map.value
-    })
-    return
-  }
+    if (!location || !map.value) {
+      console.error('Cannot create marker: location or map missing', {
+        hasLocation: !!location,
+        hasMap: !!map.value,
+      })
+      return
+    }
 
     if (householdMarker.value) {
       householdMarker.value.remove()
@@ -48,12 +47,11 @@ export function useHouseholdMarker(
     const vNode = h(MapIcon, {
       type: 'household',
       size: 'small',
-      withBackground: true
+      withBackground: true,
     })
     render(vNode, el)
 
-    const popup = new mapboxgl.Popup({ offset: 25 })
-      .setHTML(`
+    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
         <div class="popup-content">
           <h3>Your Household</h3>
           <p>Your registered home location</p>
@@ -75,7 +73,7 @@ export function useHouseholdMarker(
     map.value.flyTo({
       center: [location.longitude, location.latitude],
       zoom: 15,
-      essential: true
+      essential: true,
     })
   }
 
@@ -94,7 +92,7 @@ export function useHouseholdMarker(
             createHouseholdMarker()
           }
         },
-        { immediate: true }
+        { immediate: true },
       )
     } catch (error) {
       console.error('Error initializing household marker:', error)
@@ -106,6 +104,6 @@ export function useHouseholdMarker(
     isHouseholdVisible,
     createHouseholdMarker,
     navigateToHousehold,
-    initialize
+    initialize,
   }
 }

@@ -45,7 +45,7 @@ function save() {
 
 function handleMapClick({ lng, lat }: { lng: number; lat: number }) {
   console.log('Map clicked at:', lng, lat)
-  router.push({ name: 'AddPOI', query: { lng, lat } })
+  router.push({ name: 'addPOI', query: { lng, lat } })
 }
 </script>
 

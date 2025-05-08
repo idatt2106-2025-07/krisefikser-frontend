@@ -65,7 +65,7 @@ const submitForm = async () => {
       name: name.value,
       unit: unit.value,
       calories: Number(calories.value),
-      type: type.value
+      type: type.value,
     })
 
     formSuccess.value = true
@@ -108,9 +108,7 @@ const handleCaloriesChange = (event: Event) => {
     <div class="add-item-card">
       <h1 class="title">Add New Item To Product List</h1>
 
-      <div v-if="formSuccess" class="success-message">
-        Item added successfully! Redirecting...
-      </div>
+      <div v-if="formSuccess" class="success-message">Item added successfully! Redirecting...</div>
 
       <div v-if="formError" class="error-message">
         {{ formError }}
@@ -124,7 +122,7 @@ const handleCaloriesChange = (event: Event) => {
           v-model="name"
           placeholder="Enter item name"
           :disabled="isSubmitting"
-        >
+        />
       </div>
 
       <div class="form-group">
@@ -135,7 +133,7 @@ const handleCaloriesChange = (event: Event) => {
           v-model="unit"
           placeholder="Enter unit (e.g., piece, box, liter, kg)"
           :disabled="isSubmitting"
-        >
+        />
       </div>
 
       <div class="form-group">
@@ -148,16 +146,12 @@ const handleCaloriesChange = (event: Event) => {
           placeholder="Enter number of calories per unit"
           min="0"
           :disabled="isSubmitting"
-        >
+        />
       </div>
 
       <div class="form-group">
         <label for="type">Type</label>
-        <select
-          id="type"
-          v-model="type"
-          :disabled="isSubmitting"
-        >
+        <select id="type" v-model="type" :disabled="isSubmitting">
           <option value="" disabled>Select a type</option>
           <option v-for="itemType in itemTypes" :key="itemType" :value="itemType">
             {{ itemType.charAt(0) + itemType.slice(1).toLowerCase() }}
@@ -166,22 +160,13 @@ const handleCaloriesChange = (event: Event) => {
       </div>
 
       <div class="form-actions">
-        <button
-          class="add-button"
-          @click="submitForm"
-          :disabled="isSubmitting"
-        >
+        <button class="add-button" @click="submitForm" :disabled="isSubmitting">
           <span v-if="isSubmitting">Adding...</span>
           <span v-else>Add Item</span>
         </button>
-        <button
-          class="cancel-button"
-          @click="navigateToAddStorageItem"
-          :disabled="isSubmitting"
-        >
+        <button class="cancel-button" @click="navigateToAddStorageItem" :disabled="isSubmitting">
           Cancel
         </button>
-
       </div>
     </div>
   </div>
@@ -224,7 +209,8 @@ label {
   color: #333;
 }
 
-input, select {
+input,
+select {
   width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
@@ -240,14 +226,17 @@ select {
   background-size: 1em;
 }
 
-input:hover, select:hover {
+input:hover,
+select:hover {
   border-color: #b8b8b8;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);  transition: all 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
   outline: none;
-  border-color: #5ADF7B;
+  border-color: #5adf7b;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -258,7 +247,7 @@ input:focus, select:focus {
 }
 
 .add-button {
-  background-color: #5ADF7B;
+  background-color: #5adf7b;
   border: none;
   color: #333;
   padding: 12px 30px;
@@ -267,7 +256,9 @@ input:focus, select:focus {
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.2s, opacity 0.2s;
+  transition:
+    background-color 0.2s,
+    opacity 0.2s;
 }
 
 .add-button:hover {
@@ -290,7 +281,7 @@ input:focus, select:focus {
 
 .success-message {
   background-color: #e9f7ef;
-  color: #5ADF7B;
+  color: #5adf7b;
   padding: 12px;
   border-radius: 8px;
   margin-bottom: 20px;
@@ -314,7 +305,9 @@ input:focus, select:focus {
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.2s, opacity 0.2s;
+  transition:
+    background-color 0.2s,
+    opacity 0.2s;
 }
 
 .cancel-button:hover {

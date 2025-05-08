@@ -5,8 +5,8 @@ import { useItemStore } from '@/stores/itemStore.ts'
 const props = defineProps({
   searchInputSelector: {
     type: String,
-    default: '.search-input'
-  }
+    default: '.search-input',
+  },
 })
 
 const emit = defineEmits(['select'])
@@ -100,10 +100,7 @@ onUnmounted(() => {
 <template>
   <div ref="containerRef" class="dropdown-provider-container">
     <slot></slot>
-    <div
-      v-if="showDropdown && searchResults.length > 0"
-      class="search-results-dropdown"
-    >
+    <div v-if="showDropdown && searchResults.length > 0" class="search-results-dropdown">
       <ul>
         <li
           v-for="item in searchResults"

@@ -61,7 +61,7 @@ const sortDirection = computed(() => {
 
 // Get items with expiration days calculated
 const items = computed(() => {
-  return storageItemStore.aggregatedItems.map(item => {
+  return storageItemStore.aggregatedItems.map((item) => {
     const expirationDate = new Date(item.earliestExpirationDate)
     const today = new Date()
     const diffTime = expirationDate.getTime() - today.getTime()
@@ -100,8 +100,12 @@ watch([checkedCategories, selectedSortOption], () => {
 
 // Function to handle search input
 const handleSearch = (value: string | Event) => {
-  if (typeof value === 'object' && value !== null && 'target' in value &&
-    value.target instanceof HTMLInputElement) {
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    'target' in value &&
+    value.target instanceof HTMLInputElement
+  ) {
     searchQuery.value = value.target.value
   } else if (typeof value === 'string') {
     searchQuery.value = value
@@ -130,7 +134,7 @@ const applyFiltersSearchAndSort = () => {
       searchQuery.value as string,
       hasCategories ? checkedCategories.value : undefined,
       hasSort ? selectedSort.value : undefined,
-      hasSort ? sortDirection.value : 'asc'
+      hasSort ? sortDirection.value : 'asc',
     )
     return
   }
@@ -140,7 +144,7 @@ const applyFiltersSearchAndSort = () => {
     storageItemStore.filterAndSortAggregatedItems(
       checkedCategories.value,
       selectedSort.value,
-      sortDirection.value
+      sortDirection.value,
     )
   } else if (hasCategories) {
     storageItemStore.filterByItemType(checkedCategories.value)
@@ -209,7 +213,7 @@ onMounted(async () => {
             />
           </div>
 
-          <button class="add-button" @click="navigateToAddItem" >Add item</button>
+          <button class="add-button" @click="navigateToAddItem">Add item</button>
         </div>
 
         <div v-if="storageItemStore.loading" class="loading-indicator">
@@ -241,9 +245,11 @@ onMounted(async () => {
               <div class="item-expiration">
                 <div :class="['status-pill', getExpirationClass(item.expirationDays)]">
                   {{
-                    item.expirationDays === Infinity ? 'Infinite' :
-                      item.expirationDays <= 0 ? 'Expired' :
-                        `${item.expirationDays} days`
+                    item.expirationDays === Infinity
+                      ? 'Infinite'
+                      : item.expirationDays <= 0
+                        ? 'Expired'
+                        : `${item.expirationDays} days`
                   }}
                 </div>
               </div>
@@ -410,7 +416,7 @@ onMounted(async () => {
 }
 
 .status-expired {
-  background-color:lightgrey;
+  background-color: lightgrey;
 }
 
 .status-pill {

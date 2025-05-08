@@ -27,21 +27,21 @@ const itemToDelete = ref<number | null>(null)
 const deleteInProgress = ref(false)
 
 interface ModifiedItem {
-  id: number;
-  quantity: number;
-  expirationDays: number;
+  id: number
+  quantity: number
+  expirationDays: number
   originalData: {
-    quantity: number;
-    expirationDays: number;
-  };
-  changed: boolean;
+    quantity: number
+    expirationDays: number
+  }
+  changed: boolean
 }
 
 const modifiedItems = reactive<Record<number, ModifiedItem>>({})
 
 // Initialize modified items tracker
 const initializeModifiedItems = () => {
-  storageItemStore.individualItems.forEach(item => {
+  storageItemStore.individualItems.forEach((item) => {
     const expirationDate = new Date(item.expirationDate)
     const today = new Date()
     const diffTime = expirationDate.getTime() - today.getTime()
@@ -53,9 +53,9 @@ const initializeModifiedItems = () => {
       expirationDays: diffDays > 0 ? diffDays : 0,
       originalData: {
         quantity: item.quantity,
-        expirationDays: diffDays > 0 ? diffDays : 0
+        expirationDays: diffDays > 0 ? diffDays : 0,
       },
-      changed: false
+      changed: false,
     }
   })
 }
@@ -105,15 +105,12 @@ const aggregatedItem = computed(() => {
   const firstItem = items[0]
 
   // Calculate total quantity using the potentially modified values
-  const totalQuantity = Object.values(modifiedItems).reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  )
+  const totalQuantity = Object.values(modifiedItems).reduce((sum, item) => sum + item.quantity, 0)
 
   // Find the earliest expiration date from modified values
   const earliestExpirationDays = Object.values(modifiedItems).reduce(
     (earliest, item) => Math.min(earliest, item.expirationDays || Infinity),
-    Infinity
+    Infinity,
   )
 
   return {
@@ -121,7 +118,7 @@ const aggregatedItem = computed(() => {
     name: firstItem.item.name,
     totalQuantity,
     unit: firstItem.item.unit,
-    expirationDays: earliestExpirationDays === Infinity ? 0 : earliestExpirationDays
+    expirationDays: earliestExpirationDays === Infinity ? 0 : earliestExpirationDays,
   }
 })
 
@@ -201,7 +198,7 @@ const saveChanges = async () => {
     savingChanges.value = true
 
     // Get items that have been modified
-    const changedItems = Object.values(modifiedItems).filter(item => item.changed)
+    const changedItems = Object.values(modifiedItems).filter((item) => item.changed)
 
     if (changedItems.length === 0) {
       // No changes to save
@@ -211,7 +208,7 @@ const saveChanges = async () => {
 
     // Update each changed item
     for (const item of changedItems) {
-      const originalItem = storageItemStore.individualItems.find(i => i.id === item.id)
+      const originalItem = storageItemStore.individualItems.find((i) => i.id === item.id)
 
       if (originalItem) {
         // Convert expiration days to a date
@@ -221,7 +218,7 @@ const saveChanges = async () => {
           itemId: originalItem.itemId,
           quantity: item.quantity,
           expirationDate: expirationDate,
-          householdId: originalItem.householdId
+          householdId: originalItem.householdId,
         })
       }
     }
@@ -246,24 +243,20 @@ const cancel = () => {
   <div class="update-item-container">
     <h1 class="update-item-title">Update Item</h1>
 
-    <div v-if="loading" class="loading-indicator">
-      Loading item details...
-    </div>
+    <div v-if="loading" class="loading-indicator">Loading item details...</div>
 
     <div v-else-if="error" class="error-message">
       {{ error }}
     </div>
 
-    <div v-else-if="!aggregatedItem" class="error-message">
-      Item not found.
-    </div>
+    <div v-else-if="!aggregatedItem" class="error-message">Item not found.</div>
 
     <div v-else class="content-wrapper">
       <!-- Column headers -->
       <div class="item-header">
         <div class="item-name">Aggregated Item</div>
-        <div class="item-quantity">Total <br>quantity</div>
-        <div class="item-expiration">Earliest expiration<br>date</div>
+        <div class="item-quantity">Total <br />quantity</div>
+        <div class="item-expiration">Earliest expiration<br />date</div>
       </div>
 
       <!-- Aggregated item summary -->
@@ -271,7 +264,9 @@ const cancel = () => {
         <div class="item-summary-row">
           <div class="item-name-value">{{ aggregatedItem.name }}</div>
           <div class="item-quantity-value">
-            <div class="quantity-pill">{{ aggregatedItem.totalQuantity.toFixed(1) }} {{ aggregatedItem.unit }}</div>
+            <div class="quantity-pill">
+              {{ aggregatedItem.totalQuantity.toFixed(1) }} {{ aggregatedItem.unit }}
+            </div>
           </div>
           <div class="item-expiration-value">
             <div class="expiration-pill">{{ aggregatedItem.expirationDays }} days</div>
@@ -295,7 +290,10 @@ const cancel = () => {
         <div class="individual-items-list">
           <div v-for="item in storageItemStore.individualItems" :key="item.id" class="item-row">
             <div class="item-type">
-              {{ item.item.name }} ({{ modifiedItems[item.id]?.quantity.toFixed(1) || item.quantity.toFixed(1)}} {{ item.item.unit }})
+              {{ item.item.name }} ({{
+                modifiedItems[item.id]?.quantity.toFixed(1) || item.quantity.toFixed(1)
+              }}
+              {{ item.item.unit }})
             </div>
             <div class="item-inputs">
               <input
@@ -304,7 +302,11 @@ const cancel = () => {
                 step="0.1"
                 class="quantity-input"
                 @input="(e) => updateQuantity(item.id, (e.target as HTMLInputElement).value)"
-                :class="{ 'modified': modifiedItems[item.id]?.quantity !== modifiedItems[item.id]?.originalData.quantity }"
+                :class="{
+                  modified:
+                    modifiedItems[item.id]?.quantity !==
+                    modifiedItems[item.id]?.originalData.quantity,
+                }"
               />
               <span class="unit-label">{{ item.item.unit }}</span>
             </div>
@@ -314,7 +316,11 @@ const cancel = () => {
                 type="number"
                 class="expiration-input"
                 @input="(e) => updateExpirationDays(item.id, (e.target as HTMLInputElement).value)"
-                :class="{ 'modified': modifiedItems[item.id]?.expirationDays !== modifiedItems[item.id]?.originalData.expirationDays }"
+                :class="{
+                  modified:
+                    modifiedItems[item.id]?.expirationDays !==
+                    modifiedItems[item.id]?.originalData.expirationDays,
+                }"
               />
               <span class="days-label">days</span>
             </div>
@@ -331,7 +337,9 @@ const cancel = () => {
           {{ savingChanges ? 'Saving...' : 'Save changes' }}
         </button>
         <button class="cancel-button" @click="cancel" :disabled="savingChanges">Cancel</button>
-        <button class="add-button" @click="navigateToAddStorageItem" :disabled="savingChanges">Add new item</button>
+        <button class="add-button" @click="navigateToAddStorageItem" :disabled="savingChanges">
+          Add new item
+        </button>
       </div>
 
       <!-- Delete confirmation popup -->
@@ -339,7 +347,11 @@ const cancel = () => {
         <div class="confirmation-popup">
           <h3 class="confirmation-title">Confirm Delete</h3>
           <p class="confirmation-message">
-            {{ deleteAllMode ? 'Are you sure you want to delete all items?' : 'Are you sure you want to delete this item?' }}
+            {{
+              deleteAllMode
+                ? 'Are you sure you want to delete all items?'
+                : 'Are you sure you want to delete this item?'
+            }}
           </p>
           <div class="confirmation-buttons">
             <button
@@ -349,7 +361,9 @@ const cancel = () => {
             >
               {{ deleteInProgress ? 'Deleting...' : 'Yes, delete' }}
             </button>
-            <button class="cancel-delete-button" @click="cancelDelete" :disabled="deleteInProgress">Cancel</button>
+            <button class="cancel-delete-button" @click="cancelDelete" :disabled="deleteInProgress">
+              Cancel
+            </button>
           </div>
         </div>
       </div>
@@ -535,7 +549,9 @@ const cancel = () => {
   padding: 0.3rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  transition: border-color 0.2s, background-color 0.2s;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
   font-size: 1.2rem;
   font-weight: 500;
 }

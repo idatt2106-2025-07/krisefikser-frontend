@@ -94,7 +94,7 @@ const submitForm = async () => {
     await storageItemStore.addStorageItem({
       itemId: selectedItem.value.id,
       quantity: quantity.value,
-      expirationDate: formatDateForApi(expirationDate.value)
+      expirationDate: formatDateForApi(expirationDate.value),
     })
 
     formSuccess.value = true
@@ -136,14 +136,14 @@ const submitForm = async () => {
           <SearchDropdown @select="handleSelectItem">
             <SearchBar placeholder="Search for a product..." />
           </SearchDropdown>
-          <div v-if="selectedItem" class="selected-item">
-            Selected: {{ selectedItem.name }}
-          </div>
+          <div v-if="selectedItem" class="selected-item">Selected: {{ selectedItem.name }}</div>
         </div>
       </div>
 
       <div class="form-group helper-section">
-        <p class="helper-text">Cant find an item? Press the button below to add a new item to the list</p>
+        <p class="helper-text">
+          Cant find an item? Press the button below to add a new item to the list
+        </p>
         <div class="button-container">
           <button type="button" class="add-item-button" @click="navigateToAddItem">
             Add new item
@@ -161,7 +161,7 @@ const submitForm = async () => {
             :value="quantity"
             @input="handleQuantityChange"
             :disabled="isSubmitting"
-          >
+          />
           <span v-if="selectedItem" class="unit-display">{{ selectedItem.unit }}</span>
 
           <button type="button" class="quantity-btn" @click="increaseQuantity">+</button>
@@ -176,23 +176,15 @@ const submitForm = async () => {
           v-model="expirationDate"
           placeholder="MM/DD/YYYY"
           :disabled="isSubmitting"
-        >
+        />
       </div>
 
       <div class="form-actions">
-        <button
-          class="add-button"
-          @click="submitForm"
-          :disabled="isSubmitting || !selectedItem"
-        >
+        <button class="add-button" @click="submitForm" :disabled="isSubmitting || !selectedItem">
           <span v-if="isSubmitting">Adding...</span>
           <span v-else>Add Item</span>
         </button>
-        <button
-          class="cancel-button"
-          @click="navigateToStorage"
-          :disabled="isSubmitting"
-        >
+        <button class="cancel-button" @click="navigateToStorage" :disabled="isSubmitting">
           Cancel
         </button>
       </div>
@@ -246,7 +238,9 @@ input {
   box-sizing: border-box;
 }
 
-input:hover, #quantity:hover, input#expirationDate:hover {
+input:hover,
+#quantity:hover,
+input#expirationDate:hover {
   border-color: #b8b8b8;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease;
@@ -277,7 +271,6 @@ input:focus {
   width: 100%;
   margin-top: 10px;
 }
-
 
 .search-results-dropdown ul {
   margin: 0;
@@ -316,7 +309,7 @@ input:focus {
 }
 
 .add-button {
-  background-color: #5ADF7B;
+  background-color: #5adf7b;
   border: none;
   color: #333;
   padding: 12px 30px;
@@ -325,7 +318,9 @@ input:focus {
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.2s, opacity 0.2s;
+  transition:
+    background-color 0.2s,
+    opacity 0.2s;
 }
 
 .add-button:hover {
@@ -348,7 +343,7 @@ input:focus {
 
 .success-message {
   background-color: #e9f7ef;
-  color: #5ADF7B;
+  color: #5adf7b;
   padding: 12px;
   border-radius: 8px;
   margin-bottom: 20px;
@@ -364,12 +359,12 @@ input:focus {
   font-weight: normal;
   margin-bottom: 8px;
   color: #333;
-  font-size:  1rem;
+  font-size: 1rem;
   opacity: 0.9;
 }
 
 .add-item-button {
-  background-color: #5ADF7B;
+  background-color: #5adf7b;
   border: none;
   color: #333;
   padding: 8px 16px;
@@ -400,7 +395,9 @@ input:focus {
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.2s, opacity 0.2s;
+  transition:
+    background-color 0.2s,
+    opacity 0.2s;
 }
 
 .cancel-button:hover {

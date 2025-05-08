@@ -1,11 +1,7 @@
 // stores/storageItemStore.ts
 import { defineStore } from 'pinia'
 import storageItemService from '@/services/storageItemService'
-import type {
-  AggregatedStorageItem,
-  StorageItem,
-  AddStorageItemRequest
-} from '@/types/storageItem'
+import type { AggregatedStorageItem, StorageItem, AddStorageItemRequest } from '@/types/storageItem'
 
 export const useStorageItemStore = defineStore('storageItem', {
   state: () => ({
@@ -71,7 +67,7 @@ export const useStorageItemStore = defineStore('storageItem', {
 
       try {
         await storageItemService.deleteStorageItem(id)
-        this.individualItems = this.individualItems.filter(item => item.id !== id)
+        this.individualItems = this.individualItems.filter((item) => item.id !== id)
 
         if (this.individualItems.length === 0) {
           await this.fetchAggregatedItems()
@@ -116,9 +112,7 @@ export const useStorageItemStore = defineStore('storageItem', {
           this.aggregatedItems = [...this.aggregatedItems].sort((a, b) => {
             const nameA = a.item?.name?.toLowerCase() || ''
             const nameB = b.item?.name?.toLowerCase() || ''
-            return sortDirection === 'asc'
-              ? nameA.localeCompare(nameB)
-              : nameB.localeCompare(nameA)
+            return sortDirection === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
           })
         } else if (sortBy === 'quantity') {
           // Sort by quantity
@@ -132,9 +126,7 @@ export const useStorageItemStore = defineStore('storageItem', {
           this.aggregatedItems = [...this.aggregatedItems].sort((a, b) => {
             const dateA = new Date(a.earliestExpirationDate).getTime()
             const dateB = new Date(b.earliestExpirationDate).getTime()
-            return sortDirection === 'asc'
-              ? dateA - dateB
-              : dateB - dateA
+            return sortDirection === 'asc' ? dateA - dateB : dateB - dateA
           })
         }
       } catch (err) {
@@ -146,7 +138,12 @@ export const useStorageItemStore = defineStore('storageItem', {
     },
 
     // Method to search for aggregated items based on a search term
-    async searchAggregatedItems(searchTerm: string, types?: string[], sortBy?: string, sortDirection: string = 'asc') {
+    async searchAggregatedItems(
+      searchTerm: string,
+      types?: string[],
+      sortBy?: string,
+      sortDirection: string = 'asc',
+    ) {
       this.loading = true
       this.error = null
 
@@ -155,7 +152,7 @@ export const useStorageItemStore = defineStore('storageItem', {
           searchTerm,
           types,
           sortBy,
-          sortDirection
+          sortDirection,
         )
       } catch (err) {
         this.error = 'Failed to search storage items'
@@ -166,7 +163,11 @@ export const useStorageItemStore = defineStore('storageItem', {
     },
 
     // Method to filter and sort aggregated items based on types and sort criteria
-    async filterAndSortAggregatedItems(types: string[], sortBy: string, sortDirection: string = 'asc') {
+    async filterAndSortAggregatedItems(
+      types: string[],
+      sortBy: string,
+      sortDirection: string = 'asc',
+    ) {
       if (!types?.length && !sortBy) {
         return this.fetchAggregatedItems()
       }
@@ -192,9 +193,7 @@ export const useStorageItemStore = defineStore('storageItem', {
           this.aggregatedItems = [...this.aggregatedItems].sort((a, b) => {
             const nameA = a.item?.name?.toLowerCase() || ''
             const nameB = b.item?.name?.toLowerCase() || ''
-            return sortDirection === 'asc'
-              ? nameA.localeCompare(nameB)
-              : nameB.localeCompare(nameA)
+            return sortDirection === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
           })
         } else if (sortBy === 'quantity') {
           // Sort by quantity
@@ -208,9 +207,7 @@ export const useStorageItemStore = defineStore('storageItem', {
           this.aggregatedItems = [...this.aggregatedItems].sort((a, b) => {
             const dateA = new Date(a.earliestExpirationDate).getTime()
             const dateB = new Date(b.earliestExpirationDate).getTime()
-            return sortDirection === 'asc'
-              ? dateA - dateB
-              : dateB - dateA
+            return sortDirection === 'asc' ? dateA - dateB : dateB - dateA
           })
         }
       } catch (err) {
@@ -229,11 +226,11 @@ export const useStorageItemStore = defineStore('storageItem', {
       try {
         const response = await storageItemService.updateStorageItem(id, updatedItem)
 
-        const index = this.individualItems.findIndex(item => item.id === id)
+        const index = this.individualItems.findIndex((item) => item.id === id)
         if (index !== -1) {
           this.individualItems[index] = {
             ...this.individualItems[index],
-            ...response
+            ...response,
           }
         }
 
@@ -245,6 +242,6 @@ export const useStorageItemStore = defineStore('storageItem', {
       } finally {
         this.loading = false
       }
-    }
-  }
+    },
+  },
 })

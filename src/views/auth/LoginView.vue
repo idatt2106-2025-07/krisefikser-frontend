@@ -338,16 +338,6 @@ function getErrorMessage(error: unknown, defaultMsg: string): string {
   background-color: #fff5f5;
 }
 
-.error-message {
-  color: #e53e3e;
-  font-size: 0.75rem;
-}
-
-.success-message {
-  color: #38a169;
-  font-size: 0.75rem;
-}
-
 .auth-button {
   padding: 0.75rem;
   background-color: #4299e1;
@@ -421,14 +411,6 @@ function getErrorMessage(error: unknown, defaultMsg: string): string {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
   animation: slide-up 0.3s ease-out;
-}
-
-.notification.error {
-  background-color: #e53e3e;
-}
-
-.notification.success {
-  background-color: #38a169;
 }
 
 @keyframes slide-up {

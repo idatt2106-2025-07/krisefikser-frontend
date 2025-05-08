@@ -1,166 +1,532 @@
-<!-- AdminView.vue -->
 <template>
-  <h1 class="title">Admin Panel</h1>
-  <div class="admin-page">
-    <Tabs v-model:value="value" class="w-full">
-      <TabList>
-        <Tab v-for="(tab, index) in tabs" :key="index" :value="index.toString()">
-          {{ tab.label }}
-        </Tab>
-      </TabList>
+  <div class="admin-dashboard">
+    <div class="header">
+      <h1 class="page-title">Privacy Policy Management</h1>
+      <p class="page-subtitle">Manage privacy policies for registered users and public visitors</p>
+    </div>
 
-      <TabPanels>
-        <TabPanel v-for="(tab, index) in tabs" :key="index" :value="index.toString()">
-          <AdminPanel
-            v-if="tab.type !== 'InviteAdmin'"
-            :type="tab.type === 'Users' ? 'User' : tab.type"
-          />
-          <div v-else>
-            <h2>Invite Admin</h2>
-            <form @submit.prevent="handleInviteAdmin">
-              <div class="field">
-                <label for="email">Admin Email</label>
-                <input
-                  id="email"
-                  type="email"
-                  v-model="email"
-                  placeholder="Enter admin email"
-                  required
-                />
-              </div>
-              <button type="submit" :disabled="loading">
-                {{ loading ? 'Sending...' : 'Send Invite' }}
-              </button>
-              <p v-if="message" :class="{ success: success, error: !success }">{{ message }}</p>
-            </form>
+    <div class="card">
+      <div class="tabs">
+        <button
+          :class="['tab-button', { active: activeTab === 'registered' }]"
+          @click="activeTab = 'registered'"
+        >
+          <i class="fas fa-user-shield"></i> Registered Users
+        </button>
+        <button
+          :class="['tab-button', { active: activeTab === 'unregistered' }]"
+          @click="activeTab = 'unregistered'"
+        >
+          <i class="fas fa-globe"></i> Public Visitors
+        </button>
+      </div>
+
+      <!-- Loading indicator -->
+      <div v-if="loading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Loading policy...</p>
+      </div>
+
+      <!-- Error display -->
+      <div v-else-if="error" class="error-message">
+        <div class="error-content">
+          <i class="fas fa-exclamation-circle"></i>
+          <div>
+            <h3>Error Loading Policy</h3>
+            <p>{{ error }}</p>
           </div>
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+        </div>
+        <button @click="fetchCurrentPolicy" class="retry-button">
+          <i class="fas fa-sync-alt"></i> Try Again
+        </button>
+      </div>
+
+      <!-- Editor section -->
+      <div v-else class="editor-section">
+        <div class="editor-header">
+          <h2 class="section-title">
+            {{ activeTab === 'registered' ? 'Registered Users Policy' : 'Public Policy' }}
+          </h2>
+          <div class="character-count">{{ policyContent.length }} characters</div>
+        </div>
+
+        <div class="editor-wrapper">
+          <textarea
+            v-model="policyContent"
+            class="policy-editor"
+            :placeholder="
+              activeTab === 'registered'
+                ? 'Enter policy for registered users...'
+                : 'Enter policy for public visitors...'
+            "
+            rows="20"
+          ></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button
+            @click="fetchCurrentPolicy"
+            class="cancel-button"
+            :disabled="saving || policyContent === originalContent"
+          >
+            <i class="fas fa-times"></i> Discard Changes
+          </button>
+          <button
+            @click="savePolicy"
+            class="save-button"
+            :disabled="saving || policyContent === originalContent"
+          >
+            <i class="fas fa-save"></i> {{ saving ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast notifications -->
+    <transition name="fade">
+      <div v-if="notification" class="notification" :class="notification.type">
+        <i
+          :class="[
+            'icon',
+            notification.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle',
+          ]"
+        ></i>
+        {{ notification.message }}
+      </div>
+    </transition>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import axios from 'axios'
-import AdminPanel from '@/components/admin/AdminPanel.vue' // Adjust the path as needed
-/* PrimeVue v4 components */
-import Tabs from 'primevue/tabs'
-import TabList from 'primevue/tablist'
-import Tab from 'primevue/tab'
-import TabPanels from 'primevue/tabpanels'
-import TabPanel from 'primevue/tabpanel'
 
-const tabs = [
-  { label: 'Manage Map', type: 'Map' },
-  { label: 'Gameification', type: 'Gameification' },
-  { label: 'Manage Users', type: 'Users' },
-  { label: 'Invite Admin', type: 'InviteAdmin' },
-] as const
-
-const value = ref('0') // Default to the first tab
-
-// Invite Admin state
-const email = ref('')
+// State variables
+const activeTab = ref('registered')
+const policyContent = ref('')
+const originalContent = ref('')
 const loading = ref(false)
-const message = ref('')
-const success = ref(false)
+const saving = ref(false)
+const error = ref<string | null>(null)
+const notification = ref<{ message: string; type: 'success' | 'error' } | null>(null)
 
-async function handleInviteAdmin() {
+// Watch for tab changes to load the appropriate policy
+watch(activeTab, () => {
+  fetchCurrentPolicy()
+})
+
+// Fetch the currently selected policy type
+async function fetchCurrentPolicy() {
   loading.value = true
-  message.value = ''
-  success.value = false
+  error.value = null
 
   try {
-    // Use the full backend endpoint
-    const response = await axios.post('/api/admin/invite', { email: email.value })
-    message.value = response.data
-    success.value = true
-  } catch (error) {
-    console.error(error)
-    if (axios.isAxiosError(error) && error.response) {
-      message.value = error.response.data || 'Failed to send invite'
-    } else {
-      message.value = 'Failed to send invite'
-    }
-    success.value = false
-  } finally {
+    const endpoint = `/api/privacy-policy/${activeTab.value}`
+    const response = await axios.get(endpoint)
+
+    // Map response correctly based on backend DTO structure
+    policyContent.value =
+      activeTab.value === 'registered'
+        ? response.data.registered || ''
+        : response.data.unregistered || ''
+
+    originalContent.value = policyContent.value
     loading.value = false
+  } catch (err: any) {
+    loading.value = false
+    error.value = err.response?.data?.message || `Failed to fetch ${activeTab.value} privacy policy`
+    console.error('Error fetching privacy policy:', err)
   }
 }
 
-const showAddIconForm = ref(false)
-const iconType = ref('')
-const iconTypes = [
-  'Shelter',
-  'Affected Area',
-  'Defibrillator',
-  'Water Station',
-  'Food central',
-  'Hospital',
-]
+async function savePolicy() {
+  saving.value = true
+  error.value = null
 
-function handleAddIcon() {
-  if (!iconType.value) {
-    alert('Please select an icon type.')
-    return
+  try {
+    const endpoint = `/api/privacy-policy/${activeTab.value}`
+
+    // Create the correct request object based on backend DTO structure
+    const requestData =
+      activeTab.value === 'registered'
+        ? { registered: policyContent.value }
+        : { unregistered: policyContent.value }
+
+    // Include proper headers
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+
+    await axios.post(endpoint, requestData, config)
+    originalContent.value = policyContent.value
+    saving.value = false
+    showNotification(
+      `${activeTab.value === 'registered' ? 'Registered' : 'Public'} policy updated successfully`,
+      'success',
+    )
+  } catch (err: any) {
+    saving.value = false
+    const errorMessage =
+      err.response?.data?.message || `Failed to update ${activeTab.value} privacy policy`
+    showNotification(errorMessage, 'error')
+    console.error('Error updating privacy policy:', err)
   }
-  alert(`Icon added: Type – ${iconType.value}`)
-  showAddIconForm.value = false
 }
+
+// Display a notification toast
+function showNotification(message: string, type: 'success' | 'error') {
+  notification.value = { message, type }
+  setTimeout(() => {
+    notification.value = null
+  }, 5000)
+}
+
+// Load the first policy on component mount
+onMounted(fetchCurrentPolicy)
 </script>
 
 <style scoped>
-/* ----- layout & content ----- */
-.admin-container {
-  display: flex;
-  max-width: 900px;
+/* Base styles */
+.admin-dashboard {
+  max-width: 1200px;
   margin: 0 auto;
-  background: #fff;
+  padding: 2rem 1.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2d3748;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a365d;
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  font-size: 1rem;
+  color: #718096;
+}
+
+/* Card styling */
+.card {
+  background: white;
   border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-.content {
-  flex: 1;
-  padding: 2rem;
-  text-align: center;
-}
-
-.admin-page {
-  max-width: 900px;
-  margin: 0 auto;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   padding: 2rem;
 }
 
-.field {
-  margin-bottom: 1rem;
+/* Tabs styling */
+.tabs {
+  display: flex;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tab-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 3px solid transparent;
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.tab-button:hover {
+  color: #3182ce;
+  background-color: #ebf8ff;
+}
+
+.tab-button.active {
+  border-bottom: 3px solid #3182ce;
+  color: #3182ce;
+  font-weight: 600;
+}
+
+.tab-button i {
+  font-size: 0.9rem;
+}
+
+/* Loading indicator */
+.loading-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  min-height: 300px;
 }
 
-button {
-  padding: 0.75rem 1.5rem;
-  background-color: #007bff;
-  color: #fff;
+.loading-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #3182ce;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error message */
+.error-message {
+  background-color: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.error-content {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.error-content i {
+  color: #e53e3e;
+  font-size: 1.5rem;
+  margin-top: 0.2rem;
+}
+
+.error-content h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e53e3e;
+  margin-bottom: 0.5rem;
+}
+
+.error-content p {
+  color: #718096;
+}
+
+.retry-button {
+  background-color: #e53e3e;
+  color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-button:disabled {
-  background-color: #ccc;
+.retry-button:hover {
+  background-color: #c53030;
+}
+
+.retry-button i {
+  font-size: 0.9rem;
+}
+
+/* Editor section */
+.editor-section {
+  margin-top: 1rem;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.character-count {
+  font-size: 0.875rem;
+  color: #718096;
+}
+
+.editor-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+.policy-editor {
+  width: 100%;
+  padding: 1.25rem;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  resize: vertical;
+  transition: border-color 0.2s;
+  background-color: #f8fafc;
+}
+
+.policy-editor:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+}
+
+/* Form actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.save-button {
+  background-color: #3182ce;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.save-button:hover:not(:disabled) {
+  background-color: #2b6cb0;
+}
+
+.save-button:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.cancel-button {
+  background-color: white;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cancel-button:hover:not(:disabled) {
+  background-color: #f7fafc;
+  border-color: #cbd5e0;
+}
+
+.cancel-button:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-.success {
-  color: green;
-  margin-top: 1rem;
+/* Notification toast */
+.notification {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  z-index: 100;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: slide-in 0.3s ease-out;
 }
 
-.error {
-  color: red;
-  margin-top: 1rem;
+.notification.success {
+  background-color: #f0fff4;
+  color: #276749;
+  border: 1px solid #c6f6d5;
+}
+
+.notification.error {
+  background-color: #fff5f5;
+  color: #c53030;
+  border: 1px solid #fed7d7;
+}
+
+.notification .icon {
+  font-size: 1.2rem;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(1rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 1rem;
+  }
+
+  .card {
+    padding: 1.5rem;
+  }
+
+  .tabs {
+    flex-direction: column;
+  }
+
+  .tab-button {
+    justify-content: center;
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .notification {
+    width: calc(100% - 2rem);
+    right: 1rem;
+    bottom: 1rem;
+  }
 }
 </style>

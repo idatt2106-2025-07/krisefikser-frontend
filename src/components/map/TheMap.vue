@@ -8,6 +8,7 @@ import { useMapInitialization } from '@/composables/useMapInitialization'
 import { useMarkerManagement } from '@/composables/usePointsOfInterest'
 import { useMapLayers } from '@/composables/useAffectedAreas'
 import { useSearchGeocoder } from '@/composables/useSearchGeocoder'
+import { useAffectedAreaManagement } from '@/composables/useAffectedAreas'
 import type { LocationData } from '@/types/mapTypes'
 import mapService from '@/services/mapService'
 import mapboxgl from 'mapbox-gl'
@@ -189,16 +190,30 @@ const {
   markers: any
   initializeMarkers: () => void
   updateMarkers: () => void
-} = useMarkerManagement(map as Ref<mapboxgl.Map | null>, locationData, filtersRef, isAdminPageRef, router)
+} = useMarkerManagement(
+  map as Ref<mapboxgl.Map | null>,
+  locationData,
+  filtersRef,
+  isAdminPageRef,
+  router,
+)
 const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(
   map as Ref<mapboxgl.Map | null>,
   locationData,
   filtersRef,
+  isAdminPageRef,
+  router,
 )
 const { initializeSearch } = useSearchGeocoder(
   map as Ref<mapboxgl.Map | null>,
   locationData,
   markers,
+)
+const { initializeAffectedAreaPopups } = useAffectedAreaManagement(
+  map as Ref<mapboxgl.Map | null>,
+  locationData,
+  isAdminPageRef,
+  router,
 )
 
 /**
@@ -235,6 +250,7 @@ onMounted(() => {
       setTimeout(() => {
         tryInitializeLayers(5)
         initializeMarkers()
+        initializeAffectedAreaPopups()
         if (!props.isHomePage && !props.isAdminPage) {
           initializeSearch()
         }
@@ -259,13 +275,11 @@ onMounted(() => {
               const { lng, lat } = e.lngLat
               console.log('Admin map click at:', lng, lat)
 
-              // Remove any existing popup
               const existingPopup = document.querySelector('.mapboxgl-popup')
               if (existingPopup) {
                 existingPopup.remove()
               }
 
-              // Create popup content
               const popupContent = document.createElement('div')
               popupContent.innerHTML = `
                 <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px;">
@@ -278,7 +292,6 @@ onMounted(() => {
                 </div>
               `
 
-              // Create and add the popup to the map
               const popup = new mapboxgl.Popup({
                 closeButton: true,
                 closeOnClick: true,
@@ -287,7 +300,6 @@ onMounted(() => {
                 .setDOMContent(popupContent)
                 .addTo(map.value!)
 
-              // Add event listeners for the buttons
               popupContent.querySelector('#add-poi-button')?.addEventListener('click', () => {
                 console.log('Navigating to Add POI View')
                 emit('map-click', { lng, lat })
@@ -297,14 +309,16 @@ onMounted(() => {
                 })
               })
 
-              popupContent.querySelector('#add-affected-area-button')?.addEventListener('click', () => {
-                console.log('Navigating to Add Affected Area View')
-                emit('map-click', { lng, lat })
-                router.push({
-                  path: '/admin/add/affected-area',
-                  query: { lng: lng.toString(), lat: lat.toString() },
+              popupContent
+                .querySelector('#add-affected-area-button')
+                ?.addEventListener('click', () => {
+                  console.log('Navigating to Add Affected Area View')
+                  emit('map-click', { lng, lat })
+                  router.push({
+                    path: '/admin/add/affected-area',
+                    query: { lng: lng.toString(), lat: lat.toString() },
+                  })
                 })
-              })
             })
           }
         }
@@ -338,6 +352,7 @@ onMounted(() => {
   height: 100%;
   position: relative;
   overflow: hidden;
+  border-radius: 12px;
 }
 
 .map-nav-button {

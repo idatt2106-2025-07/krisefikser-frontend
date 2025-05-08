@@ -39,8 +39,9 @@ const currentYear = computed(() => new Date().getFullYear())
   background-color: #f8f9fa;
   color: #495057;
   padding: 1rem 0.75rem;
-  margin-top: auto;
   border-top: 1px solid #e9ecef;
+  width: 100%;
+  margin-top: auto; /* This is key for pushing footer down */
 }
 
 .footer-content {
@@ -92,7 +93,7 @@ const currentYear = computed(() => new Date().getFullYear())
   padding-top: 0.5rem;
   border-top: 1px solid #e9ecef;
   color: #adb5bd;
-  font-size: 0.2rem;
+  font-size: 0.75rem; /* Increased from 0.2rem which was too small */
 }
 
 @media (max-width: 600px) {

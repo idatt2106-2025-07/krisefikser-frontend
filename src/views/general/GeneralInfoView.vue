@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 
 interface GeneralInfoResponse {
@@ -9,182 +9,208 @@ interface GeneralInfoResponse {
   theme: string
 }
 
-const allInfos = ref<GeneralInfoResponse[]>([]) // <-- full list
-const infos = ref<GeneralInfoResponse[]>([]) // <-- displayed list
+const allInfos = ref<GeneralInfoResponse[]>([])
 const error = ref<string | null>(null)
 const isLoading = ref(false)
 
-// selected theme filter
-const themeFilter = ref<string | null>(null)
+// 👉 replace single-active with multi-active
+// const activeCategory = ref<string | null>(null)
+const activeCategories = ref<string[]>([])
 
-// compute unique theme options from the full list
-const themes = computed(() => Array.from(new Set(allInfos.value.map((i) => i.theme))))
+const categories = [
+  { key: 'BEFORE_CRISIS', label: 'Before Crisis', color: '#D0E8FF' },
+  { key: 'DURING_CRISIS', label: 'During Crisis', color: '#FFF4D6' },
+  { key: 'AFTER_CRISIS', label: 'After Crisis', color: '#E6FFE6' },
+]
 
-// helper to display nicer theme names
-function formatTheme(t: string) {
-  return t.replace(/_/g, ' ').toUpperCase()
+const grouped = computed(() => {
+  const groups: Record<string, GeneralInfoResponse[]> = {}
+  categories.forEach((cat) => (groups[cat.key] = []))
+  allInfos.value.forEach((info) => {
+    const key = info.theme.toUpperCase()
+    if (groups[key]) groups[key].push(info)
+  })
+  return groups
+})
+
+// 👉 toggle only the clicked key
+function toggleCategory(key: string) {
+  const idx = activeCategories.value.indexOf(key)
+  if (idx >= 0) {
+    activeCategories.value.splice(idx, 1)
+  } else {
+    activeCategories.value.push(key)
+  }
 }
 
 async function fetchAllInfos() {
+  isLoading.value = true
+  error.value = null
   try {
     const res = await axios.get<GeneralInfoResponse[]>('/api/general-info/all', {
       withCredentials: true,
     })
     allInfos.value = res.data
-  } catch (err) {
-    console.error('Error fetching all themes:', err)
-  }
-}
-
-async function fetchGeneralInfo(theme?: string) {
-  isLoading.value = true
-  error.value = null
-
-  const url = theme ? `/api/general-info/${theme}` : '/api/general-info/all'
-
-  try {
-    const res = await axios.get<GeneralInfoResponse[]>(url, {
-      withCredentials: true,
-    })
-    infos.value = res.data
-  } catch (err) {
-    console.error('Error fetching general info:', err)
-    if (axios.isAxiosError(err) && err.response?.data?.message) {
-      error.value = err.response.data.message
-    } else {
-      error.value = 'Failed to load general information.'
-    }
+  } catch (err: any) {
+    error.value = 'Failed to load general information.'
   } finally {
     isLoading.value = false
   }
 }
 
-onMounted(() => {
-  fetchAllInfos() // load themes
-  fetchGeneralInfo() // load initial list
-})
-
-// refetch only the displayed list when filter changes
-watch(themeFilter, (newTheme) => {
-  fetchGeneralInfo(newTheme || undefined)
-})
+onMounted(fetchAllInfos)
 </script>
 
 <template>
   <div class="general-info">
     <h2 class="page-title">General Information</h2>
 
-    <!-- theme filter dropdown -->
-    <div class="field filter-field">
-      <label for="theme">Filter by theme:</label>
-      <select id="theme" v-model="themeFilter">
-        <option :value="null">All</option>
-        <option v-for="t in themes" :key="t" :value="t">{{ formatTheme(t) }}</option>
-      </select>
-    </div>
+    <div v-if="isLoading" class="status">Loading…</div>
+    <div v-else-if="error" class="status error">{{ error }}</div>
+    <div v-else class="categories">
+      <div
+        v-for="cat in categories"
+        :key="cat.key"
+        class="card"
+        :class="{ active: activeCategories.includes(cat.key) }"
+        @click="toggleCategory(cat.key)"
+      >
+        <div class="header" :style="{ backgroundColor: cat.color }">
+          {{ cat.label }}
+          <span class="icon">
+            {{ activeCategories.includes(cat.key) ? '−' : '+' }}
+          </span>
+        </div>
 
-    <div v-if="isLoading" class="loading">Loading…</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
-    <ul v-else class="info-list">
-      <li v-for="info in infos" :key="info.id" class="info-item">
-        <h3 class="info-title">
-          {{ info.title }}
-          <small class="info-theme">{{ formatTheme(info.theme) }}</small>
-          <!-- no () around theme -->
-        </h3>
-        <p class="info-content">{{ info.content }}</p>
-      </li>
-    </ul>
+        <transition name="accordion">
+          <div v-if="activeCategories.includes(cat.key)" class="content">
+            <div v-if="grouped[cat.key]?.length">
+              <div v-for="info in grouped[cat.key]" :key="info.id" class="item">
+                <h3>{{ info.title }}</h3>
+                <p>{{ info.content }}</p>
+              </div>
+            </div>
+            <div v-else class="no-info">No information available for this category</div>
+          </div>
+        </transition>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .general-info {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 1rem 1.5rem;
-  background: #f9fafb;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  color: #333;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .page-title {
   text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 2rem;
-  color: #2c3e50;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 28px;
 }
 
-.filter-field {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.filter-field select {
-  flex-shrink: 0;
-  padding: 0.4rem 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-
-.filter-field select:hover {
-  border-color: #888;
-}
-
-.loading,
-.error {
+.status {
   text-align: center;
-  font-size: 1.1rem;
-  margin: 2rem 0;
+  padding: 20px;
+  font-size: 16px;
 }
 
-.error {
-  color: #e74c3c;
+.status.error {
+  color: #e53e3e;
 }
 
-.info-list {
-  list-style: none;
-  padding: 0;
+.categories {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
 }
 
-.info-item {
-  background: #fff;
-  border: 1px solid #e1e1e1;
-  border-radius: 6px;
-  padding: 1rem 1.2rem;
-  margin-bottom: 1rem;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+.card {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
-.info-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.info-title {
-  margin: 0 0 0.5rem;
+.card.active {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.header {
+  padding: 15px 20px;
   font-weight: 600;
-  color: #34495e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  transition: background-color 0.3s;
 }
 
-.info-theme {
-  margin-left: 0.6rem;
-  font-size: 0.85rem;
-  color: #7f8c8d;
+.icon {
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 1;
 }
 
-.info-content {
+.content {
+  background-color: white;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0;
+  overflow: hidden;
+}
+
+.item {
+  padding: 15px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.item h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.item p {
   margin: 0;
-  line-height: 1.6;
+  line-height: 1.5;
   color: #555;
+}
+
+.no-info {
+  padding: 20px;
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}
+
+/* Animation for accordion */
+.accordion-enter-active,
+.accordion-leave-active {
+  transition:
+    max-height 0.3s ease,
+    opacity 0.3s ease;
+  max-height: 500px;
+  overflow: hidden;
+}
+
+.accordion-enter-from,
+.accordion-leave-to {
+  max-height: 0;
+  opacity: 0;
 }
 </style>

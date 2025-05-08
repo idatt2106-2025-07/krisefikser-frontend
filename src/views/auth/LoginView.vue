@@ -66,14 +66,20 @@ async function handleLogin() {
   if (!formValid.value) return
 
   try {
-    await axios.post(
+    const respone = await axios.post(
       '/api/auth/login',
       { email: email.value, password: password.value },
       { withCredentials: true },
     )
-    await authStore.fetchUser()
-    loginSuccess.value = 'Login successful, redirecting...'
-    setTimeout(() => router.push('/'), 1500)
+    if (respone.status === 200 && respone.data?.message ===  'Two-factor authentication code sent') {
+      loginSuccess.value = 'Valid credentials, redirecting...'
+      router.push('/admin/2fa-notify')
+    } else {
+      await authStore.fetchUser()
+      loginSuccess.value = 'Login successful, redirecting...'
+      setTimeout(() => router.push('/'), 1500)
+    }
+
   } catch (error) {
     handleLoginError(error)
   }
@@ -225,7 +231,7 @@ function getErrorMessage(error: unknown, defaultMsg: string): string {
 
     <!-- Regular User Login Form -->
     <div v-else class="auth-card">
-      <h2 class="auth-title">User Login</h2>
+      <h2 class="auth-title">Login</h2>
 
       <form @submit.prevent="handleLogin" class="auth-form">
         <div class="form-group">
@@ -262,7 +268,6 @@ function getErrorMessage(error: unknown, defaultMsg: string): string {
             <router-link to="/register" class="auth-link">Register</router-link>
           </p>
           <a href="#" @click.prevent="isResetMode = true" class="auth-link"> Forgot password? </a>
-          <a href="#" @click.prevent="isAdminMode = true" class="auth-link admin"> Admin login </a>
         </div>
       </form>
     </div>

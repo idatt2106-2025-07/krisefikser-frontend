@@ -78,16 +78,12 @@
 
   <!-- Toast notifications -->
   <transition name="fade">
-    <div
-      v-if="notification"
-      class="notification"
-      :class="notification.type"
-    >
+    <div v-if="notification" class="notification" :class="notification.type">
       <i
         class="icon"
-        :class="notification.type === 'success'
-          ? 'fas fa-check-circle'
-          : 'fas fa-exclamation-circle'"
+        :class="
+          notification.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'
+        "
       ></i>
       {{ notification.message }}
     </div>
@@ -142,12 +138,10 @@ async function savePolicy() {
     originalContent.value = policyContent.value
     showNotification(
       `${activeTab.value.charAt(0).toUpperCase() + activeTab.value.slice(1)} policy updated`,
-      'success'
+      'success',
     )
   } catch (err: any) {
-    const msg =
-      err.response?.data?.message ||
-      `Failed to update ${activeTab.value} privacy policy`
+    const msg = err.response?.data?.message || `Failed to update ${activeTab.value} privacy policy`
     showNotification(msg, 'error')
     console.error(err)
   } finally {

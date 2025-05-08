@@ -3,6 +3,7 @@
     <div class="card">
       <details class="editor-menu">
         <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right arrow-icon"></i>
           <i class="fas fa-user-cog"></i>
           Admin Management
         </summary>
@@ -11,6 +12,7 @@
 
       <details class="editor-menu">
         <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right arrow-icon"></i>
           <i class="fas fa-file-alt"></i>
           Privacy Policy Editor
         </summary>
@@ -62,12 +64,16 @@ import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor
 .editor-menu-summary .fas {
   transition: transform 0.2s;
 }
-/* rotate icon when open */
-.editor-menu[open] .editor-menu-summary .fas {
-  transform: rotate(90deg);
-}
 /* hide default marker */
 .editor-menu summary::-webkit-details-marker {
   display: none;
+}
+
+/* arrow icon transition */
+.editor-menu-summary .arrow-icon {
+  transition: transform 0.2s;
+}
+.editor-menu[open] .editor-menu-summary .arrow-icon {
+  transform: rotate(90deg);
 }
 </style>

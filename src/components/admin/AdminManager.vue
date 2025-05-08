@@ -5,12 +5,7 @@
     <div class="invite-section">
       <h3>Invite New Admin</h3>
       <form @submit.prevent="invite">
-        <input
-          v-model="inviteEmail"
-          type="email"
-          placeholder="Admin email"
-          required
-        />
+        <input v-model="inviteEmail" type="email" placeholder="Admin email" required />
         <button type="submit">Send Invite</button>
       </form>
     </div>
@@ -30,18 +25,8 @@
             <td>{{ admin.id }}</td>
             <td>{{ admin.email }}</td>
             <td class="actions">
-              <button
-                @click="deleteAdmin(admin.id)"
-                class="delete-btn"
-              >
-                Delete
-              </button>
-              <button
-                @click="sendResetLink(admin.email)"
-                class="reset-btn"
-              >
-                Reset Password
-              </button>
+              <button @click="deleteAdmin(admin.id)" class="delete-btn">Delete</button>
+              <button @click="sendResetLink(admin.email)" class="reset-btn">Reset Password</button>
             </td>
           </tr>
         </tbody>
@@ -50,11 +35,7 @@
     </div>
 
     <div class="toast-container">
-      <div
-        v-for="t in toasts"
-        :key="t.id"
-        :class="['toast', t.type]"
-      >
+      <div v-for="t in toasts" :key="t.id" :class="['toast', t.type]">
         {{ t.message }}
       </div>
     </div>
@@ -65,8 +46,15 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
-interface Admin { id: number; email: string }
-interface Toast { id: number; message: string; type: 'success' | 'error' }
+interface Admin {
+  id: number
+  email: string
+}
+interface Toast {
+  id: number
+  message: string
+  type: 'success' | 'error'
+}
 
 const inviteEmail = ref('')
 const admins = ref<Admin[]>([])
@@ -87,14 +75,14 @@ function addToast(message: string, type: 'success' | 'error' = 'success') {
   const id = Date.now()
   toasts.value.push({ id, message, type })
   setTimeout(() => {
-    toasts.value = toasts.value.filter(t => t.id !== id)
+    toasts.value = toasts.value.filter((t) => t.id !== id)
   }, 3000)
 }
 
 const invite = async () => {
   try {
     await axios.post('/api/super-admin/invite', {
-      email: inviteEmail.value
+      email: inviteEmail.value,
     })
     addToast('Invite sent successfully', 'success')
     inviteEmail.value = ''
@@ -110,20 +98,15 @@ const deleteAdmin = async (id: number) => {
     addToast('Admin removed', 'success')
     fetchAdmins()
   } catch (err: any) {
-    addToast(
-      'Error removing admin: ' + (err.response?.data || err.message),
-      'error'
-    )
+    addToast('Error removing admin: ' + (err.response?.data || err.message), 'error')
   }
 }
 
 const sendResetLink = async (email: string) => {
   try {
-    await axios.post(
-      '/api/super-admin/admins/new-password-link',
-      email,
-      { headers: { 'Content-Type': 'text/plain' } }
-    )
+    await axios.post('/api/super-admin/admins/new-password-link', email, {
+      headers: { 'Content-Type': 'text/plain' },
+    })
     addToast('Reset link sent to ' + email, 'success')
   } catch (err: any) {
     addToast('Error: ' + (err.response?.data || err.message), 'error')

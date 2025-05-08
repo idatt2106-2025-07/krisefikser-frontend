@@ -2,9 +2,7 @@
   <div class="admin-dashboard">
     <div class="header">
       <h1 class="page-title">Privacy Policy Management</h1>
-      <p class="page-subtitle">
-        Manage privacy policies for registered users and public visitors
-      </p>
+      <p class="page-subtitle">Manage privacy policies for registered users and public visitors</p>
     </div>
 
     <div class="card">

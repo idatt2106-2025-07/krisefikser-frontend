@@ -12,7 +12,7 @@ import axios from 'axios'
  *                                        should be made using credentials such as cookies or authorization headers.
  */
 const axiosInstance = axios.create({
-  baseURL: 'http://dev.krisefikser.com:8080/api', // Dynamic base URL from the environment variable
+  baseURL: 'http://dev.krisefikser.localhost:8080/api', // Dynamic base URL from the environment variable
   headers: {
     'Content-Type': 'application/json',
   },

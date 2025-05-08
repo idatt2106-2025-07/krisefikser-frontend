@@ -13,7 +13,7 @@ export function useSearchGeocoder(
 ) {
   const geocoder = ref<MapboxGeocoder | null>(null)
 
-/**
+  /**
    * Initializes the search functionality on the map using Mapbox Geocoder.
    *
    * This function sets up a custom geocoder with a local geocoding function,
@@ -70,7 +70,7 @@ export function useSearchGeocoder(
     })
   }
 
-/**
+  /**
    * Filters and returns a list of GeoJSON features that match the given query string.
    *
    * @param query - The search string to filter GeoJSON features. Must be at least 2 characters long.

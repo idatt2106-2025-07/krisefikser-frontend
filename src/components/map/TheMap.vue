@@ -248,16 +248,14 @@ const { initializeSearch } = useSearchGeocoder(
           })
         })
 
-        popupContent
-          .querySelector('#add-affected-area-button')
-          ?.addEventListener('click', () => {
-            console.log('Navigating to Add Affected Area View')
-            emit('map-click', { lng, lat })
-            router.push({
-              path: '/admin/add/affected-area',
-              query: { lng: lng.toString(), lat: lat.toString() },
-            })
+        popupContent.querySelector('#add-affected-area-button')?.addEventListener('click', () => {
+          console.log('Navigating to Add Affected Area View')
+          emit('map-click', { lng, lat })
+          router.push({
+            path: '/admin/add/affected-area',
+            query: { lng: lng.toString(), lat: lat.toString() },
           })
+        })
       } else {
         map.value?.flyTo({
           center: [lng, lat],

@@ -25,6 +25,8 @@ export const useUserStore = defineStore('user', {
         longitude: state.userInfo.householdLongitude,
       }
     },
+
+    getIsSharingLocation: (state) => state.userInfo?.sharingLocation,
   },
 
   actions: {

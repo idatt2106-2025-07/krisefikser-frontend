@@ -14,7 +14,7 @@ import AddStorageItemView from '@/views/storage/AddStorageItemView.vue'
 import UpdateItemView from '@/views/storage/UpdateItemView.vue'
 import AddItemView from '@/views/storage/AddItemView.vue'
 import MapView from '@/views/map/MapView.vue'
-import RegisterAdmin from '@/views/RegisterAdmin.vue'
+import RegisterAdmin from '@/views/admin/RegisterAdmin.vue'
 import AddPOIView from '@/views/admin/AddPOIView.vue'
 import AddAffectedAreaView from '@/views/admin/AddAffectedAreaView.vue'
 import verifyHouseholdInvitationView from '@/views/household/verifyHouseholdInvitationView.vue'
@@ -159,11 +159,6 @@ const router = createRouter({
       path: '/super-admin',
       name: 'super-admin',
       component: SuperAdminView,
-    },
-    {
-      path: '/register-admin',
-      name: 'register-admin',
-      component: RegisterAdmin,
     },
     {
       path: '/verify-admin',

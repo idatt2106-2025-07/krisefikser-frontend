@@ -1,44 +1,4 @@
 <template>
-  <h1 class="title">Admin Panel</h1>
-  <div class="admin-page">
-    <Tabs v-model:value="value" class="w-full">
-      <TabList>
-        <Tab v-for="(tab, index) in tabs" :key="index" :value="index.toString()">
-          {{ tab.label }}
-        </Tab>
-      </TabList>
-
-      <TabPanels>
-        <TabPanel v-for="(tab, index) in tabs" :key="index" :value="index.toString()">
-          <AdminPanel
-            v-if="tab.type !== 'InviteAdmin'"
-            :type="tab.type === 'Users' ? 'User' : tab.type"
-            :isAdminPage="tab.type === 'Map'"
-          />
-          <div v-else>
-            <h2>Invite Admin</h2>
-            <form @submit.prevent="handleInviteAdmin">
-              <div class="field">
-                <label for="email">Admin Email</label>
-                <input
-                  id="email"
-                  type="email"
-                  v-model="email"
-                  placeholder="Enter admin email"
-                  required
-                />
-              </div>
-              <button type="submit" :disabled="loading">
-                {{ loading ? 'Sending...' : 'Send Invite' }}
-              </button>
-              <p v-if="message" :class="{ success: success, error: !success }">{{ message }}</p>
-            </form>
-          </div>
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
-  </div>
-
   <div class="admin-dashboard">
     <div class="header">
       <h1 class="page-title">Admin Dashboard</h1>

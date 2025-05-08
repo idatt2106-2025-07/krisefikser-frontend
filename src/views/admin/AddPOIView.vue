@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import Dropdown from 'primevue/dropdown'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import axios from 'axios'
 
 const router = useRouter()
-const route = useRoute()
 
 const types = [
   { label: 'Defibrillator', value: 'defibrillator' },
@@ -23,18 +22,18 @@ const description = ref('')
 const openingHours = ref('')
 const closingHours = ref('')
 const contactInfo = ref('')
-const lng = route.query.lng
-const lat = route.query.lat
+const lng = ref('')
+const lat = ref('')
 
 async function savePOI() {
-  if (!type.value) {
-    alert('Please fill in required fields')
+  if (!type.value || !lng.value || !lat.value) {
+    alert('Please fill in all required fields')
     return
   }
 
   const poiRequest = {
-    latitude: Number(lat),
-    longitude: Number(lng),
+    latitude: Number(lat.value),
+    longitude: Number(lng.value),
     type: type.value,
     opensAt: openingHours.value || null,
     closesAt: closingHours.value || null,
@@ -47,19 +46,29 @@ async function savePOI() {
       withCredentials: true,
     })
     alert('Point of Interest saved successfully!')
-    router.push('/admin')
+    // Clear form fields instead of redirecting
+    clearForm()
   } catch (error) {
     console.error('Failed to save POI:', error)
     alert('Failed to save Point of Interest. Please try again.')
   }
 }
+
+function clearForm() {
+  type.value = ''
+  description.value = ''
+  openingHours.value = ''
+  closingHours.value = ''
+  contactInfo.value = ''
+  lng.value = ''
+  lat.value = ''
+}
 </script>
 
 <template>
   <div class="form-container">
-    <h2>Add Point of Interest</h2>
-    <p>Longitude: {{ lng }}</p>
-    <p>Latitude: {{ lat }}</p>
+    <InputText v-model="lng" placeholder="Longitude (required)" />
+    <InputText v-model="lat" placeholder="Latitude (required)" />
     <Dropdown
       v-model="type"
       :options="types"
@@ -71,7 +80,7 @@ async function savePOI() {
     <InputText v-model="openingHours" placeholder="Opening Time" />
     <InputText v-model="closingHours" placeholder="Closing Time" />
     <InputText v-model="contactInfo" placeholder="Contact Info" />
-    <Button label="Save" @click="savePOI" />
+    <Button label="Save Point of Interest" @click="savePOI" />
   </div>
 </template>
 

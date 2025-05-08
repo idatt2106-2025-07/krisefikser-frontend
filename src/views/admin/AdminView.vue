@@ -21,6 +21,38 @@
         </summary>
         <ManageGeneralInfo />
       </details>
+
+      <details class="editor-menu">
+        <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right"></i>
+          Add Point of Interest
+        </summary>
+        <AddPOIView />
+      </details>
+
+      <details class="editor-menu">
+        <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right"></i>
+          Update Point of Interest
+        </summary>
+        <UpdatePOIView />
+      </details>
+
+      <details class="editor-menu">
+        <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right"></i>
+          Add Affected Area
+        </summary>
+        <AddAffectedAreaView />
+      </details>
+
+      <details class="editor-menu">
+        <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right"></i>
+          Update Affected Area
+        </summary>
+        <UpdateAffectedAreaView />
+      </details>
     </div>
   </div>
 </template>
@@ -29,6 +61,10 @@
 import { ref } from 'vue'
 import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor.vue'
 import ManageGeneralInfo from '@/components/admin/ManageGeneralInfo.vue'
+import AddPOIView from './AddPOIView.vue'
+import UpdatePOIView from './UpdatePOIView.vue'
+import AddAffectedAreaView from './AddAffectedAreaView.vue'
+import UpdateAffectedAreaView from './UpdateAffectedAreaView.vue'
 
 const email = ref('')
 const tabs = ref([

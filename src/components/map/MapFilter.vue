@@ -11,6 +11,8 @@ const filters = ref({
   food_central: true,
   hospital: true,
   meeting_place: true,
+  household: true,
+  household_member: true,
 })
 
 const emit = defineEmits(['filter-change'])
@@ -31,22 +33,28 @@ onMounted(() => {
   <div class="filter-container">
     <h2 class="filter-title">Filters</h2>
 
-    <div class="filter-item">
+    <div class="filter-item affected-areas">
       <input type="checkbox" id="affected-areas" v-model="filters.affected_areas" />
       <MapIcon type="affected_areas" size="small" />
       <label for="affected-areas">Affected Areas</label>
     </div>
 
     <div class="filter-item">
-      <input type="checkbox" id="hospital" v-model="filters.hospital" />
-      <MapIcon type="hospital" size="small" />
-      <label for="hospital">Hospital</label>
-    </div>
-
-    <div class="filter-item">
       <input type="checkbox" id="shelter" v-model="filters.shelter" />
       <MapIcon type="shelter" size="small" />
       <label for="shelter">Shelter</label>
+    </div>
+
+    <div class="filter-item">
+      <input type="checkbox" id="meeting-place" v-model="filters.meeting_place" />
+      <MapIcon type="meeting_place" size="small" />
+      <label for="meeting-place">Meeting Place</label>
+    </div>
+
+    <div class="filter-item">
+      <input type="checkbox" id="hospital" v-model="filters.hospital" />
+      <MapIcon type="hospital" size="small" />
+      <label for="hospital">Hospital</label>
     </div>
 
     <div class="filter-item">
@@ -67,10 +75,16 @@ onMounted(() => {
       <label for="food-central">Food Central</label>
     </div>
 
+    <div class="filter-item household">
+      <input type="checkbox" id="household" v-model="filters.household" />
+      <MapIcon type="household" size="small" />
+      <label for="household-">My Home</label>
+    </div>
+
     <div class="filter-item">
-      <input type="checkbox" id="meeting-place" v-model="filters.meeting_place" />
-      <MapIcon type="meeting_place" size="small" />
-      <label for="meeting-place">Meeting Place</label>
+      <input type="checkbox" id="household_member" v-model="filters.household_member" />
+      <MapIcon type="household_member" size="small" />
+      <label for="household_member-">Household Members</label>
     </div>
   </div>
 </template>
@@ -91,7 +105,7 @@ onMounted(() => {
 }
 
 .filter-item {
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -110,5 +124,13 @@ label {
   padding-top: 8px;
   margin-left: 8px;
   cursor: pointer;
+}
+
+.affected-areas {
+  margin-bottom: 16px;
+}
+
+.household {
+  margin-top: 16px;
 }
 </style>

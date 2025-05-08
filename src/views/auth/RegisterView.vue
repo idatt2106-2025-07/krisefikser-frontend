@@ -20,12 +20,13 @@ const householdName = ref('')
 const address = ref('')
 const coordinates = ref<{ lat: number; lon: number } | null>(null)
 
-const message = ref('')
-const messageType = ref<'' | 'success' | 'error'>('')
+// toast state
+const toastMessage = ref<string | null>(null)
+const toastType = ref<'' | 'success' | 'error'>('')
 
 const siteKey = 'a754b964-3852-4810-a35e-c13ad84ce644'
 
-const hcaptchaToken = ref<string | null>(null) // <-- new
+const hcaptchaToken = ref<string | null>(null)
 
 function validateEmail() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -51,8 +52,8 @@ const formValid = computed(
 )
 
 async function handleSubmit() {
-  message.value = ''
-  messageType.value = ''
+  toastMessage.value = null
+  toastType.value = ''
 
   validateEmail()
   confirmTouched.value = true
@@ -62,13 +63,13 @@ async function handleSubmit() {
     isLoading.value = true
 
     const verify = await axios.post(
-      'http://dev.krisefikser.com:8080/api/hcaptcha/verify',
+      'http://dev.krisefikser.localhost:8080/api/hcaptcha/verify',
       { token: hcaptchaToken.value },
       { withCredentials: true },
     )
     if (verify.status !== 200 || !verify.data.success) {
-      message.value = 'Captcha verification failed'
-      messageType.value = 'error'
+      toastMessage.value = 'Captcha verification failed'
+      toastType.value = 'error'
       isLoading.value = false
       return
     }
@@ -89,28 +90,28 @@ async function handleSubmit() {
     )
 
     if (res.status === 201) {
-      message.value =
-        'Registered successfully. A verification email has been sent to your email address.'
-      messageType.value = 'success'
-
+      toastMessage.value =
+        'Registered successfully. A verification email has been sent. Redirecting to login…'
+      toastType.value = 'success'
       setTimeout(() => {
-        isLoading.value = false
+        toastMessage.value = null
+        toastType.value = ''
         router.push('/login')
       }, 2000)
       return
     }
 
     console.error('Unexpected response status:', res.status)
-    message.value = 'Unexpected response. Please try again.'
-    messageType.value = 'error'
+    toastMessage.value = 'Unexpected response. Please try again.'
+    toastType.value = 'error'
   } catch (err) {
     console.error('Error during registration:', err)
     if (axios.isAxiosError(err) && err.response) {
-      message.value = err.response.data?.message || 'Registration failed. Please try again.'
+      toastMessage.value = err.response.data?.message || 'Registration failed. Please try again.'
     } else {
-      message.value = 'An unexpected error occurred. Please try again.'
+      toastMessage.value = 'An unexpected error occurred. Please try again.'
     }
-    messageType.value = 'error'
+    toastType.value = 'error'
   } finally {
     /* cleared only for error paths */
     isLoading.value = false
@@ -125,12 +126,13 @@ async function fetchCoordinates() {
 
 <template>
   <div class="page-wrapper">
+    <!-- toast notification -->
+    <div v-if="toastMessage" :class="['toast', toastType]">
+      {{ toastMessage }}
+    </div>
+
     <form class="register-form" @submit.prevent="handleSubmit">
       <h2>Register</h2>
-
-      <div v-if="message" :class="['status-message', messageType]">
-        {{ message }}
-      </div>
 
       <div class="field">
         <label for="name">Name</label>

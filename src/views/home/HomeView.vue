@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import InfoCard from '@/components/common/InfoCard.vue'
 import NotificationBar from '@/components/admin/NotificationBar.vue'
 import TheMap from '@/components/map/TheMap.vue'
 import DaysCircle from '@/components/common/DaysCircle.vue'
+import { useReadinessStore } from '@/stores/readinessStore.ts'
 
 interface Notification {
   type: 'danger' | 'warning' | 'info'
@@ -48,6 +49,32 @@ const navigateToQuiz = () => {
 const navigateToNews = () => {
   router.push('/news')
 }
+
+const readinessStore = useReadinessStore()
+
+const daysLeft = ref(0)
+const hoursLeft = ref(0)
+
+const readinessIsLoading = ref(false)
+const error = ref('')
+
+const SUSTAIN_DAYS_GOAL = 7
+
+onMounted(async () => {
+  readinessIsLoading.value = true
+  try {
+    const readinessData = await readinessStore.getReadinessLevel()
+    if (readinessData) {
+      daysLeft.value = readinessData.days || 0
+      hoursLeft.value = readinessData.hours || 0
+    }
+  } catch (err) {
+    error.value = 'Failed to load readiness data'
+    console.error(err)
+  } finally {
+    readinessIsLoading.value = false
+  }
+})
 </script>
 
 <template>
@@ -69,7 +96,11 @@ const navigateToNews = () => {
                 <InfoCard clickable>
                   <h2>Emergency Storage</h2>
                   <div class="days-circle-wrapper">
-                    <DaysCircle :current-days="currentStorageDays" :goal-days="14" />
+                    <DaysCircle
+                      :current-days="daysLeft"
+                      :goal-days="SUSTAIN_DAYS_GOAL"
+                      :loading="readinessIsLoading"
+                    />
                   </div>
                   <p>View Emergency Storage -></p>
                 </InfoCard>

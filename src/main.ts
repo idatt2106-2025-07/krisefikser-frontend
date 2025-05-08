@@ -1,18 +1,17 @@
 import { createApp } from 'vue'
-import './assets/main.css'
+import './assets/styles/main.css'
 import App from './App.vue'
 import router from './router'
 import PrimeVue from 'primevue/config'
-import Aura from '@primevue/themes/aura'
-import Lara from '@primevue/themes/lara'
 import Material from '@primevue/themes/material'
-import '@/assets/fonts.css'
+import './assets/styles/fonts.css'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Checkbox from 'primevue/checkbox'
 import Button from 'primevue/button'
 import ToastService from 'primevue/toastservice'
 import { createPinia } from 'pinia'
+import './assets/styles/toast.css'
 
 const app = createApp(App)
 const pinia = createPinia()

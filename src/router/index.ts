@@ -16,6 +16,7 @@ import SuperAdminView from '@/views/admin/SuperAdminView.vue'
 import RegisterAdmin from '@/views/admin/RegisterAdmin.vue'
 import TwoFactorAuthView from '@/views/2fa/TwoFactorAuthView.vue'
 import TwoFactorNotifyView from '@/views/2fa/TwoFactorNotifyView.vue'
+import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -119,6 +120,11 @@ const router = createRouter({
       path: '/admin/2fa-notify',
       name: 'TwoFactorNotify',
       component: TwoFactorNotifyView,
+    },
+    {
+      path: '/privacy-policy',
+      name: 'privacy-policy',
+      component: PrivacyPolicyView,
     },
   ],
 })

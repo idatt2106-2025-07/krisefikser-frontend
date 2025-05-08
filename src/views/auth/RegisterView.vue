@@ -261,35 +261,4 @@ button:disabled {
   font-size: 0.9rem;
   text-align: center;
 }
-
-/* toast popup */
-.toast {
-  position: fixed;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #fff;
-  padding: 0.75rem 1.25rem;
-  border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  animation: slide-up 0.3s ease-out;
-}
-.toast.success {
-  background: #28a745;
-}
-.toast.error {
-  background: #dc3545;
-}
-
-@keyframes slide-up {
-  from {
-    transform: translate(-50%, 100%);
-    opacity: 0;
-  }
-  to {
-    transform: translate(-50%, 0);
-    opacity: 1;
-  }
-}
 </style>

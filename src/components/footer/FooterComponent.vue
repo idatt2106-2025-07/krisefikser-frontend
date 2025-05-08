@@ -14,8 +14,10 @@
       <div class="footer-section">
         <h3 class="footer-header">About Us</h3>
         <ul class="footer-links">
-          <li><router-link to="/privacy" class="footer-link">Privacy Policy</router-link></li>
-          <li><router-link to="/info" class="footer-link">General Info</router-link></li>
+          <li>
+            <router-link to="/privacy-policy" class="footer-link">Privacy Policy</router-link>
+          </li>
+          <li><router-link to="/general-info" class="footer-link">General Info</router-link></li>
         </ul>
       </div>
     </div>

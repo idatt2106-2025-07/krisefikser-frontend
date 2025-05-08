@@ -71,7 +71,7 @@ async function handleLogin() {
       { email: email.value, password: password.value },
       { withCredentials: true },
     )
-    if (respone.status === 200 && respone.data?.message ===  'Two-factor authentication code sent') {
+    if (respone.status === 200 && respone.data?.message === 'Two-factor authentication code sent') {
       loginSuccess.value = 'Valid credentials, redirecting...'
       router.push('/admin/2fa-notify')
     } else {
@@ -79,7 +79,6 @@ async function handleLogin() {
       loginSuccess.value = 'Login successful, redirecting...'
       setTimeout(() => router.push('/'), 1500)
     }
-
   } catch (error) {
     handleLoginError(error)
   }

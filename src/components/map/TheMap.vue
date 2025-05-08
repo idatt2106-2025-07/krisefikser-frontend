@@ -10,6 +10,7 @@ import { useSearchGeocoder } from '@/composables/useSearchGeocoder'
 import type { LocationData } from '@/types/mapTypes'
 import mapService from '@/services/mapService'
 import { useHouseholdMarker } from '@/composables/useHouseholdMarker'
+import { useHouseholdPositions } from '@/composables/useHouseholdPositions'
 
 const locationData = shallowRef<LocationData>({
   pointsOfInterest: [],
@@ -142,7 +143,7 @@ watch(
     if (isLoading.value || isDebouncing.value) return
 
     const poiFilters = getEnabledFilters(newFilters).filter(
-      (f) => f !== 'affected_areas' && f !== 'household',
+      (f) => f !== 'affected_areas' && f !== 'household' && f !== 'household_member',
     )
 
     const filtersStr = poiFilters.sort().join(',')
@@ -193,6 +194,8 @@ const {
   createHouseholdMarker,
   initialize: initializeHouseholdMarker,
 } = useHouseholdMarker(map, isMapLoaded, isStyleLoaded)
+const { householdPositions, isTrackingActive, startPositionTracking, stopPositionTracking } =
+  useHouseholdPositions(map, isMapLoaded, isStyleLoaded)
 
 const navigateToPOI = async (poi: {
   longitude: number
@@ -264,6 +267,21 @@ watch(
 )
 
 /**
+ * Watcher that checks the filter for household member positions
+ */
+ watch(
+  () => filtersRef.value.household_member,
+  (showPositions) => {
+    stopPositionTracking()
+    if (showPositions) {
+      nextTick(() => {
+        startPositionTracking()
+      })
+    }
+  }
+)
+
+/**
  * onMounted function that initializes POI markers and affected area layers.
  * Waits for the map to be loaded.
  */
@@ -272,6 +290,9 @@ onMounted(() => {
     if (mapLoaded && styleLoaded) {
       setTimeout(() => {
         initializeHouseholdMarker()
+        if (filtersRef.value.household_positions) {
+          startPositionTracking()
+        }
         tryInitializeLayers(5)
         initializeMarkers()
         if (!props.isHomePage) {
@@ -286,7 +307,7 @@ onMounted(() => {
             fetchAllPointsOfInterest()
           } else {
             const poiFilters = getEnabledFilters(filtersRef.value).filter(
-              (f) => f !== 'affected_areas' && f !== 'household',
+              (f) => f !== 'affected_areas' && f !== 'household' && f !== 'household_member',
             )
 
             if (poiFilters.length > 0) {

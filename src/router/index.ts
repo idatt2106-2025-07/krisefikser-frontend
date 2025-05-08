@@ -19,6 +19,7 @@ import AddAffectedAreaView from '@/views/admin/AddAffectedAreaView.vue'
 import QuizCreator from '@/views/admin/QuizCreator.vue'
 
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
+import UpdatePOIView from '@/views/admin/UpdatePOIView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -95,13 +96,19 @@ const router = createRouter({
     },
     {
       path: '/admin/add/poi',
-      name: 'AddPOI',
+      name: 'addPOI',
       component: AddPOIView,
     },
     {
       path: '/admin/add/affected-area',
-      name: 'AddAffectedArea',
+      name: 'addAffectedArea',
       component: AddAffectedAreaView,
+    },
+    {
+      path: '/admin/update/poi',
+      name: 'updatePOI',
+      component: UpdatePOIView,
+      props: true,
     },
   ],
 })

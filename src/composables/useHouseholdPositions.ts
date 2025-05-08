@@ -8,11 +8,11 @@ import type { HouseholdPosition } from '@/types/mapTypes'
 
 interface HouseholdPositionsReturn {
   householdPositions: Ref<HouseholdPosition[]>
-  positionMarkers: Ref<mapboxgl.Marker[]>
-  fetchPositions: () => Promise<void>
+  positionMarkers: Ref<any[]>
+  fetchPositions: () => Promise<HouseholdPosition[]>
   createPositionMarkers: () => void
   clearPositionMarkers: () => void
-  startPositionTracking: () => void
+  startPositionTracking: () => Promise<void>
   stopPositionTracking: () => void
   isTrackingActive: Ref<boolean>
 }
@@ -85,6 +85,7 @@ export function useHouseholdPositions(
         .setPopup(popup)
         .addTo(map.value!)
 
+      // @ts-expect-error fix
       positionMarkers.value.push(marker)
     })
   }
@@ -153,12 +154,9 @@ export function useHouseholdPositions(
     stopPositionTracking()
   })
 
-  //@ts-expect-error fix
   return {
     householdPositions,
-    //@ts-expect-error fix
     positionMarkers,
-    //@ts-expect-error fix
     fetchPositions,
     createPositionMarkers,
     clearPositionMarkers,

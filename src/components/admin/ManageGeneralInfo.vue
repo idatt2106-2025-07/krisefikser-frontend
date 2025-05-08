@@ -28,7 +28,7 @@ const isCreating = ref(false)
 const currentItem = ref<GeneralInfoRequest>({
   title: '',
   content: '',
-  theme: 'BEFORE_CRISIS'
+  theme: 'BEFORE_CRISIS',
 })
 const editingId = ref<number | null>(null)
 
@@ -36,20 +36,20 @@ const editingId = ref<number | null>(null)
 const themeOptions = [
   { value: 'BEFORE_CRISIS', label: 'Before Crisis' },
   { value: 'DURING_CRISIS', label: 'During Crisis' },
-  { value: 'AFTER_CRISIS', label: 'After Crisis' }
+  { value: 'AFTER_CRISIS', label: 'After Crisis' },
 ]
 
 // Filtered lists by theme
 const beforeCrisisInfo = computed(() =>
-  generalInfoList.value.filter(info => info.theme === 'BEFORE_CRISIS')
+  generalInfoList.value.filter((info) => info.theme === 'BEFORE_CRISIS'),
 )
 
 const duringCrisisInfo = computed(() =>
-  generalInfoList.value.filter(info => info.theme === 'DURING_CRISIS')
+  generalInfoList.value.filter((info) => info.theme === 'DURING_CRISIS'),
 )
 
 const afterCrisisInfo = computed(() =>
-  generalInfoList.value.filter(info => info.theme === 'AFTER_CRISIS')
+  generalInfoList.value.filter((info) => info.theme === 'AFTER_CRISIS'),
 )
 
 // Fetch all general info items
@@ -59,11 +59,12 @@ async function fetchGeneralInfo() {
 
   try {
     const response = await axios.get<GeneralInfoResponse[]>('/api/general-info/all', {
-      withCredentials: true
+      withCredentials: true,
     })
     generalInfoList.value = response.data
   } catch (err: any) {
-    error.value = 'Failed to load general information. ' + (err.response?.data?.message || err.message)
+    error.value =
+      'Failed to load general information. ' + (err.response?.data?.message || err.message)
   } finally {
     loading.value = false
   }
@@ -77,7 +78,7 @@ function initCreateForm() {
   currentItem.value = {
     title: '',
     content: '',
-    theme: 'BEFORE_CRISIS'
+    theme: 'BEFORE_CRISIS',
   }
 }
 
@@ -89,7 +90,7 @@ function initEditForm(item: GeneralInfoResponse) {
   currentItem.value = {
     title: item.title,
     content: item.content,
-    theme: item.theme
+    theme: item.theme,
   }
 }
 
@@ -110,7 +111,7 @@ async function createGeneralInfo() {
     const response = await axios.post<GeneralInfoResponse>(
       '/api/general-info/admin/add',
       currentItem.value,
-      { withCredentials: true }
+      { withCredentials: true },
     )
 
     generalInfoList.value.push(response.data)
@@ -121,10 +122,11 @@ async function createGeneralInfo() {
     currentItem.value = {
       title: '',
       content: '',
-      theme: 'BEFORE_CRISIS'
+      theme: 'BEFORE_CRISIS',
     }
   } catch (err: any) {
-    error.value = 'Failed to create general information. ' + (err.response?.data?.message || err.message)
+    error.value =
+      'Failed to create general information. ' + (err.response?.data?.message || err.message)
   } finally {
     loading.value = false
   }
@@ -142,11 +144,11 @@ async function updateGeneralInfo() {
     const response = await axios.put<GeneralInfoResponse>(
       `/api/general-info/admin/update/${editingId.value}`,
       currentItem.value,
-      { withCredentials: true }
+      { withCredentials: true },
     )
 
     // Update in the list
-    const index = generalInfoList.value.findIndex(item => item.id === editingId.value)
+    const index = generalInfoList.value.findIndex((item) => item.id === editingId.value)
     if (index !== -1) {
       generalInfoList.value[index] = response.data
     }
@@ -155,7 +157,8 @@ async function updateGeneralInfo() {
     isEditing.value = false
     editingId.value = null
   } catch (err: any) {
-    error.value = 'Failed to update general information. ' + (err.response?.data?.message || err.message)
+    error.value =
+      'Failed to update general information. ' + (err.response?.data?.message || err.message)
   } finally {
     loading.value = false
   }
@@ -171,14 +174,15 @@ async function deleteGeneralInfo(id: number) {
 
   try {
     await axios.delete(`/api/general-info/admin/delete/${id}`, {
-      withCredentials: true
+      withCredentials: true,
     })
 
     // Remove from the list
-    generalInfoList.value = generalInfoList.value.filter(item => item.id !== id)
+    generalInfoList.value = generalInfoList.value.filter((item) => item.id !== id)
     success.value = 'General information deleted successfully'
   } catch (err: any) {
-    error.value = 'Failed to delete general information. ' + (err.response?.data?.message || err.message)
+    error.value =
+      'Failed to delete general information. ' + (err.response?.data?.message || err.message)
   } finally {
     loading.value = false
   }
@@ -239,12 +243,7 @@ onMounted(fetchGeneralInfo)
 
       <div class="form-group">
         <label for="theme">Theme</label>
-        <select
-          id="theme"
-          v-model="currentItem.theme"
-          required
-          class="form-control"
-        >
+        <select id="theme" v-model="currentItem.theme" required class="form-control">
           <option v-for="option in themeOptions" :key="option.value" :value="option.value">
             {{ option.label }}
           </option>
@@ -267,9 +266,7 @@ onMounted(fetchGeneralInfo)
         <button type="submit" class="btn-primary" :disabled="loading">
           {{ isEditing ? 'Update' : 'Create' }}
         </button>
-        <button type="button" @click="cancelForm" class="btn-secondary">
-          Cancel
-        </button>
+        <button type="button" @click="cancelForm" class="btn-secondary">Cancel</button>
       </div>
     </form>
 
@@ -290,12 +287,8 @@ onMounted(fetchGeneralInfo)
             <div class="info-header">
               <h4>{{ item.title }}</h4>
               <div class="card-actions">
-                <button @click="initEditForm(item)" class="btn-icon edit">
-                  ✏️
-                </button>
-                <button @click="deleteGeneralInfo(item.id)" class="btn-icon delete">
-                  🗑️
-                </button>
+                <button @click="initEditForm(item)" class="btn-icon edit">✏️</button>
+                <button @click="deleteGeneralInfo(item.id)" class="btn-icon delete">🗑️</button>
               </div>
             </div>
             <p class="info-content">{{ item.content }}</p>
@@ -316,12 +309,8 @@ onMounted(fetchGeneralInfo)
             <div class="info-header">
               <h4>{{ item.title }}</h4>
               <div class="card-actions">
-                <button @click="initEditForm(item)" class="btn-icon edit">
-                  ✏️
-                </button>
-                <button @click="deleteGeneralInfo(item.id)" class="btn-icon delete">
-                  🗑️
-                </button>
+                <button @click="initEditForm(item)" class="btn-icon edit">✏️</button>
+                <button @click="deleteGeneralInfo(item.id)" class="btn-icon delete">🗑️</button>
               </div>
             </div>
             <p class="info-content">{{ item.content }}</p>
@@ -342,12 +331,8 @@ onMounted(fetchGeneralInfo)
             <div class="info-header">
               <h4>{{ item.title }}</h4>
               <div class="card-actions">
-                <button @click="initEditForm(item)" class="btn-icon edit">
-                  ✏️
-                </button>
-                <button @click="deleteGeneralInfo(item.id)" class="btn-icon delete">
-                  🗑️
-                </button>
+                <button @click="initEditForm(item)" class="btn-icon edit">✏️</button>
+                <button @click="deleteGeneralInfo(item.id)" class="btn-icon delete">🗑️</button>
               </div>
             </div>
             <p class="info-content">{{ item.content }}</p>
@@ -408,7 +393,8 @@ onMounted(fetchGeneralInfo)
   margin-bottom: 20px;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   padding: 10px 15px;
   border-radius: 4px;
   font-weight: 600;

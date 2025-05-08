@@ -5,7 +5,7 @@ import SortDropdown from '@/components/common/SortDropdown.vue'
 import DaysCircle from '@/components/common/DaysCircle.vue'
 import FilterSidebar from '@/components/storage/FilterSidebar.vue'
 import threeDots from '@/assets/three-dots-horizontal.svg'
-import { useStorageItemStore } from '@/stores/storageItem'
+import { useStorageItemStore } from '@/stores/storageItemStore.ts'
 import { useRouter } from 'vue-router'
 
 const storageItemStore = useStorageItemStore()
@@ -30,7 +30,11 @@ const sortOptions = [
 const SUSTAIN_DAYS_GOAL = 21
 
 const navigateToAddItem = () => {
-  router.push('/storage/add')
+  router.push('/storage/add-storage-item')
+}
+
+const navigateToUpdateItem = (itemId: number) => {
+  router.push(`/storage/update/${itemId}`)
 }
 
 const selectedSortOption = ref('')
@@ -43,7 +47,6 @@ const searchDebounceTimeout = ref<number | null>(null)
 const selectedSort = computed(() => {
   if (!selectedSortOption.value) return ''
 
-  // Extract everything before the last underscore
   const lastUnderscoreIndex = selectedSortOption.value.lastIndexOf('_')
   if (lastUnderscoreIndex === -1) return selectedSortOption.value
 
@@ -59,7 +62,6 @@ const sortDirection = computed(() => {
 // Get items with expiration days calculated
 const items = computed(() => {
   return storageItemStore.aggregatedItems.map(item => {
-    // Calculate days until expiration
     const expirationDate = new Date(item.earliestExpirationDate)
     const today = new Date()
     const diffTime = expirationDate.getTime() - today.getTime()
@@ -81,7 +83,6 @@ const items = computed(() => {
 // In a real implementation, this would be calculated based on water and food quantities
 const daysLeft = ref(13)
 
-// Watch ONLY the search query with debounce
 watch(searchQuery, () => {
   if (searchDebounceTimeout.value) {
     clearTimeout(searchDebounceTimeout.value)
@@ -107,7 +108,7 @@ const handleSearch = (value: string | Event) => {
   }
 }
 
-// Add the handleSort function back to fix the template error
+// Function to handle sort option change
 const handleSort = (value: string) => {
   selectedSortOption.value = value
 }
@@ -248,11 +249,11 @@ onMounted(async () => {
               </div>
 
               <div class="item-quantity">
-                <div :class="['status-pill']">{{ item.quantity }} {{ item.unit }}</div>
+                <div :class="['status-pill']">{{ item.quantity.toFixed(1) }} {{ item.unit }}</div>
               </div>
 
               <div class="item-actions">
-                <button class="options-button">
+                <button class="options-button" @click="navigateToUpdateItem(item.id)">
                   <img :src="threeDots" alt="Options" />
                 </button>
               </div>

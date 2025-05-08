@@ -10,6 +10,9 @@ import StorageView from '@/views/storage/StorageView.vue'
 import AdminView from '@/views/admin/AdminView.vue'
 import GeneralInfo from '@/views/general/GeneralInfoView.vue'
 import News from '@/views/home/NewsView.vue'
+import AddStorageItemView from '@/views/storage/AddStorageItemView.vue'
+import UpdateItemView from '@/views/storage/UpdateItemView.vue'
+import AddItemView from '@/views/storage/AddItemView.vue'
 import MapView from '@/views/map/MapView.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
 import SuperAdminView from '@/views/admin/SuperAdminView.vue'
@@ -60,6 +63,21 @@ const router = createRouter({
       path: '/storage',
       name: 'storage',
       component: StorageView,
+    },
+    {
+      path: '/storage/add-storage-item',
+      name: 'add-storage-item',
+      component: AddStorageItemView,
+    },
+    {
+      path: '/storage/add-item',
+      name: 'add-item',
+      component: AddItemView,
+    },
+    {
+      path: '/storage/update/:itemId',
+      name: 'update-item',
+      component: UpdateItemView,
     },
     {
       path: '/admin',

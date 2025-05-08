@@ -1,7 +1,6 @@
 // services/storageItemService.ts
 import axios from 'axios'
 import type {
-  Item,
   AggregatedStorageItem,
   StorageItem,
   AddStorageItemRequest

@@ -2,15 +2,19 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
+type UserInfo = {
+  email: string
+  name: string | null
+}
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    // now just store the email string or null
-    user: null as null | string,
+    user: null as null | UserInfo,
   }),
   actions: {
     async fetchUser() {
       try {
-        const resp = await axios.get<string>('/api/auth/me', {
+        const resp = await axios.get<UserInfo>('/api/auth/me', {
           withCredentials: true,
           validateStatus: (status) => status === 200 || status === 204,
         })
@@ -29,7 +33,7 @@ export const useAuthStore = defineStore('auth', {
   },
   getters: {
     isLoggedIn: (state) => !!state.user,
-    // you can now expose the email directly
-    email: (state) => state.user,
+    email: (state) => state.user?.email ?? null,
+    name: (state) => state.user?.name ?? null,
   },
 })

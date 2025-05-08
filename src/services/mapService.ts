@@ -68,6 +68,27 @@ class MapService {
   async updatePointOfInterest(id: number, data: any) {
     await axiosInstance.put(`/point-of-interest/${id}`, data)
   }
+
+  /**
+   * Updates an affected area by its ID with the provided data.
+   *
+   * @param id - The ID of the affected area to update.
+   * @param data - The data to update the affected area with.
+   * @returns A promise that resolves when the affected area is successfully updated.
+   */
+  async updateAffectedArea(id: number, data: any) {
+    await axiosInstance.put(`/affected-area/${id}`, data)
+  }
+
+  /**
+   * Deletes an affected area by its ID.
+   *
+   * @param id - The ID of the affected area to delete.
+   * @returns A promise that resolves when the affected area is successfully deleted.
+   */
+  async deleteAffectedArea(id: number) {
+    await axiosInstance.delete(`/affected-area/${id}`)
+  }
 }
 
 const mapService = new MapService()

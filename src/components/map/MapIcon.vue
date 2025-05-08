@@ -19,17 +19,19 @@ const getIconDetails = (type: string) => {
     case 'hospital':
       return { color: '#ff5252', faIcon: 'fa-hospital' }
     case 'shelter':
-      return { color: '#4caf50', faIcon: 'fa-home' }
+      return { color: '#4caf50', faIcon: 'fa-house-user' }
     case 'defibrillator':
-      return { color: '#2196f3', faIcon: 'fa-heartbeat' }
+      return { color: '#ff5252', faIcon: 'fa-heartbeat' }
     case 'water_station':
       return { color: '#03a9f4', faIcon: 'fa-tint' }
     case 'food_central':
       return { color: '#ff9800', faIcon: 'fa-utensils' }
     case 'meeting_place':
-      return { color: '#9c27b0', faIcon: 'fa-users' }
+      return { color: '#4caf50', faIcon: 'fa-users' }
     case 'affected_areas':
-      return { color: '#ff5252', faIcon: 'fa-exclamation-triangle' }
+      return { color: '#D82727', faIcon: 'fa-exclamation-triangle' }
+    case 'household':
+      return { color: '#4285F4', faIcon: 'fa-home' }
     default:
       return { color: '#757575', faIcon: 'fa-question' }
   }

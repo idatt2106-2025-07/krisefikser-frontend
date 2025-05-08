@@ -48,8 +48,16 @@ export interface Filters {
   food_central?: boolean
   affected_areas?: boolean
   meeting_place?: boolean
+  household?: boolean
+  household_member?: boolean
 }
 
 export interface GetPointsOfInterestRequest {
   types: string[]
+}
+
+export interface HouseholdPosition {
+  latitude: number
+  longitude: number
+  name: string
 }

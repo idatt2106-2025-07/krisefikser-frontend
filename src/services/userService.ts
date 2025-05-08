@@ -4,7 +4,6 @@ class UserService {
 
   async getUserInfo() {
     const response = await axios.get('/api/user/profile', { withCredentials: true })
-    console.log('Raw user API response:', response.data)
     return response.data
   }
 }

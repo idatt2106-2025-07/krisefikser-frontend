@@ -20,6 +20,9 @@ import RegisterAdmin from '@/views/admin/RegisterAdmin.vue'
 import TwoFactorAuthView from '@/views/2fa/TwoFactorAuthView.vue'
 import TwoFactorNotifyView from '@/views/2fa/TwoFactorNotifyView.vue'
 import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
+import BeforeCrisisView from '@/views/general/BeforeCrisisView.vue'
+import DuringCrisisView from '@/views/general/DuringCrisisView.vue'
+import AfterCrisisView from '@/views/general/AfterCrisisView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -143,6 +146,21 @@ const router = createRouter({
       path: '/privacy-policy',
       name: 'privacy-policy',
       component: PrivacyPolicyView,
+    },
+    {
+      path: '/general-info/before-crisis',
+      name: 'before-crisis',
+      component: BeforeCrisisView,
+    },
+    {
+      path: '/general-info/during-crisis',
+      name: 'during-crisis',
+      component: DuringCrisisView,
+    },
+    {
+      path: '/general-info/after-crisis',
+      name: 'after-crisis',
+      component: AfterCrisisView,
     },
   ],
 })

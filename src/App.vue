@@ -5,13 +5,29 @@ import FooterComponent from './components/footer/FooterComponent.vue'
 </script>
 
 <template>
-  <div id="app">
+  <div class="app-layout">
     <NavBar />
-    <router-view />
+    <main class="main-content">
+      <router-view />
+    </main>
     <footer-component />
   </div>
 </template>
 
-<style scoped>
-/* Add any global styles here */
+<style>
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+}
 </style>

@@ -142,7 +142,6 @@ function getErrorMessage(error: unknown, defaultMsg: string): string {
 
 <template>
   <div class="auth-container">
-    <!-- Toast Notifications -->
     <div v-if="loginError" class="notification error">
       {{ loginError }}
     </div>

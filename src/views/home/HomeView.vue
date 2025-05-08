@@ -60,7 +60,7 @@ const navigateToNews = () => {
       <NotificationBar :notifications="notifications" />
 
       <div class="main-content">
-        <TheMap class="map-area" />
+        <TheMap class="map-area" :isHomePage="true" />
 
         <div class="content-column buttons-column">
           <div class="page-buttons">
@@ -144,11 +144,13 @@ const navigateToNews = () => {
 .map-area {
   display: flex;
   width: 50%;
-  height: 500px;
+  height: 508px;
+  margin: 20px;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .content-column {
-  flex: 1;
   display: flex;
   flex-direction: column;
 }

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+
 // Views
 import HomeView from '@/views/home/HomeView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
@@ -13,6 +14,13 @@ import RegisterAdmin from '@/views/RegisterAdmin.vue'
 import AddStorageItemView from '@/views/storage/AddStorageItemView.vue'
 import UpdateItemView from '@/views/storage/UpdateItemView.vue'
 import AddItemView from '@/views/storage/AddItemView.vue'
+import MapView from '@/views/map/MapView.vue'
+import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
+import SuperAdminView from '@/views/admin/SuperAdminView.vue'
+import RegisterAdmin from '@/views/admin/RegisterAdmin.vue'
+import TwoFactorAuthView from '@/views/2fa/TwoFactorAuthView.vue'
+import TwoFactorNotifyView from '@/views/2fa/TwoFactorNotifyView.vue'
+import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -41,6 +49,11 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: UserSettingsView,
+    },
+    {
+      path: '/map',
+      name: 'map',
+      component: MapView,
     },
     {
       path: '/household',
@@ -101,6 +114,36 @@ const router = createRouter({
       path: '/register-admin',
       name: 'register-admin',
       component: RegisterAdmin,
+    },
+    {
+      path: '/reset-password',
+      name: 'reset-password',
+      component: ResetPasswordView,
+    },
+    {
+      path: '/super-admin',
+      name: 'super-admin',
+      component: SuperAdminView,
+    },
+    {
+      path: '/register-admin',
+      name: 'register-admin',
+      component: RegisterAdmin,
+    },
+    {
+      path: '/verify-admin',
+      name: 'two-factor-auth',
+      component: TwoFactorAuthView,
+    },
+    {
+      path: '/admin/2fa-notify',
+      name: 'TwoFactorNotify',
+      component: TwoFactorNotifyView,
+    },
+    {
+      path: '/privacy-policy',
+      name: 'privacy-policy',
+      component: PrivacyPolicyView,
     },
   ],
 })

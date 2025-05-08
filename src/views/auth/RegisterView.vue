@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
 
 const router = useRouter()
 const name = ref('')
@@ -15,8 +16,13 @@ const emailError = ref(false)
 const confirmTouched = ref(false)
 const isLoading = ref(false)
 
-const message = ref('')
-const messageType = ref<'' | 'success' | 'error'>('')
+// toast state
+const toastMessage = ref<string | null>(null)
+const toastType = ref<'' | 'success' | 'error'>('')
+
+const siteKey = 'a754b964-3852-4810-a35e-c13ad84ce644'
+
+const hcaptchaToken = ref<string | null>(null)
 
 function validateEmail() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -27,18 +33,21 @@ const passwordsMatch = computed(() => password.value === confirmpassword.value)
 
 const formValid = computed(
   () =>
-    name.value &&
-    email.value &&
-    password.value &&
-    confirmpassword.value &&
-    agreeToTerms.value &&
-    passwordsMatch.value &&
-    !emailError.value,
+    !!(
+      name.value &&
+      email.value &&
+      password.value &&
+      confirmpassword.value &&
+      agreeToTerms.value &&
+      passwordsMatch.value &&
+      !emailError.value &&
+      hcaptchaToken.value
+    ),
 )
 
 async function handleSubmit() {
-  message.value = ''
-  messageType.value = ''
+  toastMessage.value = null
+  toastType.value = ''
 
   validateEmail()
   confirmTouched.value = true
@@ -47,36 +56,47 @@ async function handleSubmit() {
   try {
     isLoading.value = true
 
+    const verify = await axios.post(
+      'http://dev.krisefikser.localhost:8080/api/hcaptcha/verify',
+      { token: hcaptchaToken.value },
+      { withCredentials: true },
+    )
+    if (verify.status !== 200 || !verify.data.success) {
+      toastMessage.value = 'Captcha verification failed'
+      toastType.value = 'error'
+      isLoading.value = false
+      return
+    }
+
     const res = await axios.post(
-      'http://localhost:8080/api/auth/register',
+      'http://dev.krisefikser.localhost:8080/api/auth/register',
       { name: name.value, email: email.value, password: password.value },
       { withCredentials: true },
     )
 
     if (res.status === 201) {
-      message.value =
-        'Registered successfully. A verification email has been sent to your email address.'
-      messageType.value = 'success'
-
+      toastMessage.value =
+        'Registered successfully. A verification email has been sent. Redirecting to login…'
+      toastType.value = 'success'
       setTimeout(() => {
-        isLoading.value = false
+        toastMessage.value = null
+        toastType.value = ''
         router.push('/login')
       }, 2000)
-
       return
     }
 
     console.error('Unexpected response status:', res.status)
-    message.value = 'Unexpected response. Please try again.'
-    messageType.value = 'error'
+    toastMessage.value = 'Unexpected response. Please try again.'
+    toastType.value = 'error'
   } catch (err) {
     console.error('Error during registration:', err)
     if (axios.isAxiosError(err) && err.response) {
-      message.value = err.response.data?.message || 'Registration failed. Please try again.'
+      toastMessage.value = err.response.data?.message || 'Registration failed. Please try again.'
     } else {
-      message.value = 'An unexpected error occurred. Please try again.'
+      toastMessage.value = 'An unexpected error occurred. Please try again.'
     }
-    messageType.value = 'error'
+    toastType.value = 'error'
   } finally {
     /* cleared only for error paths */
     isLoading.value = false
@@ -86,12 +106,13 @@ async function handleSubmit() {
 
 <template>
   <div class="page-wrapper">
+    <!-- toast notification -->
+    <div v-if="toastMessage" :class="['toast', toastType]">
+      {{ toastMessage }}
+    </div>
+
     <form class="register-form" @submit.prevent="handleSubmit">
       <h2>Register</h2>
-
-      <div v-if="message" :class="['status-message', messageType]">
-        {{ message }}
-      </div>
 
       <div class="field">
         <label for="name">Name</label>
@@ -144,6 +165,12 @@ async function handleSubmit() {
         <input type="checkbox" class="agreeToTerms" v-model="agreeToTerms" :disabled="isLoading" />
         <label for="agreeToTerms">I agree to the terms and conditions</label>
       </div>
+
+      <vue-hcaptcha
+        sitekey="a754b964-3852-4810-a35e-c13ad84ce644"
+        @verify="(token: string) => (hcaptchaToken = token)"
+        @expire="() => (hcaptchaToken = null)"
+      ></vue-hcaptcha>
 
       <button type="submit" :disabled="!formValid || isLoading">
         {{ isLoading ? 'Registering…' : 'Register' }}

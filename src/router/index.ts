@@ -12,6 +12,7 @@ import GeneralInfo from '@/views/general/GeneralInfoView.vue'
 import News from '@/views/home/NewsView.vue'
 import MapView from '@/views/map/MapView.vue'
 import RegisterAdmin from '@/views/RegisterAdmin.vue'
+import verifyHouseholdInvitationView from '@/views/household/verifyHouseholdInvitationView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -90,6 +91,11 @@ const router = createRouter({
       path: '/register-admin',
       name: 'register-admin',
       component: RegisterAdmin,
+    },
+    {
+      path: '/invitation/verify',
+      name: 'verifyinvitation',
+      component: verifyHouseholdInvitationView,
     },
   ],
 })

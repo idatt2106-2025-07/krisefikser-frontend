@@ -27,11 +27,17 @@ export function useHouseholdPositions(
   const isTrackingActive = ref(false)
   let trackingInterval: number | null = null
 
+  /**
+   * Fetches the positions of household members from the map service and updates the `householdPositions` state.
+   * Logs the updated positions to the console upon success.
+   * In case of an error, logs the error to the console and returns an empty array.
+   *
+   * @returns {Promise<any[]>} A promise that resolves to an array of household member positions.
+   */
   const fetchPositions = async () => {
     try {
       const positions = await mapService.getHouseholdMemberPositions()
       householdPositions.value = positions
-      console.log('Household positions updated:', positions)
       return positions
     } catch (error) {
       console.error('Error fetching household positions:', error)
@@ -39,9 +45,17 @@ export function useHouseholdPositions(
     }
   }
 
+  /**
+   * Creates position markers on the map for each household position.
+   *
+   * This function first checks if the map instance is available. If not, it logs a message
+   * and exits early. It then clears any existing position markers before iterating over
+   * the `householdPositions` array to create new markers.
+   *
+   */
   const createPositionMarkers = () => {
     if (!map.value) {
-      console.log('Map not available, cannot create position markers')
+      console.error('Map not available, cannot create position markers')
       return
     }
 
@@ -75,6 +89,12 @@ export function useHouseholdPositions(
     })
   }
 
+  /**
+   * Clears all position markers from the map and resets the position markers array.
+   *
+   * This function iterates through the `positionMarkers` array, removes each marker
+   * from the map, and then resets the array to an empty state.
+   */
   const clearPositionMarkers = () => {
     positionMarkers.value.forEach((marker) => marker.remove())
     positionMarkers.value = []
@@ -83,16 +103,13 @@ export function useHouseholdPositions(
   const startPositionTracking = async () => {
     stopPositionTracking();
 
-    console.log('Starting position tracking')
     isTrackingActive.value = true
 
     try {
       console.log('Fetching household positions...')
       const positions = await fetchPositions()
-      console.log(`Fetched ${positions.length} household positions`)
 
       if (map.value && isMapLoaded.value && isStyleLoaded.value) {
-        console.log('Map ready, creating markers immediately')
         createPositionMarkers()
       } else {
         console.log('Map not ready, will create markers when map loads')
@@ -112,8 +129,11 @@ export function useHouseholdPositions(
     }
   }
 
+  /**
+   * Stops the position tracking process by clearing the tracking interval,
+   * resetting the tracking state, and removing position markers.
+   */
   const stopPositionTracking = () => {
-    console.log('Stopping position tracking')
     if (trackingInterval) {
       clearInterval(trackingInterval)
       trackingInterval = null

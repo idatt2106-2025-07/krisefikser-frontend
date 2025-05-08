@@ -1,14 +1,19 @@
 <template>
   <div class="admin-dashboard">
-    <div class="header">
-      <h1 class="page-title">Privacy Policy Management</h1>
-      <p class="page-subtitle">Manage privacy policies for registered users and public visitors</p>
-    </div>
-
     <div class="card">
       <details class="editor-menu">
         <summary class="editor-menu-summary">
-          <i class="fas fa-chevron-right"></i>
+          <i class="fas fa-chevron-right arrow-icon"></i>
+          <i class="fas fa-user-cog"></i>
+          Admin Management
+        </summary>
+        <AdminManagement />
+      </details>
+
+      <details class="editor-menu">
+        <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right arrow-icon"></i>
+          <i class="fas fa-file-alt"></i>
           Privacy Policy Editor
         </summary>
         <PrivacyPolicyEditor policyType="registered" />
@@ -18,36 +23,17 @@
 </template>
 
 <script setup lang="ts">
+import AdminManagement from '@/components/admin/AdminManager.vue'
 import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor.vue'
 </script>
 
 <style scoped>
-/* Base styles */
+/* Card layout */
 .admin-dashboard {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #2d3748;
 }
-
-.header {
-  margin-bottom: 2rem;
-}
-
-.page-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a365d;
-  margin-bottom: 0.5rem;
-}
-
-.page-subtitle {
-  font-size: 1rem;
-  color: #718096;
-}
-
-/* Card styling */
 .card {
   background: white;
   border-radius: 12px;
@@ -62,7 +48,7 @@ import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   overflow: hidden;
-  margin: 0;
+  margin-bottom: 1.5rem;
 }
 .editor-menu-summary {
   list-style: none;
@@ -78,12 +64,16 @@ import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor
 .editor-menu-summary .fas {
   transition: transform 0.2s;
 }
-/* rotate icon when open */
-.editor-menu[open] .editor-menu-summary .fas {
-  transform: rotate(90deg);
-}
 /* hide default marker */
 .editor-menu summary::-webkit-details-marker {
   display: none;
+}
+
+/* arrow icon transition */
+.editor-menu-summary .arrow-icon {
+  transition: transform 0.2s;
+}
+.editor-menu[open] .editor-menu-summary .arrow-icon {
+  transform: rotate(90deg);
 }
 </style>

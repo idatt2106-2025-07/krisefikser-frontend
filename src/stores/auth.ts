@@ -2,23 +2,21 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
+// stores/auth.ts
+export interface AuthUser {
+  email: string
+  role: 'ROLE_NORMAL' | 'ROLE_ADMIN' | 'ROLE_SUPER_ADMIN' | 'ROLE_UNKNOWN'
+}
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    // now just store the email string or null
-    user: null as null | string,
+    user: null as AuthUser | null,
   }),
   actions: {
     async fetchUser() {
       try {
-        const resp = await axios.get<string>('/api/auth/me', {
-          withCredentials: true,
-          validateStatus: (status) => status === 200 || status === 204,
-        })
-        if (resp.status === 200) {
-          this.user = resp.data
-        } else {
-          this.user = null
-        }
+        const resp = await axios.get<AuthUser>('/api/auth/me', { withCredentials: true })
+        this.user = resp.data
       } catch {
         this.user = null
       }
@@ -29,7 +27,7 @@ export const useAuthStore = defineStore('auth', {
   },
   getters: {
     isLoggedIn: (state) => !!state.user,
-    // you can now expose the email directly
-    email: (state) => state.user,
+    isAdmin: (state) => state.user?.role === 'ROLE_ADMIN',
+    isSuperAdmin: (state) => state.user?.role === 'ROLE_SUPER_ADMIN',
   },
 })

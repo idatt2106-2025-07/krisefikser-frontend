@@ -34,7 +34,6 @@ onMounted(async () => {
 
 <template>
   <div class="main-content">
-
     <div class="news-page">
       <h1>News</h1>
 
@@ -93,7 +92,9 @@ h1 {
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   height: auto;
   min-height: 60px;
   width: auto;

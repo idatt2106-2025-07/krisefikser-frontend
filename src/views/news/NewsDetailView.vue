@@ -36,9 +36,7 @@ onMounted(async () => {
       <div v-else-if="error" class="error">{{ error }}</div>
       <div v-else-if="article">
         <h1>{{ article.title }}</h1>
-        <p class="meta">
-          Published: {{ new Date(article.publishedAt).toLocaleString() }}
-        </p>
+        <p class="meta">Published: {{ new Date(article.publishedAt).toLocaleString() }}</p>
         <div class="content" v-html="article.content"></div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useItemStore } from '@/stores/item'
+import { useItemStore } from '@/stores/itemStore.ts'
 
 const props = defineProps({
   searchInputSelector: {

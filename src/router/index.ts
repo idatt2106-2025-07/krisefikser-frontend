@@ -14,9 +14,10 @@ import AddStorageItemView from '@/views/storage/AddStorageItemView.vue'
 import UpdateItemView from '@/views/storage/UpdateItemView.vue'
 import AddItemView from '@/views/storage/AddItemView.vue'
 import MapView from '@/views/map/MapView.vue'
+import RegisterAdmin from '@/views/RegisterAdmin.vue'
+import verifyHouseholdInvitationView from '@/views/household/verifyHouseholdInvitationView.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
 import SuperAdminView from '@/views/admin/SuperAdminView.vue'
-import RegisterAdmin from '@/views/admin/RegisterAdmin.vue'
 import TwoFactorAuthView from '@/views/2fa/TwoFactorAuthView.vue'
 import TwoFactorNotifyView from '@/views/2fa/TwoFactorNotifyView.vue'
 import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
@@ -117,6 +118,11 @@ const router = createRouter({
       path: '/register-admin',
       name: 'register-admin',
       component: RegisterAdmin,
+    },
+    {
+      path: '/invitation/verify',
+      name: 'verifyinvitation',
+      component: verifyHouseholdInvitationView,
     },
     {
       path: '/reset-password',

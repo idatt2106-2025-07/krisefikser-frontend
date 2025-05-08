@@ -5,6 +5,7 @@ import axios from 'axios'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha'
+import { getCoordinatesFromAddress } from '@/services/geoNorgeService'
 
 const router = useRouter()
 const name = ref('')
@@ -15,6 +16,9 @@ const agreeToTerms = ref(false)
 const emailError = ref(false)
 const confirmTouched = ref(false)
 const isLoading = ref(false)
+const householdName = ref('')
+const address = ref('')
+const coordinates = ref<{ lat: number; lon: number } | null>(null)
 
 // toast state
 const toastMessage = ref<string | null>(null)
@@ -38,6 +42,8 @@ const formValid = computed(
       email.value &&
       password.value &&
       confirmpassword.value &&
+      householdName.value &&
+      address.value &&
       agreeToTerms.value &&
       passwordsMatch.value &&
       !emailError.value &&
@@ -69,8 +75,17 @@ async function handleSubmit() {
     }
 
     const res = await axios.post(
-      'http://dev.krisefikser.localhost:8080/api/auth/register',
-      { name: name.value, email: email.value, password: password.value },
+      'http://dev.krisefikser.com:8080/api/auth/register',
+      {
+        name: name.value,
+        email: email.value,
+        password: password.value,
+        householdRequest: {
+          name: householdName.value,
+          longitude: coordinates.value?.lat,
+          latitude: coordinates.value?.lon,
+        },
+      },
       { withCredentials: true },
     )
 
@@ -101,6 +116,10 @@ async function handleSubmit() {
     /* cleared only for error paths */
     isLoading.value = false
   }
+}
+
+async function fetchCoordinates() {
+  coordinates.value = await getCoordinatesFromAddress(address.value)
 }
 </script>
 
@@ -160,6 +179,29 @@ async function handleSubmit() {
           >Passwords don’t match</small
         >
       </div>
+
+      <hr />
+      <p>Please fill in your household details, you can join another household later</p>
+
+      <div class="field">
+        <label for="householdName">Household Name</label>
+        <InputText
+          id="householdName"
+          v-model="householdName"
+          placeholder="Household Name"
+          :disabled="isLoading"
+        />
+      </div>
+
+      <label for="address">Address</label>
+      <InputText
+        id="address"
+        v-model="address"
+        placeholder="Address"
+        :disabled="isLoading"
+        @blur="fetchCoordinates"
+      />
+      <div v-if="coordinates">Coordinates: {{ coordinates.lat }}, {{ coordinates.lon }}</div>
 
       <div class="checkbox-container">
         <input type="checkbox" class="agreeToTerms" v-model="agreeToTerms" :disabled="isLoading" />
@@ -260,5 +302,10 @@ button:disabled {
   margin-top: 1rem;
   font-size: 0.9rem;
   text-align: center;
+}
+
+p {
+  font-size: 16px;
+  font-weight: bold;
 }
 </style>

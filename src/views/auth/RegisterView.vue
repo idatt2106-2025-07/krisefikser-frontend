@@ -83,8 +83,8 @@ async function handleSubmit() {
         householdRequest: {
           name: householdName.value,
           longitude: coordinates.value?.lat,
-          latitude: coordinates.value?.lon
-        }
+          latitude: coordinates.value?.lon,
+        },
       },
       { withCredentials: true },
     )
@@ -121,7 +121,6 @@ async function handleSubmit() {
 async function fetchCoordinates() {
   coordinates.value = await getCoordinatesFromAddress(address.value)
 }
-
 </script>
 
 <template>
@@ -181,7 +180,7 @@ async function fetchCoordinates() {
         >
       </div>
 
-      <hr>
+      <hr />
       <p>Please fill in your household details, you can join another household later</p>
 
       <div class="field">
@@ -202,9 +201,7 @@ async function fetchCoordinates() {
         :disabled="isLoading"
         @blur="fetchCoordinates"
       />
-      <div v-if="coordinates">
-        Coordinates: {{ coordinates.lat }}, {{ coordinates.lon }}
-      </div>
+      <div v-if="coordinates">Coordinates: {{ coordinates.lat }}, {{ coordinates.lon }}</div>
 
       <div class="checkbox-container">
         <input type="checkbox" class="agreeToTerms" v-model="agreeToTerms" :disabled="isLoading" />
@@ -307,7 +304,7 @@ button:disabled {
   text-align: center;
 }
 
-p{
+p {
   font-size: 16px;
   font-weight: bold;
 }

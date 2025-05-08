@@ -2,7 +2,6 @@
 import axiosInstance from '@/services/axiosService.ts'
 
 class HouseholdService {
-
   /**
    * Fetches the details of the authenticated user's household.
    *
@@ -13,7 +12,11 @@ class HouseholdService {
     return response.data
   }
 
-  async leaveAndCreateHousehold(householdRequest: { name: string; longitude: number; latitude: number }) {
+  async leaveAndCreateHousehold(householdRequest: {
+    name: string
+    longitude: number
+    latitude: number
+  }) {
     const response = await axiosInstance.post('/households', householdRequest)
     return response.data
   }
@@ -30,7 +33,6 @@ class HouseholdService {
     return response.data
   }
 
-
   async acceptJoinRequest(requestId: number) {
     await axiosInstance.put(`/households/requests/${requestId}/accept`)
   }
@@ -46,7 +48,7 @@ class HouseholdService {
 
   async verifyInvitation(token: string) {
     const response = await axiosInstance.get('/household-invitations/verify', {
-      params: { token }
+      params: { token },
     })
     return response.data
   }
@@ -55,7 +57,6 @@ class HouseholdService {
     const response = await axiosInstance.post('/household-invitations/accept', { token })
     return response.data
   }
-
 }
 
 const householdService = new HouseholdService()

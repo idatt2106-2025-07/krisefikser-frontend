@@ -5,7 +5,7 @@ import householdService from '@/services/HouseholdService'
 
 const route = useRoute()
 const router = useRouter()
-const token = ref(route.query.token as string || '')
+const token = ref((route.query.token as string) || '')
 const invitation = ref<any>(null)
 const error = ref('')
 const isLoading = ref(true)
@@ -70,7 +70,7 @@ const acceptInvitation = async () => {
   padding: 32px 24px;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 .error {

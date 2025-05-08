@@ -66,7 +66,7 @@ const handleItemSelected = (item: SidebarItem, index: number) => {
  */
 const members = ref<Member[]>([])
 
-const householdTitle = ref();
+const householdTitle = ref()
 
 const householdId = ref<number | null>(null)
 
@@ -207,7 +207,7 @@ const fetchMembers = async () => {
 
     members.value = data.members || []
     householdTitle.value = data.name
-    householdId.value = data.id;
+    householdId.value = data.id
   } catch (e) {
     error.value = 'Failed to load household members'
     console.log(e)
@@ -305,7 +305,7 @@ onBeforeUnmount(() => {
           <template #household>
             <p>Household id: {{ householdId ?? '' }}</p>
             <button class="blue-button" @click="openInviteModal">Invite user</button>
-            <br>
+            <br />
             <button class="blue-button">Add member without user</button>
 
             <div class="join-requests-section" v-if="joinRequests.length">
@@ -340,7 +340,9 @@ onBeforeUnmount(() => {
                     <div v-if="activePopupMember === member.name" class="member-popup">
                       <template v-if="member.name === currentUserName">
                         <div class="popup-option" @click.stop="openLeaveModal">Leave household</div>
-                        <div class="popup-option" @click="requestToJoinAnotherHousehold">Request to join another household</div>
+                        <div class="popup-option" @click="requestToJoinAnotherHousehold">
+                          Request to join another household
+                        </div>
                       </template>
                       <template v-else>
                         <div class="popup-option">Delete member</div>
@@ -365,8 +367,7 @@ onBeforeUnmount(() => {
     <!-- Leave Household Modal -->
     <div v-if="showLeaveModal" class="modal-overlay">
       <div class="modal-content">
-        <h3>  To leave your current household, you must create a new personal household
-        </h3>
+        <h3>To leave your current household, you must create a new personal household</h3>
         <label>
           Household Name:
           <input v-model="newHouseholdName" type="text" />
@@ -378,7 +379,10 @@ onBeforeUnmount(() => {
         <div v-if="addressError" class="error">{{ addressError }}</div>
         <div class="modal-actions">
           <button @click="closeLeaveModal" :disabled="isSubmitting">Cancel</button>
-          <button @click="submitLeaveHousehold" :disabled="isSubmitting || !newHouseholdName || !newHouseholdAddress">
+          <button
+            @click="submitLeaveHousehold"
+            :disabled="isSubmitting || !newHouseholdName || !newHouseholdAddress"
+          >
             {{ isSubmitting ? 'Submitting...' : 'Submit' }}
           </button>
         </div>
@@ -395,10 +399,8 @@ onBeforeUnmount(() => {
         </label>
         <div v-if="joinError" class="error">{{ joinError }}</div>
         <div class="modal-actions">
-          <button @click="() => showJoinModal = false">Cancel</button>
-          <button @click="submitJoinRequest" :disabled="!joinHouseholdId">
-            Submit
-          </button>
+          <button @click="() => (showJoinModal = false)">Cancel</button>
+          <button @click="submitJoinRequest" :disabled="!joinHouseholdId">Submit</button>
         </div>
       </div>
     </div>
@@ -431,7 +433,7 @@ onBeforeUnmount(() => {
   width: 100vw;
   height: 100vh;
   background: rgba(30, 41, 59, 0.45); /* darker, more modern */
-  backdrop-filter: blur(2px);          /* subtle blur */
+  backdrop-filter: blur(2px); /* subtle blur */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -440,8 +442,12 @@ onBeforeUnmount(() => {
 }
 
 @keyframes modal-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-content {
@@ -450,7 +456,7 @@ onBeforeUnmount(() => {
   padding: 32px 24px;
   min-width: 320px;
   max-width: 500px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
 }
 
 .modal-actions {
@@ -467,19 +473,21 @@ onBeforeUnmount(() => {
   gap: 0.25rem;
 }
 
-.modal-content input[type="text"] {
+.modal-content input[type='text'] {
   width: 100%;
   padding: 0.6rem 0.75rem;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   font-size: 1rem;
   background: #f8fafc;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   outline: none;
   margin-top: 0.25rem;
 }
 
-.modal-content input[type="text"]:focus {
+.modal-content input[type='text']:focus {
   border-color: #0ea5e9;
   box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15);
   background: #fff;
@@ -490,7 +498,7 @@ onBeforeUnmount(() => {
   margin-top: 8px;
 }
 
-p{
+p {
   font-size: 16px;
 }
 .page-container {

@@ -1,4 +1,6 @@
-export async function getCoordinatesFromAddress(address: string): Promise<{ lat: number; lon: number } | null> {
+export async function getCoordinatesFromAddress(
+  address: string,
+): Promise<{ lat: number; lon: number } | null> {
   if (!address || address.trim().length === 0) return null
 
   const url = `https://ws.geonorge.no/adresser/v1/sok?sok=${encodeURIComponent(address)}&fuzzy=false&utkoordsys=4258&treffPerSide=1&side=0&asciiKompatibel=true`

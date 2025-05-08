@@ -9,6 +9,7 @@ import { useMapLayers } from '@/composables/useAffectedAreas'
 import { useSearchGeocoder } from '@/composables/useSearchGeocoder'
 import type { LocationData } from '@/types/mapTypes'
 import mapService from '@/services/mapService'
+import { useHouseholdMarker } from '@/composables/useHouseholdMarker'
 
 const locationData = shallowRef<LocationData>({
   pointsOfInterest: [],
@@ -140,7 +141,7 @@ watch(
   (newFilters) => {
     if (isLoading.value || isDebouncing.value) return
 
-    const poiFilters = getEnabledFilters(newFilters).filter((f) => f !== 'affected_areas')
+    const poiFilters = getEnabledFilters(newFilters).filter((f) => f !== 'affected_areas' && f !== 'household')
 
     const filtersStr = poiFilters.sort().join(',')
     const prevFiltersStr = prevFilters.value.sort().join(',')
@@ -183,6 +184,13 @@ const { initializeSearch } = useSearchGeocoder(
   locationData,
   markers,
 )
+const {
+  householdMarker,
+  isHouseholdVisible,
+  navigateToHousehold,
+  createHouseholdMarker,
+  initialize: initializeHouseholdMarker
+} = useHouseholdMarker(map, isMapLoaded, isStyleLoaded)
 
 const navigateToPOI = async (poi: {
   longitude: number
@@ -235,6 +243,25 @@ watch(
 )
 
 /**
+ * Watcher that checks the filter for household and toggles filter
+ */
+ watch(
+  () => filtersRef.value.household,
+  (showHousehold) => {
+    if (!map.value || !isMapLoaded.value) return
+
+    if (showHousehold) {
+      createHouseholdMarker()
+    } else {
+      if (householdMarker.value) {
+        householdMarker.value.remove()
+        isHouseholdVisible.value = false
+      }
+    }
+  }
+)
+
+/**
  * onMounted function that initializes POI markers and affected area layers.
  * Waits for the map to be loaded.
  */
@@ -242,6 +269,7 @@ onMounted(() => {
   watch([isMapLoaded, isStyleLoaded], ([mapLoaded, styleLoaded]) => {
     if (mapLoaded && styleLoaded) {
       setTimeout(() => {
+        initializeHouseholdMarker()
         tryInitializeLayers(5)
         initializeMarkers()
         if (!props.isHomePage) {
@@ -256,8 +284,8 @@ onMounted(() => {
             fetchAllPointsOfInterest()
           } else {
             const poiFilters = getEnabledFilters(filtersRef.value).filter(
-              (f) => f !== 'affected_areas',
-            )
+              (f) => f !== 'affected_areas' && f !== 'household'
+)
 
             if (poiFilters.length > 0) {
               fetchPointsOfInterest(poiFilters)

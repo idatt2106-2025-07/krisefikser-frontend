@@ -9,7 +9,7 @@ import HouseholdView from '@/views/household/HouseholdView.vue'
 import StorageView from '@/views/storage/StorageView.vue'
 import AdminView from '@/views/admin/AdminView.vue'
 import GeneralInfo from '@/views/general/GeneralInfoView.vue'
-import News from '@/views/home/NewsView.vue'
+import News from '@/views/news/NewsView.vue'
 import AddStorageItemView from '@/views/storage/AddStorageItemView.vue'
 import UpdateItemView from '@/views/storage/UpdateItemView.vue'
 import AddItemView from '@/views/storage/AddItemView.vue'
@@ -23,6 +23,7 @@ import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
 import BeforeCrisisView from '@/views/general/BeforeCrisisView.vue'
 import DuringCrisisView from '@/views/general/DuringCrisisView.vue'
 import AfterCrisisView from '@/views/general/AfterCrisisView.vue'
+import NewsDetailView from '@/views/news/NewsDetailView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -161,6 +162,11 @@ const router = createRouter({
       path: '/general-info/after-crisis',
       name: 'after-crisis',
       component: AfterCrisisView,
+    },
+    {
+      path: '/news/:id',
+      name: 'NewsDetail',
+      component: NewsDetailView,
     },
   ],
 })

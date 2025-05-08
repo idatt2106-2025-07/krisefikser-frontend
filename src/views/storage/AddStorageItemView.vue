@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import SearchBar from '@/components/common/SearchBar.vue'
 import SearchDropdown from '@/components/storage/SearchDropdown.vue'
 import { useStorageItemStore } from '@/stores/storageItemStore.ts'
-import type { Item } from '@/stores/storageItemStore.ts'
+import type { Item } from '@/types/storageItem'
 
 const router = useRouter()
 const storageItemStore = useStorageItemStore()

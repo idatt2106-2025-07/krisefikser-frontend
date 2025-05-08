@@ -87,6 +87,11 @@ export function useMarkerManagement(
 
     removeAllMarkers()
 
+    if (!locationData.value || !Array.isArray(locationData.value.pointsOfInterest)) {
+      console.warn('POI data is not available or not an array')
+      return
+    }
+
     locationData.value.pointsOfInterest.forEach((poi: PointOfInterest) => {
       const filterKey = typeToFilterKey[poi.type]
 
@@ -100,23 +105,23 @@ export function useMarkerManagement(
           .setLngLat([poi.longitude, poi.latitude])
           .setPopup(
             new mapboxgl.Popup().setHTML(`
-              <div class="popup-content">
-                <h3>${getTypeDisplayName(poi.type)}</h3>
-                <p>${poi.description}</p>
-                ${poi.opensAt ? `<h4>Open: ${poi.opensAt} - ${poi.closesAt}</h4>` : ''}
-                ${poi.contactNumber ? `<h4>Contact: ${poi.contactNumber}</h4>` : ''}
-                ${
-                  isAdminPage.value
-                    ? `
-                    <div class="admin-buttons">
-                      <button class="edit-poi" data-id="${poi.id}" type="button">Edit</button>
-                      <button class="delete-poi" data-id="${poi.id}" type="button">Delete</button>
-                    </div>
-                    `
-                    : ''
-                }
-              </div>
-            `),
+<div class="popup-content">
+  <h3>${getTypeDisplayName(poi.type)}</h3>
+  <p>${poi.description}</p>
+  ${poi.opensAt ? `<h4>Open: ${poi.opensAt} - ${poi.closesAt}</h4>` : ''}
+  ${poi.contactNumber ? `<h4>Contact: ${poi.contactNumber}</h4>` : ''}
+  <button class="directions-btn" data-lng="${poi.longitude}" data-lat="${poi.latitude}">Get Directions</button>
+  ${
+    isAdminPage.value
+      ? `
+        <div class="admin-buttons">
+          <button class="edit-poi" data-id="${poi.id}" type="button">Edit</button>
+          <button class="delete-poi" data-id="${poi.id}" type="button">Delete</button>
+        </div>
+        `
+      : ''
+  }
+</div>
           )
           .addTo(mapInstance)
 

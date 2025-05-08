@@ -9,11 +9,24 @@ import HouseholdView from '@/views/household/HouseholdView.vue'
 import StorageView from '@/views/storage/StorageView.vue'
 import AdminView from '@/views/admin/AdminView.vue'
 import GeneralInfo from '@/views/general/GeneralInfoView.vue'
-import News from '@/views/home/NewsView.vue'
+import News from '@/views/news/NewsView.vue'
+import AddStorageItemView from '@/views/storage/AddStorageItemView.vue'
+import UpdateItemView from '@/views/storage/UpdateItemView.vue'
+import AddItemView from '@/views/storage/AddItemView.vue'
 import MapView from '@/views/map/MapView.vue'
 import RegisterAdmin from '@/views/RegisterAdmin.vue'
 import AddPOIView from '@/views/admin/AddPOIView.vue'
 import AddAffectedAreaView from '@/views/admin/AddAffectedAreaView.vue'
+import verifyHouseholdInvitationView from '@/views/household/verifyHouseholdInvitationView.vue'
+import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
+import SuperAdminView from '@/views/admin/SuperAdminView.vue'
+import TwoFactorAuthView from '@/views/2fa/TwoFactorAuthView.vue'
+import TwoFactorNotifyView from '@/views/2fa/TwoFactorNotifyView.vue'
+import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
+import BeforeCrisisView from '@/views/general/BeforeCrisisView.vue'
+import DuringCrisisView from '@/views/general/DuringCrisisView.vue'
+import AfterCrisisView from '@/views/general/AfterCrisisView.vue'
+import NewsDetailView from '@/views/news/NewsDetailView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -61,6 +74,21 @@ const router = createRouter({
       component: StorageView,
     },
     {
+      path: '/storage/add-storage-item',
+      name: 'add-storage-item',
+      component: AddStorageItemView,
+    },
+    {
+      path: '/storage/add-item',
+      name: 'add-item',
+      component: AddItemView,
+    },
+    {
+      path: '/storage/update/:itemId',
+      name: 'update-item',
+      component: UpdateItemView,
+    },
+    {
       path: '/admin',
       name: 'admin',
       component: AdminView,
@@ -96,26 +124,83 @@ const router = createRouter({
       component: RegisterAdmin,
     },
     {
-      path: '/admin/add/poi',
-      name: 'addPOI',
-      component: AddPOIView,
-    },
-    {
-      path: '/admin/add/affected-area',
-      name: 'addAffectedArea',
-      component: AddAffectedAreaView,
-    },
-    {
-      path: '/admin/update/poi',
-      name: 'updatePOI',
-      component: UpdatePOIView,
-      props: true,
-    },
-    {
-      path: '/admin/update/affected-area',
-      name: 'updateAffectedArea',
-      component: UpdateAffectedAreaView,
-      props: true,
+  path: '/admin/add/poi',
+  name: 'addPOI',
+  component: AddPOIView,
+},
+{
+  path: '/admin/add/affected-area',
+  name: 'addAffectedArea',
+  component: AddAffectedAreaView,
+},
+{
+  path: '/admin/update/poi',
+  name: 'updatePOI',
+  component: UpdatePOIView,
+  props: true,
+},
+{
+  path: '/admin/update/affected-area',
+  name: 'updateAffectedArea',
+  component: UpdateAffectedAreaView,
+  props: true,
+},
+{
+  path: '/invitation/verify',
+  name: 'verifyinvitation',
+  component: verifyHouseholdInvitationView,
+},
+{
+  path: '/reset-password',
+  name: 'reset-password',
+  component: ResetPasswordView,
+},
+{
+  path: '/super-admin',
+  name: 'super-admin',
+  component: SuperAdminView,
+},
+{
+  path: '/register-admin',
+  name: 'register-admin',
+  component: RegisterAdmin,
+},
+{
+  path: '/verify-admin',
+  name: 'two-factor-auth',
+  component: TwoFactorAuthView,
+},
+{
+  path: '/admin/2fa-notify',
+  name: 'TwoFactorNotify',
+  component: TwoFactorNotifyView,
+},
+{
+  path: '/privacy-policy',
+  name: 'privacy-policy',
+  component: PrivacyPolicyView,
+},
+{
+  path: '/general-info/before-crisis',
+  name: 'before-crisis',
+  component: BeforeCrisisView,
+},
+{
+  path: '/general-info/during-crisis',
+  name: 'during-crisis',
+  component: DuringCrisisView,
+},
+{
+  path: '/general-info/after-crisis',
+  name: 'after-crisis',
+  component: AfterCrisisView,
+},
+{
+  path: '/news/:id',
+  name: 'NewsDetail',
+  component: NewsDetailView,
+}
+
     },
   ],
 })

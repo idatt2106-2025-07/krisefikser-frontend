@@ -1,4 +1,3 @@
-<!-- AdminView.vue -->
 <template>
   <h1 class="title">Admin Panel</h1>
   <div class="admin-page">
@@ -38,130 +37,113 @@
         </TabPanel>
       </TabPanels>
     </Tabs>
+
+  <div class="admin-dashboard">
+    <div class="header">
+      <h1 class="page-title">Admin Dashboard</h1>
+      <p class="page-subtitle">Manage website content and settings</p>
+    </div>
+
+    <div class="card">
+      <details class="editor-menu">
+        <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right"></i>
+          Privacy Policy Editor
+        </summary>
+        <PrivacyPolicyEditor policyType="registered" />
+      </details>
+
+      <details class="editor-menu">
+        <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right"></i>
+          General Information Management
+        </summary>
+        <ManageGeneralInfo />
+      </details>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import axios from 'axios'
-import AdminPanel from '@/components/admin/AdminPanel.vue' // Adjust the path as needed
-/* PrimeVue v4 components */
-import Tabs from 'primevue/tabs'
-import TabList from 'primevue/tablist'
-import Tab from 'primevue/tab'
-import TabPanels from 'primevue/tabpanels'
-import TabPanel from 'primevue/tabpanel'
-
-const tabs = [
-  { label: 'Manage Map', type: 'Map' },
-  { label: 'Gameification', type: 'Gameification' },
-  { label: 'Manage Users', type: 'Users' },
-  { label: 'Invite Admin', type: 'InviteAdmin' },
-] as const
-
-const value = ref('0') // Default to the first tab
-
-// Invite Admin state
-const email = ref('')
-const loading = ref(false)
-const message = ref('')
-const success = ref(false)
-
-async function handleInviteAdmin() {
-  loading.value = true
-  message.value = ''
-  success.value = false
-
-  try {
-    // Use the full backend endpoint
-    const response = await axios.post('/api/admin/invite', { email: email.value })
-    message.value = response.data
-    success.value = true
-  } catch (error) {
-    console.error(error)
-    if (axios.isAxiosError(error) && error.response) {
-      message.value = error.response.data || 'Failed to send invite'
-    } else {
-      message.value = 'Failed to send invite'
-    }
-    success.value = false
-  } finally {
-    loading.value = false
-  }
-}
-
-const showAddIconForm = ref(false)
-const iconType = ref('')
-const iconTypes = [
-  'Shelter',
-  'Affected Area',
-  'Defibrillator',
-  'Water Station',
-  'Food central',
-  'Hospital',
-]
-
-function handleAddIcon() {
-  if (!iconType.value) {
-    alert('Please select an icon type.')
-    return
-  }
-  alert(`Icon added: Type – ${iconType.value}`)
-  showAddIconForm.value = false
-}
+import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor.vue'
+import ManageGeneralInfo from '@/components/admin/ManageGeneralInfo.vue'
 </script>
 
 <style scoped>
-/* ----- layout & content ----- */
-.admin-container {
-  display: flex;
-  max-width: 900px;
+/* Base styles */
+.admin-dashboard {
+  max-width: 1200px;
   margin: 0 auto;
-  background: #fff;
+  padding: 2rem 1.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2d3748;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a365d;
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  font-size: 1rem;
+  color: #718096;
+}
+
+/* Card styling */
+.card {
+  background: white;
   border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-.content {
-  flex: 1;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   padding: 2rem;
-  text-align: center;
-}
-
-.admin-page {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.field {
-  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
+  gap: 1.5rem;
 }
 
-button {
-  padding: 0.75rem 1.5rem;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
+/* Expandable menu */
+.editor-menu {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 0;
+}
+
+.editor-menu-summary {
+  list-style: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #f7fafc;
+  font-weight: 600;
+  color: #2d3748;
 }
 
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.editor-menu-summary .fas {
+  transition: transform 0.2s;
 }
 
-.success {
-  color: green;
-  margin-top: 1rem;
+/* rotate icon when open */
+.editor-menu[open] .editor-menu-summary .fas {
+  transform: rotate(90deg);
 }
 
-.error {
-  color: red;
-  margin-top: 1rem;
+/* hide default marker */
+.editor-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Add padding to the content inside the details */
+.editor-menu > :not(summary) {
+  padding: 1rem;
 }
 </style>

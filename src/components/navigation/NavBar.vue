@@ -8,16 +8,20 @@ const authStore = useAuthStore()
 const isLoggedIn = computed(() => authStore.isLoggedIn)
 
 onMounted(() => authStore.fetchUser())
-
-function logout() {
-  authStore.clearToken()
-  window.location.href = '/login'
-}
 </script>
 
 <template>
-  <div>
+  <div class="sticky-nav">
     <LoggedInNavBar v-if="isLoggedIn" />
     <LoggedOutNavBar v-else />
   </div>
 </template>
+
+<style scoped>
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+</style>

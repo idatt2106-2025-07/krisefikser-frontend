@@ -27,9 +27,11 @@ const props = withDefaults(
   defineProps<{
     sidebarTitle?: string
     sidebarItems: SidebarItem[]
+    contentTitle?: string
   }>(),
   {
     sidebarTitle: 'Dashboard',
+    contentTitle: undefined,
   },
 )
 
@@ -124,7 +126,7 @@ onMounted(() => {
     <!-- Content Area -->
     <div class="content-area">
       <div v-if="activeItem" class="content-wrapper">
-        <h1 class="content-title">{{ activeItem.title }}</h1>
+        <h1 class="content-title">{{ props.contentTitle ?? activeItem.title }}</h1>
         <div class="content-body">
           <slot :name="activeItem.id" :item="activeItem"></slot>
         </div>

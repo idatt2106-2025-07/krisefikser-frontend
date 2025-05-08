@@ -1,4 +1,6 @@
 import axiosInstance from '@/services/axiosService'
+import axios from 'axios'
+import type { HouseholdPosition } from '@/types/mapTypes'
 
 class MapService {
   /**
@@ -49,6 +51,7 @@ class MapService {
   }
 
   /**
+
    * Deletes a point of interest by its ID.
    *
    * @param id - The ID of the point of interest to delete.
@@ -88,6 +91,14 @@ class MapService {
    */
   async deleteAffectedArea(id: number) {
     await axiosInstance.delete(`/affected-area/${id}`)
+   /**
+   * Fetches the positions of household members from the server.
+   *
+   * @returns A promise that resolves to an array of `HouseholdPosition` objects.
+   */
+  async getHouseholdMemberPositions(): Promise<HouseholdPosition[]> {
+    const response = await axios.get('/api/position/household', { withCredentials: true })
+    return response.data
   }
 }
 

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import householdService from '@/services/HouseholdService'
 import SidebarContent from '@/components/navigation/SidebarContent.vue'
+import { useAuthStore } from '@/stores/auth.ts'
+import { computed } from 'vue'
+import { getCoordinatesFromAddress } from '@/services/geoNorgeService'
 
 /**
  * Interface representing a sidebar item.
@@ -50,6 +54,10 @@ const activePopupMember = ref<string | null>(null)
  */
 const handleItemSelected = (item: SidebarItem, index: number) => {
   console.log('Selected item:', item.title, 'at index:', index)
+  householdTitle.value = item.title
+  if (item.id === 'household') {
+    fetchMembers()
+  }
 }
 
 /**
@@ -57,6 +65,16 @@ const handleItemSelected = (item: SidebarItem, index: number) => {
  * @type {Ref<Member[]>}
  */
 const members = ref<Member[]>([])
+
+const householdTitle = ref()
+
+const householdId = ref<number | null>(null)
+
+const authStore = useAuthStore()
+
+const currentUserName = computed(() => authStore.name)
+
+const joinRequests = ref<any[]>([])
 
 /**
  * Reactive state to track the loading status.
@@ -70,6 +88,111 @@ const isLoading = ref(true)
  */
 const error = ref<string | null>(null)
 
+const showJoinModal = ref(false)
+const joinHouseholdId = ref('')
+const joinError = ref('')
+
+const showLeaveModal = ref(false)
+const newHouseholdName = ref('')
+const newHouseholdAddress = ref('')
+const addressError = ref('')
+const isSubmitting = ref(false)
+
+const showInviteModal = ref(false)
+const inviteEmail = ref('')
+const inviteError = ref('')
+const isInviting = ref(false)
+
+const openInviteModal = () => {
+  showInviteModal.value = true
+  inviteEmail.value = ''
+  inviteError.value = ''
+}
+
+const closeInviteModal = () => {
+  showInviteModal.value = false
+  inviteEmail.value = ''
+  inviteError.value = ''
+}
+
+const openLeaveModal = () => {
+  showLeaveModal.value = true
+  newHouseholdName.value = ''
+  newHouseholdAddress.value = ''
+  addressError.value = ''
+}
+
+const closeLeaveModal = () => {
+  showLeaveModal.value = false
+  addressError.value = ''
+}
+
+const submitLeaveHousehold = async () => {
+  isSubmitting.value = true
+  addressError.value = ''
+  // Get coordinates
+  const coords = await getCoordinatesFromAddress(newHouseholdAddress.value)
+  if (!coords) {
+    addressError.value = 'Invalid address. Please enter a valid Norwegian address.'
+    isSubmitting.value = false
+    return
+  }
+  try {
+    await householdService.leaveAndCreateHousehold({
+      name: newHouseholdName.value,
+      latitude: coords.lat,
+      longitude: coords.lon,
+    })
+    closeLeaveModal()
+    await fetchMembers()
+    alert('You have left your household and created a new one.')
+  } catch (e) {
+    addressError.value = 'Failed to create new household.'
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+const requestToJoinAnotherHousehold = async () => {
+  joinError.value = ''
+  joinHouseholdId.value = ''
+  showJoinModal.value = true
+}
+
+const submitJoinRequest = async () => {
+  if (!joinHouseholdId.value) {
+    joinError.value = 'Please enter a valid household ID.'
+    return
+  }
+
+  try {
+    await householdService.requestToJoinHousehold(parseInt(joinHouseholdId.value, 10))
+    alert('Join request sent!')
+    showJoinModal.value = false
+  } catch (e) {
+    joinError.value = 'Failed to send join request.'
+  }
+}
+
+const submitInvite = async () => {
+  if (!inviteEmail.value || !inviteEmail.value.includes('@')) {
+    inviteError.value = 'Please enter a valid email address.'
+    return
+  }
+
+  isInviting.value = true
+  inviteError.value = ''
+  try {
+    await householdService.createInvitation(inviteEmail.value)
+    alert('Invitation sent!')
+    closeInviteModal()
+  } catch (e) {
+    inviteError.value = 'Failed to send invitation. Try again later.'
+  } finally {
+    isInviting.value = false
+  }
+}
+
 /**
  * Fetches the list of household members.
  * Simulates an API call with a delay.
@@ -80,25 +203,46 @@ const fetchMembers = async () => {
   error.value = null
 
   try {
-    //TODO: fix to use endpoint later
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    const data = await householdService.getMyHouseholdDetails()
 
-    // Populate members with mock data
-    members.value = [
-      { name: 'Anders Lundemo' },
-      { name: 'Lukas' },
-      { name: 'Johan' },
-      { name: 'john doe' },
-      { name: 'Vetle' },
-      { name: 'Florian' },
-    ]
+    members.value = data.members || []
+    householdTitle.value = data.name
+    householdId.value = data.id
   } catch (e) {
-    // Handle errors and set error message
     error.value = 'Failed to load household members'
     console.log(e)
   } finally {
-    // Set loading state to false
     isLoading.value = false
+  }
+}
+
+const fetchJoinRequests = async () => {
+  try {
+    joinRequests.value = await householdService.getJoinRequests()
+  } catch (e) {
+    joinRequests.value = []
+  }
+}
+
+const acceptJoinRequest = async (requestId: number) => {
+  try {
+    await householdService.acceptJoinRequest(requestId)
+    await fetchJoinRequests()
+    await fetchMembers()
+    alert(`Accepted request #${requestId}`)
+  } catch (e) {
+    alert('Failed to accept join request.')
+  }
+}
+
+const declineJoinRequest = async (requestId: number) => {
+  try {
+    await householdService.declineJoinRequest(requestId)
+    await fetchJoinRequests()
+    await fetchMembers()
+    alert(`Accepted request #${requestId}`)
+  } catch (e) {
+    alert('Failed to accept join request.')
   }
 }
 
@@ -134,6 +278,7 @@ const closePopups = () => {
  */
 onMounted(() => {
   fetchMembers()
+  fetchJoinRequests()
   document.addEventListener('click', closePopups)
 })
 
@@ -151,16 +296,29 @@ onBeforeUnmount(() => {
     <div class="content-container">
       <div class="sidebar-wrapper">
         <SidebarContent
-          sidebar-title="Household"
+          :content-title="householdTitle"
+          sidebar-title="household"
           :sidebar-items="menuItems"
           @item-selected="handleItemSelected"
           class="sidebar-component"
         >
-          <!-- Define content for each sidebar item using named slots -->
           <template #household>
-            <button>Invite user</button>
-            <h1></h1>
-            <button>Add member without user</button>
+            <p>Household id: {{ householdId ?? '' }}</p>
+            <button class="blue-button" @click="openInviteModal">Invite user</button>
+            <br />
+            <button class="blue-button">Add member without user</button>
+
+            <div class="join-requests-section" v-if="joinRequests.length">
+              <h4>Pending Join Requests</h4>
+              <ul>
+                <li v-for="req in joinRequests" :key="req.id">
+                  User ID {{ req.userId }} wants to join your household
+                  <button class="accept-btn" @click="acceptJoinRequest(req.id)">Accept</button>
+                  <button class="decline-btn" @click="declineJoinRequest(req.id)">Decline</button>
+                </li>
+              </ul>
+            </div>
+
             <div class="household-content">
               <h3>Members ⋅ {{ members.length }}</h3>
               <hr />
@@ -180,12 +338,19 @@ onBeforeUnmount(() => {
                   <div class="edit-container">
                     <button class="edit-button" @click="editMember(member, $event)">•••</button>
                     <div v-if="activePopupMember === member.name" class="member-popup">
-                      <div class="popup-option">Delete member</div>
-                      <div class="popup-option">Show position</div>
+                      <template v-if="member.name === currentUserName">
+                        <div class="popup-option" @click.stop="openLeaveModal">Leave household</div>
+                        <div class="popup-option" @click="requestToJoinAnotherHousehold">
+                          Request to join another household
+                        </div>
+                      </template>
+                      <template v-else>
+                        <div class="popup-option">Delete member</div>
+                        <div class="popup-option">Show position</div>
+                      </template>
                     </div>
                   </div>
                 </div>
-                <button class="leave-household">leave household</button>
               </div>
             </div>
           </template>
@@ -198,10 +363,144 @@ onBeforeUnmount(() => {
         </SidebarContent>
       </div>
     </div>
+
+    <!-- Leave Household Modal -->
+    <div v-if="showLeaveModal" class="modal-overlay">
+      <div class="modal-content">
+        <h3>To leave your current household, you must create a new personal household</h3>
+        <label>
+          Household Name:
+          <input v-model="newHouseholdName" type="text" />
+        </label>
+        <label>
+          Address:
+          <input v-model="newHouseholdAddress" type="text" />
+        </label>
+        <div v-if="addressError" class="error">{{ addressError }}</div>
+        <div class="modal-actions">
+          <button @click="closeLeaveModal" :disabled="isSubmitting">Cancel</button>
+          <button
+            @click="submitLeaveHousehold"
+            :disabled="isSubmitting || !newHouseholdName || !newHouseholdAddress"
+          >
+            {{ isSubmitting ? 'Submitting...' : 'Submit' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Join Household Modal -->
+    <div v-if="showJoinModal" class="modal-overlay">
+      <div class="modal-content">
+        <h3>Request to Join Another Household</h3>
+        <label>
+          Enter the ID of the household you want to join:
+          <input v-model="joinHouseholdId" type="text" />
+        </label>
+        <div v-if="joinError" class="error">{{ joinError }}</div>
+        <div class="modal-actions">
+          <button @click="() => (showJoinModal = false)">Cancel</button>
+          <button @click="submitJoinRequest" :disabled="!joinHouseholdId">Submit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invite User Modal -->
+    <div v-if="showInviteModal" class="modal-overlay">
+      <div class="modal-content">
+        <h3>Invite a User to Your Household</h3>
+        <label>
+          Enter the email of the person you want to invite:
+          <input v-model="inviteEmail" type="email" placeholder="name@example.com" />
+        </label>
+        <div v-if="inviteError" class="error">{{ inviteError }}</div>
+        <div class="modal-actions">
+          <button @click="closeInviteModal" :disabled="isInviting">Cancel</button>
+          <button @click="submitInvite" :disabled="isInviting || !inviteEmail">
+            {{ isInviting ? 'Sending...' : 'Send Invite' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(30, 41, 59, 0.45); /* darker, more modern */
+  backdrop-filter: blur(2px); /* subtle blur */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: modal-fade-in 0.25s ease;
+}
+
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 32px 24px;
+  min-width: 320px;
+  max-width: 500px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+}
+
+.modal-actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 12px;
+}
+
+.modal-content label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  gap: 0.25rem;
+}
+
+.modal-content input[type='text'] {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #f8fafc;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  outline: none;
+  margin-top: 0.25rem;
+}
+
+.modal-content input[type='text']:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15);
+  background: #fff;
+}
+
+.error {
+  color: #b91c1c;
+  margin-top: 8px;
+}
+
+p {
+  font-size: 16px;
+}
 .page-container {
   min-height: 100vh;
   background-color: var(--background-color);
@@ -236,6 +535,10 @@ onBeforeUnmount(() => {
 .leave-household {
   background-color: var(--danger-color);
   margin-bottom: 20px;
+}
+
+.blue-button {
+  margin-bottom: 10px;
 }
 
 .leave-household:hover {

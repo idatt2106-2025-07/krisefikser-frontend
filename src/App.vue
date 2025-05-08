@@ -8,13 +8,16 @@ import { watch, onMounted } from 'vue'
 const userStore = useUserStore()
 const { startSharing, stopSharing, isSharing } = useLocationSharing(30000)
 
-watch(() => userStore.getIsSharingLocation, (isSharingEnabled) => {
-  if (isSharingEnabled && !isSharing.value) {
-    startSharing()
-  } else if (!isSharingEnabled && isSharing.value) {
-    stopSharing()
-  }
-})
+watch(
+  () => userStore.getIsSharingLocation,
+  (isSharingEnabled) => {
+    if (isSharingEnabled && !isSharing.value) {
+      startSharing()
+    } else if (!isSharingEnabled && isSharing.value) {
+      stopSharing()
+    }
+  },
+)
 
 onMounted(async () => {
   await userStore.fetchUserInfo()
@@ -23,7 +26,6 @@ onMounted(async () => {
     startSharing()
   }
 })
-
 </script>
 
 <template>

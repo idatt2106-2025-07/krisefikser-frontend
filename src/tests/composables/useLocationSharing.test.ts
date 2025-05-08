@@ -9,13 +9,13 @@ vi.mock('vue', async () => {
   const actual = await vi.importActual('vue')
   return {
     ...actual,
-    onUnmounted: vi.fn()
+    onUnmounted: vi.fn(),
   }
 })
 
 describe('useLocationSharing', () => {
   const mockGeolocation = {
-    getCurrentPosition: vi.fn()
+    getCurrentPosition: vi.fn(),
   }
 
   const originalSetInterval = window.setInterval
@@ -26,15 +26,15 @@ describe('useLocationSharing', () => {
 
     Object.defineProperty(navigator, 'geolocation', {
       value: mockGeolocation,
-      writable: true
+      writable: true,
     })
 
     mockGeolocation.getCurrentPosition.mockImplementation((success) => {
       success({
         coords: {
           latitude: 59.9139,
-          longitude: 10.7522
-        }
+          longitude: 10.7522,
+        },
       })
     })
 
@@ -67,9 +67,9 @@ describe('useLocationSharing', () => {
       '/api/position/share',
       {
         latitude: 59.9139,
-        longitude: 10.7522
+        longitude: 10.7522,
       },
-      { withCredentials: true }
+      { withCredentials: true },
     )
     expect(window.setInterval).toHaveBeenCalledTimes(1)
   })

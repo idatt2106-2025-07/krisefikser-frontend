@@ -11,12 +11,12 @@ vi.mock('@/components/map/MapIcon.vue', () => ({
   default: {
     name: 'MapIcon',
     props: ['type', 'size'],
-    template: '<div data-testid="map-icon" :data-type="type" :data-size="size"></div>'
-  }
+    template: '<div data-testid="map-icon" :data-type="type" :data-size="size"></div>',
+  },
 }))
 
 describe('MapFilter.vue', () => {
-  let wrapper: VueWrapper;
+  let wrapper: VueWrapper
 
   beforeEach(() => {
     wrapper = mount(MapFilter)
@@ -43,7 +43,7 @@ describe('MapFilter.vue', () => {
   it('initializes all checkboxes as checked by default', () => {
     const checkboxes = wrapper.findAll('input[type="checkbox"]')
 
-    checkboxes.forEach(checkbox => {
+    checkboxes.forEach((checkbox) => {
       expect(checkbox.element.checked).toBe(true)
     })
   })
@@ -132,7 +132,7 @@ describe('MapFilter.vue', () => {
     const lastEmission = emissions![emissions!.length - 1][0]
 
     // All filters should be false
-    Object.values(lastEmission).forEach(value => {
+    Object.values(lastEmission).forEach((value) => {
       expect(value).toBe(false)
     })
   })

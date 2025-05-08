@@ -269,7 +269,7 @@ watch(
 /**
  * Watcher that checks the filter for household member positions
  */
- watch(
+watch(
   () => filtersRef.value.household_member,
   (showPositions) => {
     stopPositionTracking()
@@ -278,7 +278,7 @@ watch(
         startPositionTracking()
       })
     }
-  }
+  },
 )
 
 /**

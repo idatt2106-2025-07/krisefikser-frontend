@@ -29,10 +29,14 @@ export function useLocationSharing(intervalMs = 30000): LocationSharingReturn {
     try {
       const position = await getCurrentPosition()
 
-      await axios.post('/api/position/share', {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude
-      }, { withCredentials: true })
+      await axios.post(
+        '/api/position/share',
+        {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        },
+        { withCredentials: true },
+      )
 
       error.value = null
     } catch (err) {
@@ -62,7 +66,7 @@ export function useLocationSharing(intervalMs = 30000): LocationSharingReturn {
       navigator.geolocation.getCurrentPosition(
         (position) => resolve(position),
         (err) => reject(new Error(`Geolocation error: ${err.message}`)),
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 },
       )
     })
   }
@@ -98,6 +102,6 @@ export function useLocationSharing(intervalMs = 30000): LocationSharingReturn {
     isSharing,
     startSharing,
     stopSharing,
-    error
+    error,
   }
 }

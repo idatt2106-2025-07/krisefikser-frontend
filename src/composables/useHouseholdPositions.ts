@@ -101,7 +101,7 @@ export function useHouseholdPositions(
   }
 
   const startPositionTracking = async () => {
-    stopPositionTracking();
+    stopPositionTracking()
 
     isTrackingActive.value = true
 

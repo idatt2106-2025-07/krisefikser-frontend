@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import InputText from 'primevue/inputtext'
+import Button from 'primevue/button'
 
-const route = useRoute()
-const router = useRouter()
-const lng = Number(route.query.lng)
-const lat = Number(route.query.lat)
-
+const lng = ref('')
+const lat = ref('')
 const name = ref('')
 const highDangerRadius = ref('')
 const mediumDangerRadius = ref('')
@@ -18,6 +16,8 @@ const timeStarted = ref('')
 
 async function saveIncident() {
   if (
+    !lng.value ||
+    !lat.value ||
     !name.value ||
     !highDangerRadius.value ||
     !mediumDangerRadius.value ||
@@ -31,8 +31,8 @@ async function saveIncident() {
   }
 
   const payload = {
-    longitude: lng,
-    latitude: lat,
+    longitude: Number(lng.value),
+    latitude: Number(lat.value),
     name: name.value,
     highDangerRadiusKm: Number(highDangerRadius.value),
     mediumDangerRadiusKm: Number(mediumDangerRadius.value),
@@ -45,19 +45,30 @@ async function saveIncident() {
   try {
     await axios.post('http://localhost:8080/api/affected-area', payload)
     alert('Incident saved!')
-    router.push('/admin')
+    clearForm()
   } catch (error) {
     alert('Error saving incident. Please try again.')
     console.error(error)
   }
 }
+
+function clearForm() {
+  lng.value = ''
+  lat.value = ''
+  name.value = ''
+  highDangerRadius.value = ''
+  mediumDangerRadius.value = ''
+  lowDangerRadius.value = ''
+  threatLevel.value = ''
+  description.value = ''
+  timeStarted.value = ''
+}
 </script>
 
 <template>
   <div class="form-container">
-    <h2>Add Affected Area / Incident</h2>
-    <p>Longitude: {{ lng }}</p>
-    <p>Latitude: {{ lat }}</p>
+    <InputText v-model="lng" placeholder="Longitude (required)" />
+    <InputText v-model="lat" placeholder="Latitude (required)" />
     <InputText v-model="name" placeholder="Name" />
     <InputText v-model="highDangerRadius" placeholder="High Danger Radius (km)" />
     <InputText v-model="mediumDangerRadius" placeholder="Medium Danger Radius (km)" />
@@ -65,7 +76,7 @@ async function saveIncident() {
     <InputText v-model="threatLevel" placeholder="Severity Level (1-3)" />
     <InputText v-model="description" placeholder="Description" />
     <InputText v-model="timeStarted" type="datetime-local" placeholder="Start Date" />
-    <Button label="Save" @click="saveIncident" />
+    <Button label="Save Affected Area" @click="saveIncident" />
   </div>
 </template>
 

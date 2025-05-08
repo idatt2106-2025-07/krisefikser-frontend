@@ -44,7 +44,7 @@ export function useMarkerManagement(
 
   onUnmounted(() => {
     removeAllMarkers()
-    markerApps.forEach(app => app.unmount())
+    markerApps.forEach((app) => app.unmount())
   })
 
   const getMarkerType = (poiType: string): string => {
@@ -60,7 +60,7 @@ export function useMarkerManagement(
     })
 
     const mountedApp = {
-      unmount: () => markerApp.unmount()
+      unmount: () => markerApp.unmount(),
     }
 
     markerApp.mount(el)
@@ -158,7 +158,7 @@ export function useMarkerManagement(
 
           marker.remove()
           locationData.value.pointsOfInterest = locationData.value.pointsOfInterest.filter(
-            p => p.id !== poi.id
+            (p) => p.id !== poi.id,
           )
         } catch (error) {
           console.error('Error deleting POI:', error)
@@ -198,7 +198,7 @@ export function useMarkerManagement(
   }
 
   const removeAllMarkers = () => {
-    markers.value.forEach(marker => {
+    markers.value.forEach((marker) => {
       marker.remove()
       if (marker.app) {
         marker.app.unmount()
@@ -217,7 +217,7 @@ export function useMarkerManagement(
     removeAllMarkers()
 
     const newMarkers = locationData.value.pointsOfInterest
-      .map(poi => createMapMarker(poi))
+      .map((poi) => createMapMarker(poi))
       .filter((marker): marker is MarkerWithApp => marker !== null)
 
     markers.value = newMarkers
@@ -235,7 +235,7 @@ export function useMarkerManagement(
         updateMarkers()
       }
     },
-    { deep: true }
+    { deep: true },
   )
 
   return {

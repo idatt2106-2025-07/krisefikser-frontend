@@ -15,7 +15,6 @@ import mapboxgl from 'mapbox-gl'
 import { useHouseholdMarker } from '@/composables/useHouseholdMarker'
 import { useHouseholdPositions } from '@/composables/useHouseholdPositions'
 
-
 const locationData = shallowRef<LocationData>({
   pointsOfInterest: [],
   affectedAreas: [],
@@ -188,12 +187,12 @@ const markerManagement = useMarkerManagement(
   isAdminPageRef,
   router,
 ) as unknown as {
-  markers: any;
-  initializeMarkers: () => void;
-  updateMarkers: () => void;
-};
+  markers: any
+  initializeMarkers: () => void
+  updateMarkers: () => void
+}
 
-const { markers, initializeMarkers, updateMarkers } = markerManagement;
+const { markers, initializeMarkers, updateMarkers } = markerManagement
 const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(
   map as Ref<mapboxgl.Map | null>,
   locationData,

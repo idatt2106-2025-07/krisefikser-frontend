@@ -99,7 +99,9 @@ class MapService {
    * @returns A promise that resolves to an array of `HouseholdPosition` objects.
    */
   async getHouseholdMemberPositions(): Promise<HouseholdPosition[]> {
-    const response = await axios.get<HouseholdPosition[]>('/api/position/household', { withCredentials: true })
+    const response = await axios.get<HouseholdPosition[]>('/api/position/household', {
+      withCredentials: true,
+    })
     return response.data
   }
 }

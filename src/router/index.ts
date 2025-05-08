@@ -124,83 +124,83 @@ const router = createRouter({
       component: RegisterAdmin,
     },
     {
-  path: '/admin/add/poi',
-  name: 'addPOI',
-  component: AddPOIView,
-},
-{
-  path: '/admin/add/affected-area',
-  name: 'addAffectedArea',
-  component: AddAffectedAreaView,
-},
-{
-  path: '/admin/update/poi',
-  name: 'updatePOI',
-  component: UpdatePOIView,
-  props: true,
-},
-{
-  path: '/admin/update/affected-area',
-  name: 'updateAffectedArea',
-  component: UpdateAffectedAreaView,
-  props: true,
-},
-{
-  path: '/invitation/verify',
-  name: 'verifyinvitation',
-  component: verifyHouseholdInvitationView,
-},
-{
-  path: '/reset-password',
-  name: 'reset-password',
-  component: ResetPasswordView,
-},
-{
-  path: '/super-admin',
-  name: 'super-admin',
-  component: SuperAdminView,
-},
-{
-  path: '/register-admin',
-  name: 'register-admin',
-  component: RegisterAdmin,
-},
-{
-  path: '/verify-admin',
-  name: 'two-factor-auth',
-  component: TwoFactorAuthView,
-},
-{
-  path: '/admin/2fa-notify',
-  name: 'TwoFactorNotify',
-  component: TwoFactorNotifyView,
-},
-{
-  path: '/privacy-policy',
-  name: 'privacy-policy',
-  component: PrivacyPolicyView,
-},
-{
-  path: '/general-info/before-crisis',
-  name: 'before-crisis',
-  component: BeforeCrisisView,
-},
-{
-  path: '/general-info/during-crisis',
-  name: 'during-crisis',
-  component: DuringCrisisView,
-},
-{
-  path: '/general-info/after-crisis',
-  name: 'after-crisis',
-  component: AfterCrisisView,
-},
-{
-  path: '/news/:id',
-  name: 'NewsDetail',
-  component: NewsDetailView,
-  },
-],
+      path: '/admin/add/poi',
+      name: 'addPOI',
+      component: AddPOIView,
+    },
+    {
+      path: '/admin/add/affected-area',
+      name: 'addAffectedArea',
+      component: AddAffectedAreaView,
+    },
+    {
+      path: '/admin/update/poi',
+      name: 'updatePOI',
+      component: UpdatePOIView,
+      props: true,
+    },
+    {
+      path: '/admin/update/affected-area',
+      name: 'updateAffectedArea',
+      component: UpdateAffectedAreaView,
+      props: true,
+    },
+    {
+      path: '/invitation/verify',
+      name: 'verifyinvitation',
+      component: verifyHouseholdInvitationView,
+    },
+    {
+      path: '/reset-password',
+      name: 'reset-password',
+      component: ResetPasswordView,
+    },
+    {
+      path: '/super-admin',
+      name: 'super-admin',
+      component: SuperAdminView,
+    },
+    {
+      path: '/register-admin',
+      name: 'register-admin',
+      component: RegisterAdmin,
+    },
+    {
+      path: '/verify-admin',
+      name: 'two-factor-auth',
+      component: TwoFactorAuthView,
+    },
+    {
+      path: '/admin/2fa-notify',
+      name: 'TwoFactorNotify',
+      component: TwoFactorNotifyView,
+    },
+    {
+      path: '/privacy-policy',
+      name: 'privacy-policy',
+      component: PrivacyPolicyView,
+    },
+    {
+      path: '/general-info/before-crisis',
+      name: 'before-crisis',
+      component: BeforeCrisisView,
+    },
+    {
+      path: '/general-info/during-crisis',
+      name: 'during-crisis',
+      component: DuringCrisisView,
+    },
+    {
+      path: '/general-info/after-crisis',
+      name: 'after-crisis',
+      component: AfterCrisisView,
+    },
+    {
+      path: '/news/:id',
+      name: 'NewsDetail',
+      component: NewsDetailView,
+    },
+  ],
 })
 
 export default router

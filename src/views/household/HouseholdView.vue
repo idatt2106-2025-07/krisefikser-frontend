@@ -166,7 +166,7 @@ const submitJoinRequest = async () => {
   }
 
   try {
-    await householdService.requestToJoinHousehold(joinHouseholdId.value)
+    await householdService.requestToJoinHousehold(parseInt(joinHouseholdId.value, 10))
     alert('Join request sent!')
     showJoinModal.value = false
   } catch (e) {

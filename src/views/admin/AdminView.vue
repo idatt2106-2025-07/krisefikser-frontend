@@ -1,8 +1,8 @@
 <template>
   <div class="admin-dashboard">
     <div class="header">
-      <h1 class="page-title">Privacy Policy Management</h1>
-      <p class="page-subtitle">Manage privacy policies for registered users and public visitors</p>
+      <h1 class="page-title">Admin Dashboard</h1>
+      <p class="page-subtitle">Manage website content and settings</p>
     </div>
 
     <div class="card">
@@ -13,12 +13,21 @@
         </summary>
         <PrivacyPolicyEditor policyType="registered" />
       </details>
+
+      <details class="editor-menu">
+        <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right"></i>
+          General Information Management
+        </summary>
+        <ManageGeneralInfo />
+      </details>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor.vue'
+import ManageGeneralInfo from '@/components/admin/ManageGeneralInfo.vue'
 </script>
 
 <style scoped>
@@ -55,6 +64,9 @@ import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
   padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 /* Expandable menu */
@@ -64,6 +76,7 @@ import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor
   overflow: hidden;
   margin: 0;
 }
+
 .editor-menu-summary {
   list-style: none;
   cursor: pointer;
@@ -75,15 +88,23 @@ import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor
   font-weight: 600;
   color: #2d3748;
 }
+
 .editor-menu-summary .fas {
   transition: transform 0.2s;
 }
+
 /* rotate icon when open */
 .editor-menu[open] .editor-menu-summary .fas {
   transform: rotate(90deg);
 }
+
 /* hide default marker */
 .editor-menu summary::-webkit-details-marker {
   display: none;
+}
+
+/* Add padding to the content inside the details */
+.editor-menu > :not(summary) {
+  padding: 1rem;
 }
 </style>

@@ -5,10 +5,23 @@ import Dropdown from 'primevue/dropdown'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 
+// Define the interface for affected area
+interface AffectedArea {
+  id: number
+  longitude: number
+  latitude: number
+  highDangerRadiusKm: number
+  mediumDangerRadiusKm: number
+  lowDangerRadiusKm: number
+  severityLevel: number
+  description: string
+  startDate: string
+}
+
 const affectedAreaId = ref('')
 const loadedAreas = ref([])
 
-const affectedArea = ref({
+const affectedArea = ref<AffectedArea>({
   id: 0,
   longitude: 0,
   latitude: 0,
@@ -29,7 +42,7 @@ onMounted(async () => {
   try {
     console.log('Fetching all affected areas...')
     const allAffectedAreas = await mapService.getAffectedAreas()
-    loadedAreas.value = allAffectedAreas.map((area) => ({
+    loadedAreas.value = allAffectedAreas.map((area: AffectedArea) => ({
       label: `${area.id}: ${area.description || 'Area ' + area.id}`,
       value: area.id,
     }))
@@ -48,7 +61,9 @@ const loadArea = async () => {
   try {
     console.log('Fetching all affected areas...')
     const allAffectedAreas = await mapService.getAffectedAreas()
-    const foundArea = allAffectedAreas.find((area) => area.id === Number(affectedAreaId.value))
+    const foundArea = allAffectedAreas.find(
+      (area: AffectedArea) => area.id === Number(affectedAreaId.value),
+    )
 
     if (foundArea) {
       affectedArea.value = foundArea

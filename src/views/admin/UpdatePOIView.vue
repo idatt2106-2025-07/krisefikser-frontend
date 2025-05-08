@@ -34,7 +34,7 @@ onMounted(async () => {
     console.log('Fetching POI data in UpdatePOIView...')
     const response = await mapService.getAllPointsOfInterest()
     locationData.value.pointsOfInterest = response
-    loadedPOIs.value = response.map((poi) => ({
+    loadedPOIs.value = response.map((poi: PointOfInterest) => ({
       label: `${poi.id}: ${poi.description || poi.type}`,
       value: poi.id,
     }))

@@ -208,7 +208,67 @@ const { initializeSearch } = useSearchGeocoder(
   map as Ref<mapboxgl.Map | null>,
   locationData,
   markers,
+  (event, payload) => {
+    if (event === 'search-result') {
+      const { lng, lat } = payload
+      console.log('Search result received:', lng, lat)
+
+      if (props.isAdminPage) {
+        const existingPopup = document.querySelector('.mapboxgl-popup')
+        if (existingPopup) {
+          existingPopup.remove()
+        }
+
+        const popupContent = document.createElement('div')
+        popupContent.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px;">
+            <button id="add-poi-button" style="padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              Add Point Of Interest
+            </button>
+            <button id="add-affected-area-button" style="padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              Add Affected Area
+            </button>
+          </div>
+        `
+
+        const popup = new mapboxgl.Popup({
+          closeButton: true,
+          closeOnClick: true,
+        })
+          .setLngLat([lng, lat])
+          .setDOMContent(popupContent)
+          .addTo(map.value!)
+
+        popupContent.querySelector('#add-poi-button')?.addEventListener('click', () => {
+          console.log('Navigating to Add POI View')
+          emit('map-click', { lng, lat })
+          router.push({
+            path: '/admin/add/poi',
+            query: { lng: lng.toString(), lat: lat.toString() },
+          })
+        })
+
+        popupContent
+          .querySelector('#add-affected-area-button')
+          ?.addEventListener('click', () => {
+            console.log('Navigating to Add Affected Area View')
+            emit('map-click', { lng, lat })
+            router.push({
+              path: '/admin/add/affected-area',
+              query: { lng: lng.toString(), lat: lat.toString() },
+            })
+          })
+      } else {
+        map.value?.flyTo({
+          center: [lng, lat],
+          zoom: 15,
+          essential: true,
+        })
+      }
+    }
+  },
 )
+
 const { initializeAffectedAreaPopups } = useAffectedAreaManagement(
   map as Ref<mapboxgl.Map | null>,
   locationData,
@@ -251,76 +311,78 @@ onMounted(() => {
         tryInitializeLayers(5)
         initializeMarkers()
         initializeAffectedAreaPopups()
-        if (!props.isHomePage && !props.isAdminPage) {
+
+        if (!props.isHomePage) {
           initializeSearch()
         }
 
         if (!initialLoaded.value) {
           initialLoaded.value = true
           fetchAffectedAreas()
+        }
 
-          if (props.isHomePage || props.isAdminPage) {
-            fetchAllPointsOfInterest()
-          } else {
-            const poiFilters = getEnabledFilters(filtersRef.value).filter(
-              (f) => f !== 'affected_areas',
-            )
+        if (props.isHomePage || props.isAdminPage) {
+          fetchAllPointsOfInterest()
+        } else {
+          const poiFilters = getEnabledFilters(filtersRef.value).filter(
+            (f) => f !== 'affected_areas',
+          )
 
-            if (poiFilters.length > 0) {
-              fetchPointsOfInterest(poiFilters)
-            }
+          if (poiFilters.length > 0) {
+            fetchPointsOfInterest(poiFilters)
           }
-          if (props.isAdminPage) {
-            map.value?.on('click', (e: mapboxgl.MapMouseEvent) => {
-              const { lng, lat } = e.lngLat
-              console.log('Admin map click at:', lng, lat)
+        }
 
-              const existingPopup = document.querySelector('.mapboxgl-popup')
-              if (existingPopup) {
-                existingPopup.remove()
-              }
+        if (props.isAdminPage) {
+          map.value?.on('click', (e: mapboxgl.MapMouseEvent) => {
+            const { lng, lat } = e.lngLat
+            console.log('Admin map click at:', lng, lat)
 
-              const popupContent = document.createElement('div')
-              popupContent.innerHTML = `
-                <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px;">
-                  <button id="add-poi-button" style="padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                    Add Point Of Interest
-                  </button>
-                  <button id="add-affected-area-button" style="padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                    Add Affected Area
-                  </button>
-                </div>
-              `
+            const existingPopup = document.querySelector('.mapboxgl-popup')
+            if (existingPopup) {
+              existingPopup.remove()
+            }
 
-              const popup = new mapboxgl.Popup({
-                closeButton: true,
-                closeOnClick: true,
+            const popupContent = document.createElement('div')
+            popupContent.innerHTML = `
+              <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px;">
+                <button id="add-poi-button" style="padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                  Add Point Of Interest
+                </button>
+                <button id="add-affected-area-button" style="padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                  Add Affected Area
+                </button>
+              </div>
+            `
+
+            const popup = new mapboxgl.Popup({
+              closeButton: true,
+              closeOnClick: true,
+            })
+              .setLngLat([lng, lat])
+              .setDOMContent(popupContent)
+              .addTo(map.value!)
+
+            popupContent.querySelector('#add-poi-button')?.addEventListener('click', () => {
+              console.log('Navigating to Add POI View')
+              emit('map-click', { lng, lat })
+              router.push({
+                path: '/admin/add/poi',
+                query: { lng: lng.toString(), lat: lat.toString() },
               })
-                .setLngLat([lng, lat])
-                .setDOMContent(popupContent)
-                .addTo(map.value!)
+            })
 
-              popupContent.querySelector('#add-poi-button')?.addEventListener('click', () => {
-                console.log('Navigating to Add POI View')
+            popupContent
+              .querySelector('#add-affected-area-button')
+              ?.addEventListener('click', () => {
+                console.log('Navigating to Add Affected Area View')
                 emit('map-click', { lng, lat })
                 router.push({
-                  path: '/admin/add/poi',
+                  path: '/admin/add/affected-area',
                   query: { lng: lng.toString(), lat: lat.toString() },
                 })
               })
-
-              popupContent
-                .querySelector('#add-affected-area-button')
-                ?.addEventListener('click', () => {
-                  console.log('Navigating to Add Affected Area View')
-                  emit('map-click', { lng, lat })
-                  router.push({
-                    path: '/admin/add/affected-area',
-                    query: { lng: lng.toString(), lat: lat.toString() },
-                  })
-                })
-            })
-          }
+          })
         }
       }, 100)
     }

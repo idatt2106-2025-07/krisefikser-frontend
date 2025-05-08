@@ -9,10 +9,11 @@ export function useSearchGeocoder(
   map: Ref<mapboxgl.Map | null>,
   locationData: Ref<LocationData>,
   markers: Ref<mapboxgl.Marker[]>,
+  emit?: (event: string, payload: any) => void,
 ) {
   const geocoder = ref<MapboxGeocoder | null>(null)
 
-  /**
+/**
    * Initializes the search functionality on the map using Mapbox Geocoder.
    *
    * This function sets up a custom geocoder with a local geocoding function,
@@ -52,29 +53,24 @@ export function useSearchGeocoder(
     map.value.addControl(geocoder.value, 'top-left')
 
     geocoder.value.on('result', (event) => {
-      if (event.result && event.result.properties && event.result.properties.id) {
-        const id = event.result.properties.id.toString()
+      if (event.result && event.result.geometry) {
         const coordinates = event.result.geometry.coordinates
+        console.log('Search result coordinates:', coordinates)
 
-        markers.value.forEach((marker) => {
-          const element = marker.getElement()
-          if (element.getAttribute('data-id') === id) {
-            marker.togglePopup()
-          }
-        })
-
-        if (map.value) {
-          map.value.flyTo({
-            center: coordinates,
-            zoom: 15,
-            essential: true,
-          })
+        if (emit) {
+          emit('search-result', { lng: coordinates[0], lat: coordinates[1] })
         }
+
+        map.value?.flyTo({
+          center: coordinates,
+          zoom: 15,
+          essential: true,
+        })
       }
     })
   }
 
-  /**
+/**
    * Filters and returns a list of GeoJSON features that match the given query string.
    *
    * @param query - The search string to filter GeoJSON features. Must be at least 2 characters long.

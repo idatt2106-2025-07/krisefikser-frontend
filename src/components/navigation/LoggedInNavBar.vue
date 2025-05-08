@@ -11,7 +11,7 @@ const authStore = useAuthStore()
 const isMenuOpen = ref(false)
 
 const navigateToProfile = () => {
-  router.push('/settings')
+  router.push('/profile')
 }
 
 const logout = async () => {

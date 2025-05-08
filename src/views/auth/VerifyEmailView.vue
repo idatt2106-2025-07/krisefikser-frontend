@@ -1,29 +1,39 @@
 <template>
-  <div class="verify-email">
-    <h1 class="verify-email__title">Email Verification</h1>
-
-    <div v-if="loading" class="verify-email__loading">Verifying your email…</div>
-
-    <div v-else>
-      <p :class="['verify-email__message', success ? 'success' : 'error']">
-        {{ message }}
-      </p>
-
-      <div class="verify-email__actions">
-        <a v-if="success" @click.prevent="router.push('/login')" class="verify-email__link">
-          Go to login
-        </a>
-        <button v-else @click="handleResend" :disabled="resendLoading" class="verify-email__retry">
-          {{ resendLoading ? 'Resending…' : 'Request new verification email' }}
-        </button>
+  <div class="verify-container">
+    <div class="verify-card">
+      <div class="verify-header">
+        <h1 class="verify-title">Email Verification</h1>
       </div>
 
-      <p
-        v-if="resendMessage"
-        :class="['verify-email__message', resendMessage.startsWith('Failed') ? 'error' : 'success']"
-      >
-        {{ resendMessage }}
-      </p>
+      <div class="verify-content">
+        <div v-if="loading" class="verify-loading">
+          <div class="spinner"></div>
+          <p>Verifying your email...</p>
+        </div>
+
+        <div v-else class="verify-result">
+          <div v-if="success" class="verify-success">
+            <div class="success-icon">✓</div>
+            <p>{{ message }}</p>
+            <button @click="router.push('/login')" class="verify-button">Go to Login</button>
+          </div>
+
+          <div v-else class="verify-error">
+            <div class="error-icon">!</div>
+            <p>{{ message }}</p>
+            <button @click="handleResend" :disabled="resendLoading" class="verify-button">
+              {{ resendLoading ? 'Sending...' : 'Resend Verification' }}
+            </button>
+          </div>
+
+          <p
+            v-if="resendMessage"
+            :class="['resend-message', resendMessage.startsWith('Failed') ? 'error' : 'success']"
+          >
+            {{ resendMessage }}
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -88,63 +98,145 @@ async function handleResend() {
 </script>
 
 <style scoped>
-.verify-email {
-  max-width: 28rem; /* ~max-w-md */
-  margin: 0 auto; /* mx-auto */
-  padding: 1.5rem; /* p-6 */
+.verify-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding: 1rem;
 }
 
-.verify-email__title {
-  font-size: 1.5rem; /* text-2xl */
-  font-weight: 600; /* font-semibold */
-  margin-bottom: 1rem; /* mb-4 */
+.verify-card {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  border-radius: 12px;
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.05),
+    0 5px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
-.verify-email__loading {
-  color: #6b7280; /* text-gray-500 */
+.verify-header {
+  padding: 1.5rem;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.verify-email__message {
-  margin-bottom: 1rem; /* mb-4 */
+.verify-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: center;
 }
 
-.verify-email__message.success {
-  color: #16a34a; /* text-green-600 */
+.verify-content {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
 }
 
-.verify-email__message.error {
-  color: #dc2626; /* text-red-600 */
+.verify-loading,
+.verify-success,
+.verify-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  text-align: center;
 }
 
-.verify-email__link {
-  color: #2563eb; /* text-blue-600 */
-  cursor: pointer;
-  text-decoration: none;
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #3b82f6;
+  animation: spin 1s ease-in-out infinite;
 }
 
-.verify-email__link:hover {
-  text-decoration: underline;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.verify-email__actions {
-  margin-bottom: 1rem;
+.error-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
-.verify-email__retry {
-  background-color: #2563eb;
-  color: #fff;
+.success-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #10b981;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.verify-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
+  background-color: #3b82f6;
+  color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.verify-email__retry:disabled {
+.verify-button:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.verify-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.verify-email__retry:hover:not(:disabled) {
-  background-color: #1e40af;
+.resend-message {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  width: 100%;
+  text-align: center;
+}
+
+.resend-message.success {
+  background-color: #ecfdf5;
+  color: #10b981;
+}
+
+.resend-message.error {
+  background-color: #fef2f2;
+  color: #ef4444;
+}
+
+.verify-result {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 </style>

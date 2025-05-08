@@ -27,6 +27,7 @@ import BeforeCrisisView from '@/views/general/BeforeCrisisView.vue'
 import DuringCrisisView from '@/views/general/DuringCrisisView.vue'
 import AfterCrisisView from '@/views/general/AfterCrisisView.vue'
 import NewsDetailView from '@/views/news/NewsDetailView.vue'
+import UserProfile from '@/views/user/ProfileView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -194,6 +195,12 @@ const router = createRouter({
       path: '/news/:id',
       name: 'NewsDetail',
       component: NewsDetailView,
+    },
+    {
+      path: '/profile',
+      name: 'UserProfile',
+      component: UserProfile,
+      props: true,
     },
   ],
 })

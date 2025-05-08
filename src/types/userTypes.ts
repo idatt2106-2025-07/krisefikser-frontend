@@ -4,4 +4,5 @@ export interface UserInfo {
   role: 'ROLE_NORMAL' | 'ROLE_ADMIN' | 'ROLE_SUPER_ADMIN'
   householdLatitude: number
   householdLongitude: number
+  sharingLocation: boolean
 }

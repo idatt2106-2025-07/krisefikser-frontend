@@ -32,6 +32,8 @@ const getIconDetails = (type: string) => {
       return { color: '#D82727', faIcon: 'fa-exclamation-triangle' }
     case 'household':
       return { color: '#4285F4', faIcon: 'fa-home' }
+    case 'household_member':
+      return { color: '#9C27B0', faIcon: 'fa-user' }
     default:
       return { color: '#757575', faIcon: 'fa-question' }
   }

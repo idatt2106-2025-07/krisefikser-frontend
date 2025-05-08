@@ -199,10 +199,8 @@ const router = createRouter({
   path: '/news/:id',
   name: 'NewsDetail',
   component: NewsDetailView,
-}
-
-    },
-  ],
+  },
+],
 })
 
 export default router

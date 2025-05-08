@@ -37,6 +37,7 @@
         </TabPanel>
       </TabPanels>
     </Tabs>
+  </div>
 
   <div class="admin-dashboard">
     <div class="header">
@@ -65,8 +66,38 @@
 </template>
 
 <script setup lang="ts">
-import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor.vue'
-import ManageGeneralInfo from '@/components/admin/ManageGeneralInfo.vue'
+import { ref } from 'vue';
+import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor.vue';
+import ManageGeneralInfo from '@/components/admin/ManageGeneralInfo.vue';
+
+const email = ref('');
+const tabs = ref([
+  { label: 'Users', type: 'Users' },
+  { label: 'Map', type: 'Map' },
+  { label: 'Invite Admin', type: 'InviteAdmin' },
+]);
+const value = ref('0'); // Initialize value as a ref with a default value
+const loading = ref(false);
+const message = ref('');
+const success = ref(false);
+
+function handleInviteAdmin() {
+  loading.value = true;
+  message.value = '';
+  success.value = false;
+
+  // Simulate an API call
+  setTimeout(() => {
+    if (email.value) {
+      message.value = 'Invite sent successfully!';
+      success.value = true;
+    } else {
+      message.value = 'Failed to send invite.';
+      success.value = false;
+    }
+    loading.value = false;
+  }, 1000);
+}
 </script>
 
 <style scoped>

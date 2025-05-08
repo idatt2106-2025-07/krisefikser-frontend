@@ -181,21 +181,19 @@ watch(
 const mapContainer = ref<HTMLElement | null>(null)
 const { map, isMapLoaded, isStyleLoaded, showDirections, clearDirections } =
   useMapInitialization(mapContainer)
-const {
-  markers,
-  initializeMarkers,
-  updateMarkers,
-}: {
-  markers: any
-  initializeMarkers: () => void
-  updateMarkers: () => void
-} = useMarkerManagement(
+const markerManagement = useMarkerManagement(
   map as Ref<mapboxgl.Map | null>,
   locationData,
   filtersRef,
   isAdminPageRef,
   router,
-)
+) as unknown as {
+  markers: any;
+  initializeMarkers: () => void;
+  updateMarkers: () => void;
+};
+
+const { markers, initializeMarkers, updateMarkers } = markerManagement;
 const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(
   map as Ref<mapboxgl.Map | null>,
   locationData,
@@ -397,7 +395,6 @@ onMounted(() => {
           const poiFilters = getEnabledFilters(filtersRef.value).filter(
             (f) => f !== 'affected_areas' && f !== 'household' && f !== 'household_member',
           )
-        }
 
           if (poiFilters.length > 0) {
             fetchPointsOfInterest(poiFilters)

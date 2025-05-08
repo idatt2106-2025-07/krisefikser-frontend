@@ -91,13 +91,15 @@ class MapService {
    */
   async deleteAffectedArea(id: number) {
     await axiosInstance.delete(`/affected-area/${id}`)
-   /**
+  }
+
+  /**
    * Fetches the positions of household members from the server.
    *
    * @returns A promise that resolves to an array of `HouseholdPosition` objects.
    */
   async getHouseholdMemberPositions(): Promise<HouseholdPosition[]> {
-    const response = await axios.get('/api/position/household', { withCredentials: true })
+    const response = await axios.get<HouseholdPosition[]>('/api/position/household', { withCredentials: true })
     return response.data
   }
 }

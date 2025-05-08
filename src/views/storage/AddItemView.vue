@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useItemStore } from '@/stores/itemStore.ts'
+import { useItemStore } from '@/stores/itemStore'
 
 const router = useRouter()
 const itemStore = useItemStore()

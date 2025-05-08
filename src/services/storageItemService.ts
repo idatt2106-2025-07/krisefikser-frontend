@@ -1,25 +1,27 @@
 // services/storageItemService.ts
 import axios from 'axios'
-import type {
-  AggregatedStorageItem,
-  StorageItem,
-  AddStorageItemRequest
-} from '@/types/storageItem'
+import type { AggregatedStorageItem, StorageItem, AddStorageItemRequest } from '@/types/storageItem'
 
 export default {
   // Fetch all aggregated storage items
   async fetchAggregatedItems(): Promise<AggregatedStorageItem[]> {
-    const response = await axios.get<AggregatedStorageItem[]>('/api/storage-items/household/aggregated', {
-      withCredentials: true
-    })
+    const response = await axios.get<AggregatedStorageItem[]>(
+      '/api/storage-items/household/aggregated',
+      {
+        withCredentials: true,
+      },
+    )
     return response.data
   },
 
   // Fetch individual storage items by item ID
   async fetchStorageItemsByItemId(itemId: number): Promise<StorageItem[]> {
-    const response = await axios.get<StorageItem[]>(`/api/storage-items/household/by-item/${itemId}`, {
-      withCredentials: true
-    })
+    const response = await axios.get<StorageItem[]>(
+      `/api/storage-items/household/by-item/${itemId}`,
+      {
+        withCredentials: true,
+      },
+    )
     return response.data
   },
 
@@ -27,11 +29,11 @@ export default {
   async addStorageItem(request: AddStorageItemRequest): Promise<any> {
     const formattedRequest = {
       ...request,
-      expirationDate: request.expirationDate + 'T00:00:00'
+      expirationDate: request.expirationDate + 'T00:00:00',
     }
 
     const response = await axios.post('/api/storage-items', formattedRequest, {
-      withCredentials: true
+      withCredentials: true,
     })
     return response.data
   },
@@ -39,7 +41,7 @@ export default {
   // Delete a storage item
   async deleteStorageItem(id: number): Promise<void> {
     await axios.delete(`/api/storage-items/${id}`, {
-      withCredentials: true
+      withCredentials: true,
     })
   },
 
@@ -52,11 +54,11 @@ export default {
     let url = '/api/storage-items/household/aggregated/filter-by-type'
 
     if (types.length > 0) {
-      url += '?' + types.map(type => 'types=' + encodeURIComponent(type)).join('&')
+      url += '?' + types.map((type) => 'types=' + encodeURIComponent(type)).join('&')
     }
 
     const response = await axios.get<AggregatedStorageItem[]>(url, {
-      withCredentials: true
+      withCredentials: true,
     })
     return response.data
   },
@@ -66,7 +68,7 @@ export default {
     searchTerm: string,
     types?: string[],
     sortBy?: string,
-    sortDirection: string = 'asc'
+    sortDirection: string = 'asc',
   ): Promise<AggregatedStorageItem[]> {
     const params = new URLSearchParams()
 
@@ -76,7 +78,7 @@ export default {
 
     // Add types if provided
     if (types && types.length > 0) {
-      types.forEach(type => params.append('types', type))
+      types.forEach((type) => params.append('types', type))
     }
 
     // Add sort parameters if provided
@@ -88,7 +90,7 @@ export default {
     const url = `/api/storage-items/household/aggregated/search?${params.toString()}`
 
     const response = await axios.get<AggregatedStorageItem[]>(url, {
-      withCredentials: true
+      withCredentials: true,
     })
     return response.data
   },
@@ -102,8 +104,8 @@ export default {
     }
 
     const response = await axios.put(`/api/storage-items/${id}`, request, {
-      withCredentials: true
+      withCredentials: true,
     })
     return response.data
-  }
+  },
 }

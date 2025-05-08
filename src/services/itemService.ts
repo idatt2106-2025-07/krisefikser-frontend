@@ -10,7 +10,7 @@ export default {
       : '/api/items'
 
     const response = await axios.get<Item[]>(url, {
-      withCredentials: true
+      withCredentials: true,
     })
     return response.data
   },
@@ -18,7 +18,7 @@ export default {
   // Fetch sorted items
   async fetchSortedItems(): Promise<Item[]> {
     const response = await axios.get<Item[]>('/api/items/sort?sortBy=name&sortDirection=asc', {
-      withCredentials: true
+      withCredentials: true,
     })
     return response.data
   },
@@ -28,9 +28,9 @@ export default {
     const response = await axios.post('/api/items', request, {
       withCredentials: true,
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     })
     return response.data
-  }
+  },
 }

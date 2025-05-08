@@ -59,6 +59,6 @@ export const useItemStore = defineStore('item', {
       } finally {
         this.loading = false
       }
-    }
-  }
+    },
+  },
 })

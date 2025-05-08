@@ -25,7 +25,7 @@ export interface StorageItem {
 }
 
 export interface AddStorageItemRequest {
-  itemId: number;
-  quantity: number;
-  expirationDate: string;
+  itemId: number
+  quantity: number
+  expirationDate: string
 }

@@ -21,6 +21,7 @@ const types = [
 const type = ref('')
 const description = ref('')
 const openingHours = ref('')
+const closingHours = ref('')
 const contactInfo = ref('')
 const lng = route.query.lng
 const lat = route.query.lat
@@ -36,7 +37,7 @@ async function savePOI() {
     longitude: Number(lng),
     type: type.value,
     opensAt: openingHours.value || null,
-    closesAt: null,
+    closesAt: closingHours.value || null,
     contactNumber: contactInfo.value || null,
     description: description.value || null,
   }
@@ -67,7 +68,8 @@ async function savePOI() {
       placeholder="Select Type (required)"
     />
     <InputText v-model="description" placeholder="Description" />
-    <InputText v-model="openingHours" placeholder="Opening Hours" />
+    <InputText v-model="openingHours" placeholder="Opening Time" />
+    <InputText v-model="closingHours" placeholder="Closing Time" />
     <InputText v-model="contactInfo" placeholder="Contact Info" />
     <Button label="Save" @click="savePOI" />
   </div>

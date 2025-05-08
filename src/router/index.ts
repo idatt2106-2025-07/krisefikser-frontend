@@ -15,6 +15,8 @@ import UpdateItemView from '@/views/storage/UpdateItemView.vue'
 import AddItemView from '@/views/storage/AddItemView.vue'
 import MapView from '@/views/map/MapView.vue'
 import RegisterAdmin from '@/views/RegisterAdmin.vue'
+import AddPOIView from '@/views/admin/AddPOIView.vue'
+import AddAffectedAreaView from '@/views/admin/AddAffectedAreaView.vue'
 import verifyHouseholdInvitationView from '@/views/household/verifyHouseholdInvitationView.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
 import SuperAdminView from '@/views/admin/SuperAdminView.vue'
@@ -30,6 +32,8 @@ import NewsDetailView from '@/views/news/NewsDetailView.vue'
 import QuizCreator from '@/views/admin/QuizCreator.vue'
 
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
+import UpdatePOIView from '@/views/admin/UpdatePOIView.vue'
+import UpdateAffectedAreaView from '@/views/admin/UpdateAffectedAreaView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -120,59 +124,83 @@ const router = createRouter({
       component: RegisterAdmin,
     },
     {
-      path: '/invitation/verify',
-      name: 'verifyinvitation',
-      component: verifyHouseholdInvitationView,
-    },
-    {
-      path: '/reset-password',
-      name: 'reset-password',
-      component: ResetPasswordView,
-    },
-    {
-      path: '/super-admin',
-      name: 'super-admin',
-      component: SuperAdminView,
-    },
-    {
-      path: '/register-admin',
-      name: 'register-admin',
-      component: RegisterAdmin,
-    },
-    {
-      path: '/verify-admin',
-      name: 'two-factor-auth',
-      component: TwoFactorAuthView,
-    },
-    {
-      path: '/admin/2fa-notify',
-      name: 'TwoFactorNotify',
-      component: TwoFactorNotifyView,
-    },
-    {
-      path: '/privacy-policy',
-      name: 'privacy-policy',
-      component: PrivacyPolicyView,
-    },
-    {
-      path: '/general-info/before-crisis',
-      name: 'before-crisis',
-      component: BeforeCrisisView,
-    },
-    {
-      path: '/general-info/during-crisis',
-      name: 'during-crisis',
-      component: DuringCrisisView,
-    },
-    {
-      path: '/general-info/after-crisis',
-      name: 'after-crisis',
-      component: AfterCrisisView,
-    },
-    {
-      path: '/news/:id',
-      name: 'NewsDetail',
-      component: NewsDetailView,
+  path: '/admin/add/poi',
+  name: 'addPOI',
+  component: AddPOIView,
+},
+{
+  path: '/admin/add/affected-area',
+  name: 'addAffectedArea',
+  component: AddAffectedAreaView,
+},
+{
+  path: '/admin/update/poi',
+  name: 'updatePOI',
+  component: UpdatePOIView,
+  props: true,
+},
+{
+  path: '/admin/update/affected-area',
+  name: 'updateAffectedArea',
+  component: UpdateAffectedAreaView,
+  props: true,
+},
+{
+  path: '/invitation/verify',
+  name: 'verifyinvitation',
+  component: verifyHouseholdInvitationView,
+},
+{
+  path: '/reset-password',
+  name: 'reset-password',
+  component: ResetPasswordView,
+},
+{
+  path: '/super-admin',
+  name: 'super-admin',
+  component: SuperAdminView,
+},
+{
+  path: '/register-admin',
+  name: 'register-admin',
+  component: RegisterAdmin,
+},
+{
+  path: '/verify-admin',
+  name: 'two-factor-auth',
+  component: TwoFactorAuthView,
+},
+{
+  path: '/admin/2fa-notify',
+  name: 'TwoFactorNotify',
+  component: TwoFactorNotifyView,
+},
+{
+  path: '/privacy-policy',
+  name: 'privacy-policy',
+  component: PrivacyPolicyView,
+},
+{
+  path: '/general-info/before-crisis',
+  name: 'before-crisis',
+  component: BeforeCrisisView,
+},
+{
+  path: '/general-info/during-crisis',
+  name: 'during-crisis',
+  component: DuringCrisisView,
+},
+{
+  path: '/general-info/after-crisis',
+  name: 'after-crisis',
+  component: AfterCrisisView,
+},
+{
+  path: '/news/:id',
+  name: 'NewsDetail',
+  component: NewsDetailView,
+}
+
     },
   ],
 })

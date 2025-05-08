@@ -3,14 +3,18 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { ref, onMounted, watch, computed, nextTick, shallowRef } from 'vue'
 import type { Ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useMapInitialization } from '@/composables/useMapInitialization'
 import { useMarkerManagement } from '@/composables/usePointsOfInterest'
 import { useMapLayers } from '@/composables/useAffectedAreas'
 import { useSearchGeocoder } from '@/composables/useSearchGeocoder'
+import { useAffectedAreaManagement } from '@/composables/useAffectedAreas'
 import type { LocationData } from '@/types/mapTypes'
 import mapService from '@/services/mapService'
+import mapboxgl from 'mapbox-gl'
 import { useHouseholdMarker } from '@/composables/useHouseholdMarker'
 import { useHouseholdPositions } from '@/composables/useHouseholdPositions'
+
 
 const locationData = shallowRef<LocationData>({
   pointsOfInterest: [],
@@ -30,9 +34,18 @@ const props = defineProps({
     default: false,
     required: false,
   },
+  isAdminPage: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
 })
 
+const emit = defineEmits(['map-click'])
+const router = useRouter()
+
 const filtersRef = computed(() => props.filters)
+const isAdminPageRef = computed(() => props.isAdminPage)
 
 /**
  * Returns a subset of filters where the value is true (enabled).
@@ -176,16 +189,88 @@ const {
   markers: any
   initializeMarkers: () => void
   updateMarkers: () => void
-} = useMarkerManagement(map as Ref<mapboxgl.Map | null>, locationData, filtersRef)
+} = useMarkerManagement(
+  map as Ref<mapboxgl.Map | null>,
+  locationData,
+  filtersRef,
+  isAdminPageRef,
+  router,
+)
 const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(
   map as Ref<mapboxgl.Map | null>,
   locationData,
   filtersRef,
+  isAdminPageRef,
+  router,
 )
 const { initializeSearch } = useSearchGeocoder(
   map as Ref<mapboxgl.Map | null>,
   locationData,
   markers,
+  (event, payload) => {
+    if (event === 'search-result') {
+      const { lng, lat } = payload
+      console.log('Search result received:', lng, lat)
+
+      if (props.isAdminPage) {
+        const existingPopup = document.querySelector('.mapboxgl-popup')
+        if (existingPopup) {
+          existingPopup.remove()
+        }
+
+        const popupContent = document.createElement('div')
+        popupContent.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px;">
+            <button id="add-poi-button" style="padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              Add Point Of Interest
+            </button>
+            <button id="add-affected-area-button" style="padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              Add Affected Area
+            </button>
+          </div>
+        `
+
+        const popup = new mapboxgl.Popup({
+          closeButton: true,
+          closeOnClick: true,
+        })
+          .setLngLat([lng, lat])
+          .setDOMContent(popupContent)
+          .addTo(map.value!)
+
+        popupContent.querySelector('#add-poi-button')?.addEventListener('click', () => {
+          console.log('Navigating to Add POI View')
+          emit('map-click', { lng, lat })
+          router.push({
+            path: '/admin/add/poi',
+            query: { lng: lng.toString(), lat: lat.toString() },
+          })
+        })
+
+        popupContent.querySelector('#add-affected-area-button')?.addEventListener('click', () => {
+          console.log('Navigating to Add Affected Area View')
+          emit('map-click', { lng, lat })
+          router.push({
+            path: '/admin/add/affected-area',
+            query: { lng: lng.toString(), lat: lat.toString() },
+          })
+        })
+      } else {
+        map.value?.flyTo({
+          center: [lng, lat],
+          zoom: 15,
+          essential: true,
+        })
+      }
+    }
+  },
+)
+
+const { initializeAffectedAreaPopups } = useAffectedAreaManagement(
+  map as Ref<mapboxgl.Map | null>,
+  locationData,
+  isAdminPageRef,
+  router,
 )
 const {
   householdMarker,
@@ -295,6 +380,8 @@ onMounted(() => {
         }
         tryInitializeLayers(5)
         initializeMarkers()
+        initializeAffectedAreaPopups()
+
         if (!props.isHomePage) {
           initializeSearch()
         }
@@ -302,18 +389,71 @@ onMounted(() => {
         if (!initialLoaded.value) {
           initialLoaded.value = true
           fetchAffectedAreas()
+        }
 
-          if (props.isHomePage) {
-            fetchAllPointsOfInterest()
-          } else {
-            const poiFilters = getEnabledFilters(filtersRef.value).filter(
-              (f) => f !== 'affected_areas' && f !== 'household' && f !== 'household_member',
-            )
+        if (props.isHomePage || props.isAdminPage) {
+          fetchAllPointsOfInterest()
+        } else {
+          const poiFilters = getEnabledFilters(filtersRef.value).filter(
+            (f) => f !== 'affected_areas' && f !== 'household' && f !== 'household_member',
+          )
+        }
 
-            if (poiFilters.length > 0) {
-              fetchPointsOfInterest(poiFilters)
-            }
+          if (poiFilters.length > 0) {
+            fetchPointsOfInterest(poiFilters)
           }
+        }
+
+        if (props.isAdminPage) {
+          map.value?.on('click', (e: mapboxgl.MapMouseEvent) => {
+            const { lng, lat } = e.lngLat
+            console.log('Admin map click at:', lng, lat)
+
+            const existingPopup = document.querySelector('.mapboxgl-popup')
+            if (existingPopup) {
+              existingPopup.remove()
+            }
+
+            const popupContent = document.createElement('div')
+            popupContent.innerHTML = `
+              <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px;">
+                <button id="add-poi-button" style="padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                  Add Point Of Interest
+                </button>
+                <button id="add-affected-area-button" style="padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                  Add Affected Area
+                </button>
+              </div>
+            `
+
+            const popup = new mapboxgl.Popup({
+              closeButton: true,
+              closeOnClick: true,
+            })
+              .setLngLat([lng, lat])
+              .setDOMContent(popupContent)
+              .addTo(map.value!)
+
+            popupContent.querySelector('#add-poi-button')?.addEventListener('click', () => {
+              console.log('Navigating to Add POI View')
+              emit('map-click', { lng, lat })
+              router.push({
+                path: '/admin/add/poi',
+                query: { lng: lng.toString(), lat: lat.toString() },
+              })
+            })
+
+            popupContent
+              .querySelector('#add-affected-area-button')
+              ?.addEventListener('click', () => {
+                console.log('Navigating to Add Affected Area View')
+                emit('map-click', { lng, lat })
+                router.push({
+                  path: '/admin/add/affected-area',
+                  query: { lng: lng.toString(), lat: lat.toString() },
+                })
+              })
+          })
         }
       }, 100)
 
@@ -365,6 +505,7 @@ onMounted(() => {
   height: 100%;
   position: relative;
   overflow: hidden;
+  border-radius: 12px;
 }
 
 .map-nav-button {

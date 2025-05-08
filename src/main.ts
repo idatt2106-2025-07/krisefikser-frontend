@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import './assets/styles/main.css'
 import App from './App.vue'
+import axios from 'axios'
 import router from './router'
 import PrimeVue from 'primevue/config'
 import Material from '@primevue/themes/material'
@@ -35,3 +36,5 @@ app.component('Checkbox', Checkbox)
 app.component('Button', Button)
 
 app.mount('#app')
+
+axios.defaults.withCredentials = true

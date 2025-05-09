@@ -103,7 +103,7 @@ const router = createRouter({
       path: '/storage/update/:itemId',
       name: 'update-item',
       component: UpdateItemView,
-      meta: { requiresAuth: true},
+      meta: { requiresAuth: true },
     },
     {
       path: '/admin',

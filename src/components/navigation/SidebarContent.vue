@@ -27,9 +27,11 @@ const props = withDefaults(
   defineProps<{
     sidebarTitle?: string
     sidebarItems: SidebarItem[]
+    contentTitle?: string
   }>(),
   {
     sidebarTitle: 'Dashboard',
+    contentTitle: undefined,
   },
 )
 
@@ -230,6 +232,7 @@ onMounted(() => {
 
 .content-wrapper {
   height: 100%;
+  position: relative;
 }
 
 .mobile-menu-button {
@@ -271,11 +274,13 @@ onMounted(() => {
     align-items: center;
   }
   .sidebar-container {
+    position: relative;
     flex-direction: column;
   }
 
   .sidebar {
-    position: fixed;
+    position: absolute;
+
     top: 0;
     left: -100%;
     z-index: 100;
@@ -292,6 +297,8 @@ onMounted(() => {
   .mobile-menu-button {
     display: flex;
     z-index: 99;
+    position: absolute;
+    margin: 20px;
   }
 
   .close-mobile-menu {

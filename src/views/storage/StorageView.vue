@@ -4,11 +4,11 @@ import { ref, onMounted, computed, watch } from 'vue'
 import TabBar from '@/components/common/TabBar.vue'
 import SearchBar from '@/components/common/SearchBar.vue'
 import SortDropdown from '@/components/common/SortDropdown.vue'
-import DaysCircle from '@/components/common/DaysCircle.vue'
 import FilterSidebar from '@/components/storage/FilterSidebar.vue'
 import threeDots from '@/assets/three-dots-horizontal.svg'
 import { useStorageItemStore } from '@/stores/storageItemStore.ts'
 import { useRouter } from 'vue-router'
+import TimeLeft from '@/components/storage/TimeLeft.vue'
 
 const storageItemStore = useStorageItemStore()
 const router = useRouter()
@@ -207,9 +207,7 @@ onMounted(async () => {
           </div>
 
           <div class="days-container">
-            <DaysCircle
-              :current-days="daysLeft"
-              :goal-days="SUSTAIN_DAYS_GOAL"
+            <TimeLeft
               container-class="my-days-container"
               circle-class="my-days-circle"
               content-class="my-days-content"

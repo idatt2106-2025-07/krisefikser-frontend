@@ -8,7 +8,11 @@ const props = defineProps({
   },
   goalDays: {
     type: Number,
-    default: 14,
+    default: 7,
+  },
+  loading: {
+    type: Boolean,
+    default: false,
   },
   containerClass: {
     type: String,
@@ -78,7 +82,8 @@ const strokeDasharray = computed(() => {
           transform="rotate(-90 18 18)"
         />
       </svg>
-      <div :class="['days-content', contentClass]">
+      <div v-if="loading" class="circle-loading">loading...</div>
+      <div v-else :class="['days-content', contentClass]">
         <div :class="['days-number', numberClass]">{{ currentDays }}/{{ goalDays }}</div>
         <div :class="['days-label', labelClass]">days</div>
       </div>
@@ -137,5 +142,14 @@ const strokeDasharray = computed(() => {
   fill: none;
   stroke-linecap: round;
   transition: stroke-dasharray 0.3s ease;
+}
+
+.circle-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.75rem;
+  color: #666;
 }
 </style>

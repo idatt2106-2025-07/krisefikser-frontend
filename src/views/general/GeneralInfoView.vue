@@ -1,190 +1,140 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
-import axios from 'axios'
+import { useRouter } from 'vue-router'
 
-interface GeneralInfoResponse {
-  id: number
-  title: string
-  content: string
-  theme: string
+const router = useRouter()
+
+function navigateTo(path: string) {
+  router.push(path)
 }
-
-const allInfos = ref<GeneralInfoResponse[]>([]) // <-- full list
-const infos = ref<GeneralInfoResponse[]>([]) // <-- displayed list
-const error = ref<string | null>(null)
-const isLoading = ref(false)
-
-// selected theme filter
-const themeFilter = ref<string | null>(null)
-
-// compute unique theme options from the full list
-const themes = computed(() => Array.from(new Set(allInfos.value.map((i) => i.theme))))
-
-// helper to display nicer theme names
-function formatTheme(t: string) {
-  return t.replace(/_/g, ' ').toUpperCase()
-}
-
-async function fetchAllInfos() {
-  try {
-    const res = await axios.get<GeneralInfoResponse[]>('/api/general-info/all', {
-      withCredentials: true,
-    })
-    allInfos.value = res.data
-  } catch (err) {
-    console.error('Error fetching all themes:', err)
-  }
-}
-
-async function fetchGeneralInfo(theme?: string) {
-  isLoading.value = true
-  error.value = null
-
-  const url = theme ? `/api/general-info/${theme}` : '/api/general-info/all'
-
-  try {
-    const res = await axios.get<GeneralInfoResponse[]>(url, {
-      withCredentials: true,
-    })
-    infos.value = res.data
-  } catch (err) {
-    console.error('Error fetching general info:', err)
-    if (axios.isAxiosError(err) && err.response?.data?.message) {
-      error.value = err.response.data.message
-    } else {
-      error.value = 'Failed to load general information.'
-    }
-  } finally {
-    isLoading.value = false
-  }
-}
-
-onMounted(() => {
-  fetchAllInfos() // load themes
-  fetchGeneralInfo() // load initial list
-})
-
-// refetch only the displayed list when filter changes
-watch(themeFilter, (newTheme) => {
-  fetchGeneralInfo(newTheme || undefined)
-})
 </script>
 
 <template>
   <div class="general-info">
     <h2 class="page-title">General Information</h2>
 
-    <!-- theme filter dropdown -->
-    <div class="field filter-field">
-      <label for="theme">Filter by theme:</label>
-      <select id="theme" v-model="themeFilter">
-        <option :value="null">All</option>
-        <option v-for="t in themes" :key="t" :value="t">{{ formatTheme(t) }}</option>
-      </select>
-    </div>
+    <div class="nav-buttons">
+      <button class="nav-button before" @click="navigateTo('/general-info/before_crisis')">
+        <h3 class="card-header">Before Crisis</h3>
+        <p class="sub-text">
+          What should you as a citizen do to be prepared for an eventual crisis?
+        </p>
+        <a class="sub-text">Click here to discover -></a>
+      </button>
 
-    <div v-if="isLoading" class="loading">Loading…</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
-    <ul v-else class="info-list">
-      <li v-for="info in infos" :key="info.id" class="info-item">
-        <h3 class="info-title">
-          {{ info.title }}
-          <small class="info-theme">{{ formatTheme(info.theme) }}</small>
-          <!-- no () around theme -->
-        </h3>
-        <p class="info-content">{{ info.content }}</p>
-      </li>
-    </ul>
+      <button class="nav-button during" @click="navigateTo('/general-info/during_crisis')">
+        <h3 class="card-header">During Crisis</h3>
+        <p class="sub-text">
+          What should you as a citizen do during a crisis to minimize panic, injuries and death?
+        </p>
+        <a class="sub-text">Click here to discover -></a>
+      </button>
+
+      <button class="nav-button after" @click="navigateTo('/general-info/after_crisis')">
+        <h3 class="card-header">After Crisis</h3>
+        <p class="sub-text">When an eventual crisis is over, what should a citizen do?</p>
+        <a class="sub-text">Click here to discover -></a>
+      </button>
+    </div>
   </div>
 </template>
 
 <style scoped>
+body {
+  background-color: #dbf5fa;
+  font-family: Arial, sans-serif;
+}
+
 .general-info {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 1rem 1.5rem;
-  background: #f9fafb;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  color: #333;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .page-title {
   text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 2rem;
-  color: #2c3e50;
+  margin: 30px 0;
+  color: #333;
+  font-size: 3rem;
+  padding: 0 20px;
 }
 
-.filter-field {
+.nav-buttons {
+  padding: 50px 0;
+  width: 100%;
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  justify-content: center;
+  gap: 5%;
+  margin-top: 30px;
+  margin-left: 0;
+  margin-right: 0;
 }
 
-.filter-field select {
-  flex-shrink: 0;
-  padding: 0.4rem 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-
-.filter-field select:hover {
-  border-color: #888;
-}
-
-.loading,
-.error {
-  text-align: center;
-  font-size: 1.1rem;
-  margin: 2rem 0;
-}
-
-.error {
-  color: #e74c3c;
-}
-
-.info-list {
-  list-style: none;
-  padding: 0;
-}
-
-.info-item {
-  background: #fff;
-  border: 1px solid #e1e1e1;
-  border-radius: 6px;
-  padding: 1rem 1.2rem;
-  margin-bottom: 1rem;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-}
-
-.info-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.info-title {
-  margin: 0 0 0.5rem;
+.nav-button {
+  width: 30%;
+  aspect-ratio: 1 / 1;
+  border: none;
+  border-radius: 10%;
   font-weight: 600;
-  color: #34495e;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: black;
+  background-color: white;
+  padding: 35px;
 }
 
-.info-theme {
-  margin-left: 0.6rem;
-  font-size: 0.85rem;
-  color: #7f8c8d;
-}
-
-.info-content {
-  margin: 0;
-  line-height: 1.6;
+.sub-text {
+  font-size: 1rem;
   color: #555;
+  text-align: center;
+}
+
+.card-header {
+  font-size: 1.5rem;
+  color: #333;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+.nav-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+a {
+  color: dodgerblue;
+}
+
+@media (max-width: 852px) {
+  .nav-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    justify-items: center;
+  }
+
+  .nav-button {
+    width: 90%;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    justify-items: center;
+    margin-bottom: 50px;
+  }
+  .nav-button {
+    width: 80%;
+    max-width: 400px;
+    margin-bottom: 20px;
+  }
 }
 </style>

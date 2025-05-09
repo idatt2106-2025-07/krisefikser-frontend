@@ -33,4 +33,14 @@ export default {
     })
     return response.data
   },
+
+  async getReadinessLevel(): Promise<any> {
+    const response = await axios.get('/api/households/readiness', {
+      withCredentials: true,
+    })
+    if (response.status === 200) {
+      return response.data
+    }
+    console.error(response.data.message)
+  },
 }

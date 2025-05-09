@@ -1,4 +1,6 @@
 import axiosInstance from '@/services/axiosService'
+import axios from 'axios'
+import type { HouseholdPosition } from '@/types/mapTypes'
 
 class MapService {
   /**
@@ -44,6 +46,61 @@ class MapService {
     ]
     const response = await axiosInstance.get('/point-of-interest', {
       params: { types: allTypes.join(',') },
+    })
+    return response.data
+  }
+
+  /**
+
+   * Deletes a point of interest by its ID.
+   *
+   * @param id - The ID of the point of interest to delete.
+   * @returns A promise that resolves when the point of interest is successfully deleted.
+   */
+  async deletePointOfInterest(id: number) {
+    await axiosInstance.delete(`/point-of-interest/${id}`)
+  }
+
+  /**
+   * Updates a point of interest by its ID with the provided data.
+   *
+   * @param id - The ID of the point of interest to update.
+   * @param data - The data to update the point of interest with.
+   * @returns A promise that resolves when the point of interest is successfully updated.
+   */
+  async updatePointOfInterest(id: number, data: any) {
+    await axiosInstance.put(`/point-of-interest/${id}`, data)
+  }
+
+  /**
+   * Updates an affected area by its ID with the provided data.
+   *
+   * @param id - The ID of the affected area to update.
+   * @param data - The data to update the affected area with.
+   * @returns A promise that resolves when the affected area is successfully updated.
+   */
+  async updateAffectedArea(id: number, data: any) {
+    await axiosInstance.put(`/affected-area/${id}`, data)
+  }
+
+  /**
+   * Deletes an affected area by its ID.
+   *
+   * @param id - The ID of the affected area to delete.
+   * @returns A promise that resolves when the affected area is successfully deleted.
+   */
+  async deleteAffectedArea(id: number) {
+    await axiosInstance.delete(`/affected-area/${id}`)
+  }
+
+  /**
+   * Fetches the positions of household members from the server.
+   *
+   * @returns A promise that resolves to an array of `HouseholdPosition` objects.
+   */
+  async getHouseholdMemberPositions(): Promise<HouseholdPosition[]> {
+    const response = await axios.get<HouseholdPosition[]>('/api/position/household', {
+      withCredentials: true,
     })
     return response.data
   }

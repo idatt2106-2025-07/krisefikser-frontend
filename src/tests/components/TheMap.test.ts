@@ -12,6 +12,8 @@ const mockFunctions = vi.hoisted(() => ({
   tryInitializeLayers: vi.fn(),
   updateLayerVisibility: vi.fn(),
   initializeSearch: vi.fn(),
+  // Add the missing function for useAffectedAreaManagement
+  initializeAffectedAreaPopups: vi.fn(),
   getPointsOfInterest: vi
     .fn()
     .mockResolvedValue([
@@ -51,10 +53,15 @@ vi.mock('@/composables/usePointsOfInterest', () => ({
   }),
 }))
 
+// Update the mock to include both functions from useAffectedAreas
 vi.mock('@/composables/useAffectedAreas', () => ({
   useMapLayers: () => ({
     tryInitializeLayers: mockFunctions.tryInitializeLayers,
     updateLayerVisibility: mockFunctions.updateLayerVisibility,
+  }),
+  // Add the useAffectedAreaManagement function
+  useAffectedAreaManagement: () => ({
+    initializeAffectedAreaPopups: mockFunctions.initializeAffectedAreaPopups,
   }),
 }))
 
@@ -78,11 +85,26 @@ vi.mock('@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css', () => ({}))
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import TheMap from '@/components/map/TheMap.vue'
+import { createPinia, setActivePinia } from 'pinia'
+import { useUserStore } from '@/stores/userStore'
 
 describe('TheMap', () => {
   let wrapper
 
   beforeEach(() => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+
+    // Initialize your user store with mock data
+    const userStore = useUserStore()
+    userStore.userInfo = {
+      email: 'test@example.com',
+      name: 'Test User',
+      role: 'ROLE_NORMAL',
+      householdLatitude: 59.9139,
+      householdLongitude: 10.7522,
+    }
+
     vi.clearAllMocks()
     vi.useFakeTimers()
 

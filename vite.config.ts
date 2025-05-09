@@ -14,7 +14,8 @@ export default defineConfig({
     },
   },
   server: {
-    host: 'dev.krisefikser.com',
+    host: 'dev.krisefikser.localhost',
+    port: 5173,
     proxy: {
       '/api': {
         target: 'http://localhost:8080', // Backend URL

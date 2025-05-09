@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import axios from 'axios'
@@ -9,9 +9,11 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const isMenuOpen = ref(false)
+const menuRef = ref<HTMLElement | null>(null)
+const hamburgerRef = ref<HTMLElement | null>(null)
 
 const navigateToProfile = () => {
-  router.push('/settings')
+  router.push('/profile')
 }
 
 const logout = async () => {
@@ -36,6 +38,27 @@ const navigateTo = (path: string) => {
   router.push(path)
   isMenuOpen.value = false
 }
+
+// Close menu when clicking outside
+function handleClickOutside(event: MouseEvent) {
+  if (
+    isMenuOpen.value &&
+    menuRef.value &&
+    hamburgerRef.value &&
+    !menuRef.value.contains(event.target as Node) &&
+    !hamburgerRef.value.contains(event.target as Node)
+  ) {
+    isMenuOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <template>
@@ -51,7 +74,11 @@ const navigateTo = (path: string) => {
       />
 
       <!-- Custom Hamburger Icon and Menu Text -->
-      <div class="custom-button hamburger-menu p-d-flex p-ai-center gap-2" @click="toggleMenu">
+      <div
+        ref="hamburgerRef"
+        class="custom-button hamburger-menu p-d-flex p-ai-center gap-2"
+        @click.stop="toggleMenu"
+      >
         <div class="hamburger-icon">
           <div class="line"></div>
           <div class="line"></div>
@@ -60,11 +87,13 @@ const navigateTo = (path: string) => {
         <span class="menu-text">Menu</span>
       </div>
 
-      <ul v-if="isMenuOpen" class="dropdown-menu">
+      <ul v-if="isMenuOpen" ref="menuRef" class="dropdown-menu">
         <li class="dropdown-item" @click="navigateTo('/')">Home</li>
         <li class="dropdown-item" @click="navigateTo('/storage')">Emergency storage</li>
-        <li class="dropdown-item" @click="navigateTo('/info')">General info</li>
-        <li class="dropdown-item" @click="navigateTo('/quiz')">Quiz</li>
+        <li class="dropdown-item" @click="navigateTo('/household')">Household</li>
+        <li class="dropdown-item" @click="navigateTo('/map')">Map</li>
+        <li class="dropdown-item" @click="navigateTo('/news')">News</li>
+        <li class="dropdown-item" @click="navigateTo('/general-info')">General info</li>
         <li v-if="authStore.isAdmin" class="dropdown-item" @click="navigateTo('/admin')">
           Admin Dashboard
         </li>
@@ -74,11 +103,11 @@ const navigateTo = (path: string) => {
       </ul>
     </div>
 
-    <!-- Right side: Profile and Logout -->
+    <!-- Rest of component remains unchanged -->
     <div class="right-section p-d-flex p-ai-center gap-4">
       <Button class="custom-button profile-button p-button-sm" @click="navigateToProfile">
         <img src="@/assets/icons/profile_icon.svg" alt="Profile Icon" class="p-button-icon" />
-        <span>Profile</span>
+        <span id="p-text">Profile</span>
       </Button>
 
       <Button severity="danger" class="custom-button p-button-sm" @click="logout">
@@ -194,6 +223,9 @@ img {
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 200px;
   z-index: 100;
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
 }
 
 .dropdown-item {
@@ -233,5 +265,14 @@ img {
   top: 0;
   z-index: 1000;
   background-color: white;
+}
+
+@media (max-width: 430px) {
+  .menu-text {
+    display: none;
+  }
+  #p-text {
+    display: none;
+  }
 }
 </style>

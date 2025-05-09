@@ -40,7 +40,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['map-click'])
+const emit = defineEmits(['map-click', 'edit-poi', 'edit-affected-area'])
 const router = useRouter()
 
 const filtersRef = computed(() => props.filters)
@@ -186,6 +186,7 @@ const markerManagement = useMarkerManagement(
   filtersRef,
   isAdminPageRef,
   router,
+  emit,
 ) as unknown as {
   markers: any
   initializeMarkers: () => void
@@ -199,6 +200,7 @@ const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(
   filtersRef,
   isAdminPageRef,
   router,
+  emit,
 )
 const { initializeSearch } = useSearchGeocoder(
   map as Ref<mapboxgl.Map | null>,
@@ -236,12 +238,9 @@ const { initializeSearch } = useSearchGeocoder(
           .addTo(map.value!)
 
         popupContent.querySelector('#add-poi-button')?.addEventListener('click', () => {
-          console.log('Navigating to Add POI View')
-          emit('map-click', { lng, lat })
-          router.push({
-            path: '/admin/add/poi',
-            query: { lng: lng.toString(), lat: lat.toString() },
-          })
+          console.log('Filling Add POI form with coordinates:', lng, lat)
+          emit('map-click', { lng, lat }) // Emit the event to the parent component
+          popup.remove() // Close the popup after emitting the event
         })
 
         popupContent.querySelector('#add-affected-area-button')?.addEventListener('click', () => {
@@ -268,6 +267,7 @@ const { initializeAffectedAreaPopups } = useAffectedAreaManagement(
   locationData,
   isAdminPageRef,
   router,
+  emit,
 )
 const {
   householdMarker,
@@ -431,12 +431,9 @@ onMounted(() => {
               .addTo(map.value!)
 
             popupContent.querySelector('#add-poi-button')?.addEventListener('click', () => {
-              console.log('Navigating to Add POI View')
-              emit('map-click', { lng, lat })
-              router.push({
-                path: '/admin/add/poi',
-                query: { lng: lng.toString(), lat: lat.toString() },
-              })
+              console.log('Filling Add POI form with coordinates:', lng, lat)
+              emit('map-click', { lng, lat }) // Emit the event to the parent component
+              popup.remove() // Close the popup after emitting the event
             })
 
             popupContent
@@ -444,10 +441,6 @@ onMounted(() => {
               ?.addEventListener('click', () => {
                 console.log('Navigating to Add Affected Area View')
                 emit('map-click', { lng, lat })
-                router.push({
-                  path: '/admin/add/affected-area',
-                  query: { lng: lng.toString(), lat: lat.toString() },
-                })
               })
           })
         }

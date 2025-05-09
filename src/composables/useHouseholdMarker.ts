@@ -11,6 +11,7 @@ interface HouseholdMarkerReturn {
   createHouseholdMarker: () => void
   navigateToHousehold: () => void
   initialize: () => Promise<void>
+  flyToHome: () => void // Added new function for centering on home
 }
 
 export function useHouseholdMarker(
@@ -21,6 +22,7 @@ export function useHouseholdMarker(
   const userStore = useUserStore()
   const householdMarker = ref<mapboxgl.Marker | null>(null)
   const isHouseholdVisible = ref(false)
+  const hasInitiallyNavigated = ref(false) // Track if we've already centered on home
 
   const createHouseholdMarker = () => {
     if (!userStore.getHouseholdLocation) {
@@ -64,6 +66,12 @@ export function useHouseholdMarker(
       .addTo(map.value)
 
     isHouseholdVisible.value = true
+
+    // Auto center on home after creating marker if we haven't done so yet
+    if (!hasInitiallyNavigated.value) {
+      flyToHome()
+      hasInitiallyNavigated.value = true
+    }
   }
 
   const navigateToHousehold = () => {
@@ -74,6 +82,19 @@ export function useHouseholdMarker(
       center: [location.longitude, location.latitude],
       zoom: 15,
       essential: true,
+    })
+  }
+
+  // New function that centers the map on household location
+  const flyToHome = () => {
+    const location = userStore.getHouseholdLocation
+    if (!location || !map.value) return
+
+    map.value.flyTo({
+      center: [location.longitude, location.latitude],
+      zoom: 14, // Slightly zoomed out compared to navigate
+      essential: true,
+      duration: 1500, // Smooth animation
     })
   }
 
@@ -105,5 +126,6 @@ export function useHouseholdMarker(
     createHouseholdMarker,
     navigateToHousehold,
     initialize,
+    flyToHome, // Export the new function
   }
 }

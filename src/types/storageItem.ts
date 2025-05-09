@@ -22,10 +22,30 @@ export interface StorageItem {
   expirationDate: string
   householdId: number
   item: Item
+  shared: boolean
 }
 
 export interface AddStorageItemRequest {
   itemId: number
   quantity: number
   expirationDate: string
+}
+
+export interface GroupStorageItemRequest {
+  itemId: number
+  quantity: number
+  expirationDate: string
+}
+
+export interface StorageItemGroupResponse {
+  storageItem: {
+    id: number
+    itemId: number
+    quantity: number
+    expirationDate: string
+    householdId: number
+    item: Item
+    shared: boolean
+  }
+  householdName: string
 }

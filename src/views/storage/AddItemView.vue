@@ -3,6 +3,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useItemStore } from '@/stores/itemStore'
+import itemService from '@/services/itemService.ts'
 
 const router = useRouter()
 const itemStore = useItemStore()
@@ -61,7 +62,7 @@ const submitForm = async () => {
   formSuccess.value = false
 
   try {
-    await itemStore.addItem({
+    await itemService.addItem({
       name: name.value,
       unit: unit.value,
       calories: Number(calories.value),

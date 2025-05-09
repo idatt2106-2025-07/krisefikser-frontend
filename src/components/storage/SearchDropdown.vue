@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useItemStore } from '@/stores/itemStore.ts'
+import itemService from '@/services/itemService.ts'
 
 const props = defineProps({
   searchInputSelector: {
@@ -27,10 +28,10 @@ const debouncedSearch = async (term: string) => {
   // Set a new timeout
   debounceTimeout.value = window.setTimeout(async () => {
     if (term.trim() === '') {
-      const items = await itemStore.fetchSortedItems()
+      const items = await itemService.fetchSortedItems()
       searchResults.value = items
     } else {
-      const results = await itemStore.searchItems(term)
+      const results = await itemService.searchItems(term)
       searchResults.value = results
     }
     showDropdown.value = true
@@ -68,7 +69,7 @@ onMounted(() => {
     if (searchInputRef.value) {
       // Listen for focus on the search input
       searchInputRef.value.addEventListener('focus', async () => {
-        const items = await itemStore.fetchSortedItems()
+        const items = await itemService.fetchSortedItems()
         searchResults.value = items
         showDropdown.value = true
       })

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
 import Dropdown from 'primevue/dropdown'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
@@ -66,7 +65,7 @@ async function savePOI() {
   }
 
   try {
-    await axios.post('http://localhost:8080/api/point-of-interest', poiRequest, {
+    await axios.post('http://dev.krisefikser.localhost:8080/api/point-of-interest', poiRequest, {
       withCredentials: true,
     })
     alert('Point of Interest saved successfully!')

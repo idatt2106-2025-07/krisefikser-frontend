@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">40.17% </span>
+                <span class="strong">41.91% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>137/341</span>
+                <span class='fraction'>140/334</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">40.17% </span>
+                <span class="strong">41.91% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>137/341</span>
+                <span class='fraction'>140/334</span>
             </div>
         
             
@@ -646,14 +646,7 @@
 <a name='L581'></a><a href='#L581'>581</a>
 <a name='L582'></a><a href='#L582'>582</a>
 <a name='L583'></a><a href='#L583'>583</a>
-<a name='L584'></a><a href='#L584'>584</a>
-<a name='L585'></a><a href='#L585'>585</a>
-<a name='L586'></a><a href='#L586'>586</a>
-<a name='L587'></a><a href='#L587'>587</a>
-<a name='L588'></a><a href='#L588'>588</a>
-<a name='L589'></a><a href='#L589'>589</a>
-<a name='L590'></a><a href='#L590'>590</a>
-<a name='L591'></a><a href='#L591'>591</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">6x</span>
+<a name='L584'></a><a href='#L584'>584</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -842,6 +835,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -860,6 +854,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -890,14 +885,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -918,6 +910,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -1102,14 +1095,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1285,7 +1271,7 @@ const props = defineProps({
   },
 })
 &nbsp;
-const emit = defineEmits(['map-click'])
+const emit = defineEmits(['map-click', 'edit-poi', 'edit-affected-area'])
 const router = useRouter()
 &nbsp;
 const filtersRef = computed(() =&gt; props.filters)
@@ -1431,6 +1417,7 @@ const markerManagement = useMarkerManagement(
   filtersRef,
   isAdminPageRef,
   router,
+  emit,
 ) as unknown as {
   markers: any
   initializeMarkers: () =&gt; void
@@ -1444,6 +1431,7 @@ const { tryInitializeLayers, updateLayerVisibility } = useMapLayers(
   filtersRef,
   isAdminPageRef,
   router,
+  emit,
 )
 const { initializeSearch } = useSearchGeocoder(
   map as Ref&lt;mapboxgl.Map | null&gt;,
@@ -1481,12 +1469,9 @@ const { initializeSearch } = useSearchGeocoder(
 <span class="cstat-no" title="statement not covered" >          .addTo(map.value!)</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        popupContent.querySelector('#add-poi-button')?.addEventListener('click', () =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >          console.log('Navigating to Add POI View')</span>
+<span class="cstat-no" title="statement not covered" >          console.log('Filling Add POI form with coordinates:', lng, lat)</span>
 <span class="cstat-no" title="statement not covered" >          emit('map-click', { lng, lat })</span>
-<span class="cstat-no" title="statement not covered" >          router.push({</span>
-<span class="cstat-no" title="statement not covered" >            path: '/admin/add/poi',</span>
-<span class="cstat-no" title="statement not covered" >            query: { lng: lng.toString(), lat: lat.toString() },</span>
-<span class="cstat-no" title="statement not covered" >          })</span>
+<span class="cstat-no" title="statement not covered" >          popup.remove()</span>
 <span class="cstat-no" title="statement not covered" >        })</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        popupContent.querySelector('#add-affected-area-button')?.addEventListener('click', () =&gt; {</span>
@@ -1513,6 +1498,7 @@ const { initializeAffectedAreaPopups } = useAffectedAreaManagement(
   locationData,
   isAdminPageRef,
   router,
+  emit,
 )
 const {
   householdMarker,
@@ -1688,12 +1674,9 @@ onMounted(() =&gt; {
 <span class="cstat-no" title="statement not covered" >              .addTo(map.value!)</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            popupContent.querySelector('#add-poi-button')?.addEventListener('click', () =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >              console.log('Navigating to Add POI View')</span>
+<span class="cstat-no" title="statement not covered" >              console.log('Filling Add POI form with coordinates:', lng, lat)</span>
 <span class="cstat-no" title="statement not covered" >              emit('map-click', { lng, lat })</span>
-<span class="cstat-no" title="statement not covered" >              router.push({</span>
-<span class="cstat-no" title="statement not covered" >                path: '/admin/add/poi',</span>
-<span class="cstat-no" title="statement not covered" >                query: { lng: lng.toString(), lat: lat.toString() },</span>
-<span class="cstat-no" title="statement not covered" >              })</span>
+<span class="cstat-no" title="statement not covered" >              popup.remove()</span>
 <span class="cstat-no" title="statement not covered" >            })</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            popupContent</span>
@@ -1701,10 +1684,6 @@ onMounted(() =&gt; {
 <span class="cstat-no" title="statement not covered" >              ?.addEventListener('click', () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >                console.log('Navigating to Add Affected Area View')</span>
 <span class="cstat-no" title="statement not covered" >                emit('map-click', { lng, lat })</span>
-<span class="cstat-no" title="statement not covered" >                router.push({</span>
-<span class="cstat-no" title="statement not covered" >                  path: '/admin/add/affected-area',</span>
-<span class="cstat-no" title="statement not covered" >                  query: { lng: lng.toString(), lat: lat.toString() },</span>
-<span class="cstat-no" title="statement not covered" >                })</span>
 <span class="cstat-no" title="statement not covered" >              })</span>
 <span class="cstat-no" title="statement not covered" >          })</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
@@ -1840,7 +1819,7 @@ onMounted(() =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-09T18:26:50.737Z
+                at 2025-05-09T18:42:14.369Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

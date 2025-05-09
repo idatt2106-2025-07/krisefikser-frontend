@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">72.91% </span>
+                <span class="strong">29.16% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>35/48</span>
+                <span class='fraction'>14/48</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/6</span>
+                <span class='fraction'>0/0</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.5% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/8</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">72.91% </span>
+                <span class="strong">29.16% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>35/48</span>
+                <span class='fraction'>14/48</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -186,11 +186,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -198,9 +198,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -211,19 +211,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -295,22 +295,22 @@ class MapService {
    *                  These types will be joined into a comma-separated string and sent as a query parameter.
    * @returns A promise that resolves to the data containing the points of interest.
    */
-  async getPointsOfInterest(filters: string[]) {
-    const response = await axiosInstance.get('/point-of-interest', {
-      params: { types: filters.join(',') },
-    })
-    return response.data
-  }
+<span class="fstat-no" title="function not covered" >  async getPointsOfInterest(filters: string[]) {</span>
+<span class="cstat-no" title="statement not covered" >    const response = await axios.get('/api/point-of-interest', {</span>
+<span class="cstat-no" title="statement not covered" >      params: { types: filters.join(',') },</span>
+<span class="cstat-no" title="statement not covered" >    })</span>
+<span class="cstat-no" title="statement not covered" >    return response.data</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
   /**
    * Fetches the list of affected areas from the server.
    *
    * @returns A promise that resolves to the data containing the affected areas.
    */
-  async getAffectedAreas() {
-    const response = await axiosInstance.get('/affected-area')
-    return response.data
-  }
+<span class="fstat-no" title="function not covered" >  async getAffectedAreas() {</span>
+<span class="cstat-no" title="statement not covered" >    const response = await axios.get('/api/affected-area')</span>
+<span class="cstat-no" title="statement not covered" >    return response.data</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
   /**
    * Fetches all points of interest (POIs) from the server.
@@ -320,20 +320,20 @@ class MapService {
    *
    * @returns A promise that resolves to the data containing the list of points of interest.
    */
-  async getAllPointsOfInterest() {
-    const allTypes = [
-      'hospital',
-      'shelter',
-      'defibrillator',
-      'water_station',
-      'food_central',
-      'meeting_place',
-    ]
-    const response = await axiosInstance.get('/point-of-interest', {
-      params: { types: allTypes.join(',') },
-    })
-    return response.data
-  }
+<span class="fstat-no" title="function not covered" >  async getAllPointsOfInterest() {</span>
+<span class="cstat-no" title="statement not covered" >    const allTypes = [</span>
+<span class="cstat-no" title="statement not covered" >      'hospital',</span>
+<span class="cstat-no" title="statement not covered" >      'shelter',</span>
+<span class="cstat-no" title="statement not covered" >      'defibrillator',</span>
+<span class="cstat-no" title="statement not covered" >      'water_station',</span>
+<span class="cstat-no" title="statement not covered" >      'food_central',</span>
+<span class="cstat-no" title="statement not covered" >      'meeting_place',</span>
+<span class="cstat-no" title="statement not covered" >    ]</span>
+<span class="cstat-no" title="statement not covered" >    const response = await axios.get('/api/point-of-interest', {</span>
+<span class="cstat-no" title="statement not covered" >      params: { types: allTypes.join(',') },</span>
+<span class="cstat-no" title="statement not covered" >    })</span>
+<span class="cstat-no" title="statement not covered" >    return response.data</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
   /**
 &nbsp;
@@ -343,7 +343,7 @@ class MapService {
    * @returns A promise that resolves when the point of interest is successfully deleted.
    */
 <span class="fstat-no" title="function not covered" >  async deletePointOfInterest(id: number) {</span>
-<span class="cstat-no" title="statement not covered" >    await axiosInstance.delete(`/point-of-interest/${id}`)</span>
+<span class="cstat-no" title="statement not covered" >    await axios.delete(`/api/point-of-interest/${id}`)</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
   /**
@@ -354,7 +354,7 @@ class MapService {
    * @returns A promise that resolves when the point of interest is successfully updated.
    */
 <span class="fstat-no" title="function not covered" >  async updatePointOfInterest(id: number, data: any) {</span>
-<span class="cstat-no" title="statement not covered" >    await axiosInstance.put(`/point-of-interest/${id}`, data)</span>
+<span class="cstat-no" title="statement not covered" >    await axios.put(`/api/point-of-interest/${id}`, data)</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
   /**
@@ -365,7 +365,7 @@ class MapService {
    * @returns A promise that resolves when the affected area is successfully updated.
    */
 <span class="fstat-no" title="function not covered" >  async updateAffectedArea(id: number, data: any) {</span>
-<span class="cstat-no" title="statement not covered" >    await axiosInstance.put(`/affected-area/${id}`, data)</span>
+<span class="cstat-no" title="statement not covered" >    await axios.put(`/api/affected-area/${id}`, data)</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
   /**
@@ -375,7 +375,7 @@ class MapService {
    * @returns A promise that resolves when the affected area is successfully deleted.
    */
 <span class="fstat-no" title="function not covered" >  async deleteAffectedArea(id: number) {</span>
-<span class="cstat-no" title="statement not covered" >    await axiosInstance.delete(`/affected-area/${id}`)</span>
+<span class="cstat-no" title="statement not covered" >    await axios.delete(`/api/affected-area/${id}`)</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
   /**
@@ -400,7 +400,7 @@ export default mapService
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-09T18:26:50.737Z
+                at 2025-05-09T18:42:14.369Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -1,22 +1,15 @@
-<!-- StorageView.vue (updated) -->
+<!-- GroupStorageView.vue -->
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import TabBar from '@/components/common/TabBar.vue'
-import SearchBar from '@/components/common/SearchBar.vue'
 import SortDropdown from '@/components/common/SortDropdown.vue'
 import FilterSidebar from '@/components/storage/FilterSidebar.vue'
 import threeDots from '@/assets/three-dots-horizontal.svg'
-import { useStorageItemStore } from '@/stores/storageItemStore.ts'
 import { useRouter } from 'vue-router'
-import TimeLeft from '@/components/storage/TimeLeft.vue'
+import { useGroupStorageItemStore } from '@/stores/groupStorageItemStore'
 
-const storageItemStore = useStorageItemStore()
 const router = useRouter()
-
-const tabs = [
-  { path: '/storage', label: 'Household Storage' },
-  { path: '/group-storage', label: 'Group Storage' },
-]
+const groupStorageItemStore = useGroupStorageItemStore()
 
 const categories = [
   { id: 'DRINK', name: 'Drink' },
@@ -34,22 +27,10 @@ const sortOptions = [
   { value: 'quantity_desc', label: 'Quantity (highest first)' },
 ]
 
-const SUSTAIN_DAYS_GOAL = 21
-
-const navigateToAddItem = () => {
-  router.push('/storage/add-storage-item')
-}
-
-const navigateToUpdateItem = (itemId: number) => {
-  router.push(`/storage/update/${itemId}`)
-}
-
 const selectedSortOption = ref('')
-const searchQuery = ref('')
 const checkedCategories = ref<string[]>([])
 
-const searchDebounceTimeout = ref<number | null>(null)
-
+// Computed properties for sorting
 const selectedSort = computed(() => {
   if (!selectedSortOption.value) return ''
 
@@ -65,8 +46,9 @@ const sortDirection = computed(() => {
   return parts.length > 1 ? parts[1] : 'asc'
 })
 
+// Get items with expiration days calculated
 const items = computed(() => {
-  return storageItemStore.aggregatedItems.map((item) => {
+  return groupStorageItemStore.groupItems.map((item) => {
     const expirationDate = new Date(item.earliestExpirationDate)
     const today = new Date()
     const diffTime = expirationDate.getTime() - today.getTime()
@@ -84,76 +66,18 @@ const items = computed(() => {
   })
 })
 
-const daysLeft = ref(13)
-
-watch(searchQuery, () => {
-  if (searchDebounceTimeout.value) {
-    clearTimeout(searchDebounceTimeout.value)
-  }
-
-  searchDebounceTimeout.value = setTimeout(() => {
-    applyFiltersSearchAndSort()
-  }, 500) as unknown as number
-})
-
-// Watch category and sort changes immediately
-watch([checkedCategories, selectedSortOption], () => {
-  applyFiltersSearchAndSort()
-})
-
-// Function to handle search input
-const handleSearch = (value: string | Event) => {
-  if (
-    typeof value === 'object' &&
-    value !== null &&
-    'target' in value &&
-    value.target instanceof HTMLInputElement
-  ) {
-    searchQuery.value = value.target.value
-  } else if (typeof value === 'string') {
-    searchQuery.value = value
-  }
+const navigateToGroupItemUpdate = (itemId: number) => {
+  router.push(`/group-storage/update/${itemId}`)
 }
 
 const handleSort = (value: string) => {
   selectedSortOption.value = value
+  applyFiltersAndSort()
 }
 
 const handleFilterClear = () => {
   checkedCategories.value = []
-}
-
-// Combined function to apply filters, search, and sort
-const applyFiltersSearchAndSort = () => {
-  const hasSearchTerm = typeof searchQuery.value === 'string' && searchQuery.value.trim() !== ''
-  const hasCategories = checkedCategories.value.length > 0
-  const hasSort = selectedSort.value && selectedSort.value !== ''
-
-  // If we have a search term, use the search endpoint with all parameters
-  if (hasSearchTerm) {
-    storageItemStore.searchAggregatedItems(
-      searchQuery.value as string,
-      hasCategories ? checkedCategories.value : undefined,
-      hasSort ? selectedSort.value : undefined,
-      hasSort ? sortDirection.value : 'asc',
-    )
-    return
-  }
-
-  // No search term, but we have categories and/or sort
-  if (hasCategories && hasSort) {
-    storageItemStore.filterAndSortAggregatedItems(
-      checkedCategories.value,
-      selectedSort.value,
-      sortDirection.value,
-    )
-  } else if (hasCategories) {
-    storageItemStore.filterByItemType(checkedCategories.value)
-  } else if (hasSort) {
-    storageItemStore.sortAggregatedItems(selectedSort.value, sortDirection.value)
-  } else {
-    storageItemStore.fetchAggregatedItems()
-  }
+  applyFiltersAndSort()
 }
 
 const getExpirationClass = (days: number) => {
@@ -164,9 +88,34 @@ const getExpirationClass = (days: number) => {
   return 'status-expired'
 }
 
-// Fetch data on component mount
+// Watch for changes in filter and sort options
+watch([checkedCategories, selectedSortOption], () => {
+  applyFiltersAndSort()
+})
+
+// Apply filters and sort when changed
+const applyFiltersAndSort = () => {
+  const hasCategories = checkedCategories.value.length > 0
+  const hasSort = selectedSort.value && selectedSort.value !== ''
+
+  if (hasCategories && hasSort) {
+    groupStorageItemStore.filterAndSortGroupItems(
+      checkedCategories.value,
+      selectedSort.value,
+      sortDirection.value,
+    )
+  } else if (hasCategories) {
+    groupStorageItemStore.filterByItemType(checkedCategories.value)
+  } else if (hasSort) {
+    groupStorageItemStore.sortGroupItems(selectedSort.value, sortDirection.value)
+  } else {
+    groupStorageItemStore.fetchGroupItems()
+  }
+}
+
+// Load data on component mount
 onMounted(async () => {
-  await storageItemStore.fetchAggregatedItems()
+  await groupStorageItemStore.fetchGroupItems()
 })
 </script>
 
@@ -174,7 +123,7 @@ onMounted(async () => {
   <div class="storage-container">
     <h1 class="storage-title">Emergency Storage</h1>
 
-    <TabBar :tabs="tabs" />
+    <TabBar />
 
     <div class="content-wrapper">
       <FilterSidebar
@@ -190,13 +139,6 @@ onMounted(async () => {
       <div class="main-content">
         <div class="actions-container">
           <div class="sort-section">
-            <SearchBar
-              placeholder="Search items..."
-              v-model:value="searchQuery"
-              @search="handleSearch"
-              custom-class="my-search-container"
-              input-class="my-custom-input"
-            />
             <SortDropdown
               :options="sortOptions"
               v-model:value="selectedSortOption"
@@ -205,24 +147,14 @@ onMounted(async () => {
               select-class="my-dropdown-select"
             />
           </div>
-
-          <div class="days-container">
-            <TimeLeft
-              container-class="my-days-container"
-              circle-class="my-days-circle"
-              content-class="my-days-content"
-            />
-          </div>
-
-          <button class="add-button" @click="navigateToAddItem">Add item</button>
         </div>
 
-        <div v-if="storageItemStore.loading" class="loading-indicator">
-          Loading storage items...
+        <div v-if="groupStorageItemStore.loading" class="loading-indicator">
+          Loading group storage items...
         </div>
 
-        <div v-else-if="storageItemStore.error" class="error-message">
-          {{ storageItemStore.error }}
+        <div v-else-if="groupStorageItemStore.error" class="error-message">
+          {{ groupStorageItemStore.error }}
         </div>
 
         <div v-else class="items-container">
@@ -235,7 +167,7 @@ onMounted(async () => {
 
           <div class="items-list">
             <div v-if="items.length === 0" class="no-items-message">
-              No items found. Try changing your search or filters.
+              No group items found. Try changing your search or filters.
             </div>
 
             <div v-for="item in items" :key="item.id" class="item-card">
@@ -260,7 +192,7 @@ onMounted(async () => {
               </div>
 
               <div class="item-actions">
-                <button class="options-button" @click="navigateToUpdateItem(item.id)">
+                <button class="options-button" @click="navigateToGroupItemUpdate(item.id)">
                   <img :src="threeDots" alt="Options" />
                 </button>
               </div>
@@ -323,28 +255,6 @@ onMounted(async () => {
 
 :deep(.my-dropdown-container) {
   width: 300px;
-}
-
-.days-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.add-button {
-  background-color: white;
-  border: none;
-  border-radius: 9999px;
-  padding: 0.5rem 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: box-shadow 0.2s;
-  font-size: 1rem;
-  color: black;
-}
-
-.add-button:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .items-container {

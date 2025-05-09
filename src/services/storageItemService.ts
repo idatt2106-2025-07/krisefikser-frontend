@@ -5,24 +5,41 @@ import type { AggregatedStorageItem, StorageItem, AddStorageItemRequest } from '
 export default {
   // Fetch all aggregated storage items
   async fetchAggregatedItems(): Promise<AggregatedStorageItem[]> {
-    const response = await axios.get<AggregatedStorageItem[]>(
-      '/api/storage-items/household/aggregated',
-      {
-        withCredentials: true,
-      },
-    )
-    return response.data
+    try {
+      const response = await axios.get<AggregatedStorageItem[]>(
+        '/api/storage-items/household/aggregated',
+        {
+          withCredentials: true,
+        },
+      )
+      return response.data
+    } catch (error) {
+      console.error('Error fetching aggregated items:', error)
+      return []
+    }
   },
 
   // Fetch individual storage items by item ID
   async fetchStorageItemsByItemId(itemId: number): Promise<StorageItem[]> {
-    const response = await axios.get<StorageItem[]>(
-      `/api/storage-items/household/by-item/${itemId}`,
-      {
+    try {
+      const response = await axios.get<any[]>(`/api/storage-items/household/by-item/${itemId}`, {
         withCredentials: true,
-      },
-    )
-    return response.data
+      })
+
+      return response.data.map((item) => ({
+        id: item.id,
+        itemId: item.itemId,
+        quantity: item.quantity,
+        expirationDate: item.expirationDate,
+        householdId: item.householdId,
+        item: item.item,
+        shared: item.shared,
+        isShared: item.shared,
+      }))
+    } catch (error) {
+      console.error(`Error fetching storage items for item ID ${itemId}:`, error)
+      return []
+    }
   },
 
   // Add a new storage item
@@ -51,16 +68,21 @@ export default {
       return this.fetchAggregatedItems()
     }
 
-    let url = '/api/storage-items/household/aggregated/filter-by-type'
+    try {
+      let url = '/api/storage-items/household/aggregated/filter-by-type'
 
-    if (types.length > 0) {
-      url += '?' + types.map((type) => 'types=' + encodeURIComponent(type)).join('&')
+      if (types.length > 0) {
+        url += '?' + types.map((type) => 'types=' + encodeURIComponent(type)).join('&')
+      }
+
+      const response = await axios.get<AggregatedStorageItem[]>(url, {
+        withCredentials: true,
+      })
+      return response.data
+    } catch (error) {
+      console.error('Error filtering by item type:', error)
+      return []
     }
-
-    const response = await axios.get<AggregatedStorageItem[]>(url, {
-      withCredentials: true,
-    })
-    return response.data
   },
 
   // Search for aggregated items
@@ -70,29 +92,88 @@ export default {
     sortBy?: string,
     sortDirection: string = 'asc',
   ): Promise<AggregatedStorageItem[]> {
-    const params = new URLSearchParams()
+    try {
+      const params = new URLSearchParams()
 
-    if (searchTerm) {
-      params.append('searchTerm', searchTerm)
+      if (searchTerm) {
+        params.append('searchTerm', searchTerm)
+      }
+
+      // Add types if provided
+      if (types && types.length > 0) {
+        types.forEach((type) => params.append('types', type))
+      }
+
+      // Add sort parameters if provided
+      if (sortBy) {
+        params.append('sortBy', sortBy)
+        params.append('sortDirection', sortDirection)
+      }
+
+      const url = `/api/storage-items/household/aggregated/search?${params.toString()}`
+
+      const response = await axios.get<AggregatedStorageItem[]>(url, {
+        withCredentials: true,
+      })
+      return response.data
+    } catch (error) {
+      console.error('Error searching aggregated items:', error)
+      return []
     }
+  },
 
-    // Add types if provided
-    if (types && types.length > 0) {
-      types.forEach((type) => params.append('types', type))
-    }
-
-    // Add sort parameters if provided
-    if (sortBy) {
+  // Sort aggregated items
+  async sortAggregatedItems(
+    sortBy: string,
+    sortDirection: string = 'asc',
+  ): Promise<AggregatedStorageItem[]> {
+    try {
+      const params = new URLSearchParams()
       params.append('sortBy', sortBy)
       params.append('sortDirection', sortDirection)
+
+      const url = `/api/storage-items/household/aggregated/sort?${params.toString()}`
+
+      const response = await axios.get<AggregatedStorageItem[]>(url, {
+        withCredentials: true,
+      })
+
+      return response.data
+    } catch (error) {
+      console.error('Error sorting aggregated items:', error)
+      return []
     }
+  },
 
-    const url = `/api/storage-items/household/aggregated/search?${params.toString()}`
+  // Filter and sort aggregated items
+  async filterAndSortAggregatedItems(
+    types: string[],
+    sortBy: string,
+    sortDirection: string = 'asc',
+  ): Promise<AggregatedStorageItem[]> {
+    try {
+      const params = new URLSearchParams()
 
-    const response = await axios.get<AggregatedStorageItem[]>(url, {
-      withCredentials: true,
-    })
-    return response.data
+      // Add types if provided
+      if (types && types.length > 0) {
+        types.forEach((type) => params.append('types', type))
+      }
+
+      // Add sort parameters
+      params.append('sortBy', sortBy)
+      params.append('sortDirection', sortDirection)
+
+      const url = `/api/storage-items/household/aggregated/filter-and-sort?${params.toString()}`
+
+      const response = await axios.get<AggregatedStorageItem[]>(url, {
+        withCredentials: true,
+      })
+
+      return response.data
+    } catch (error) {
+      console.error('Error filtering and sorting aggregated items:', error)
+      return []
+    }
   },
 
   // Update a storage item
@@ -107,5 +188,31 @@ export default {
       withCredentials: true,
     })
     return response.data
+  },
+
+  // Update shared status of a storage item
+  async updateStorageItemSharedStatus(
+    id: number,
+    isShared: boolean,
+    quantity: number,
+  ): Promise<any> {
+    const request = {
+      isShared: isShared,
+      quantity: quantity,
+    }
+
+    try {
+      const response = await axios.patch(
+        `/api/storage-items/household/${id}/shared-status`,
+        request,
+        {
+          withCredentials: true,
+        },
+      )
+      return response.data
+    } catch (error) {
+      console.error(`Error updating shared status for item ID ${id}:`, error)
+      throw error
+    }
   },
 }

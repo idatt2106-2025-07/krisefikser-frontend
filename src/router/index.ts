@@ -24,12 +24,14 @@ import SuperAdminView from '@/views/admin/SuperAdminView.vue'
 import TwoFactorAuthView from '@/views/2fa/TwoFactorAuthView.vue'
 import TwoFactorNotifyView from '@/views/2fa/TwoFactorNotifyView.vue'
 import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
+import GroupStorageView from '@/views/group-storage/GroupStorageView.vue'
 import NewsDetailView from '@/views/news/NewsDetailView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
 
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
+import UpdateGroupStorageView from '@/views/group-storage/UpdateGroupStorageView.vue'
 import SpecificCrisisTimeView from '@/views/general/SpecificCrisisTimeView.vue'
 import UpdatePOIView from '@/views/admin/UpdatePOIView.vue'
 import UpdateAffectedAreaView from '@/views/admin/UpdateAffectedAreaView.vue'
@@ -76,22 +78,32 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/group-storage',
+      name: 'group-storage',
+      component: GroupStorageView,
+    },
+    {
       path: '/storage/add-storage-item',
       name: 'add-storage-item',
       component: AddStorageItemView,
-      meta: { requiresAuth: true, role: 'admin' },
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/group-storage/update/:itemId',
+      name: 'update-group-storage',
+      component: UpdateGroupStorageView,
     },
     {
       path: '/storage/add-item',
       name: 'add-item',
       component: AddItemView,
-      meta: { requiresAuth: true, role: 'admin' },
+      meta: { requiresAuth: true },
     },
     {
       path: '/storage/update/:itemId',
       name: 'update-item',
       component: UpdateItemView,
-      meta: { requiresAuth: true, role: 'admin' },
+      meta: { requiresAuth: true },
     },
     {
       path: '/admin',
@@ -128,7 +140,6 @@ const router = createRouter({
       path: '/register-admin',
       name: 'register-admin',
       component: RegisterAdmin,
-      meta: { requiresAuth: true, role: 'superadmin' },
     },
     {
       path: '/admin/add/poi',
@@ -160,7 +171,6 @@ const router = createRouter({
       path: '/invitation/verify',
       name: 'verifyinvitation',
       component: verifyHouseholdInvitationView,
-      meta: { requiresAuth: true, role: 'admin' },
     },
     {
       path: '/reset-password',

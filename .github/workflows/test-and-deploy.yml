@@ -2,7 +2,7 @@ name: Test and Deploy Coverage
 
 on:
   push:
-    branches: [ development, master ]
+    branches: [development, master]
 
 jobs:
   test-and-deploy:
@@ -24,7 +24,7 @@ jobs:
         run: npm run test:coverage
 
       - name: Deploy coverage report to GitHub Pages
-        if: github.ref == 'refs/heads/development' || github.ref == 'refs/heads/master' || 
+        if: github.ref == 'refs/heads/development' || github.ref == 'refs/heads/master' ||
           github.ref == 'refs/heads/test-coverage'
         uses: JamesIves/github-pages-deploy-action@v4
         with:

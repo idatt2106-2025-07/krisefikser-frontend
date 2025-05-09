@@ -6,14 +6,6 @@ interface AddNonUserMemberRequest {
   type: string
 }
 
-interface UpdateNonUserMemberRequest {
-  id: number
-  name?: string
-  relationship?: string
-  dateOfBirth?: string
-  notes?: string
-}
-
 interface DeleteNonUserMemberRequest {
   id: number
 }
@@ -31,17 +23,6 @@ class NonMemberUserService {
   }
 
   /**
-   * Updates an existing non-user member in the household
-   *
-   * @param request Updated details of the non-user member
-   * @returns A promise that resolves to the response data
-   */
-  async updateNonUserMember(request: UpdateNonUserMemberRequest) {
-    const response = await axios.post('/api/non-user-member/update', request)
-    return response.data
-  }
-
-  /**
    * Deletes a non-user member from the household
    *
    * @param id ID of the non-user member to delete
@@ -50,7 +31,7 @@ class NonMemberUserService {
   async deleteNonUserMember(id: number) {
     const request: DeleteNonUserMemberRequest = { id }
     const response = await axios.delete('/api/non-user-member/delete', {
-      data: request
+      data: request,
     })
     return response.data
   }

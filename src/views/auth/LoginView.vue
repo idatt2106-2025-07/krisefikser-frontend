@@ -248,7 +248,7 @@ function getErrorMessage(error: unknown, defaultMsg: string): string {
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background-color: var(--background-color); /* Replace with your desired color */
 }
 
 .auth-card {

@@ -53,7 +53,7 @@ onUnmounted(() => {
     <div class="left-section p-d-flex p-ai-center gap-2 relative">
       <img src="@/assets/logo.svg" alt="Logo" class="h-10 w-auto" @click="navigateToHome" />
 
-      <div
+      <button
         ref="hamburgerRef"
         class="custom-button hamburger-menu p-d-flex p-ai-center gap-2"
         @click.stop="toggleMenu"
@@ -64,13 +64,13 @@ onUnmounted(() => {
           <div class="line"></div>
         </div>
         <span class="menu-text">Menu</span>
-      </div>
+      </button>
 
       <ul v-if="isMenuOpen" ref="menuRef" class="dropdown-menu">
-        <li class="dropdown-item" @click="navigateTo('/')">Home</li>
-        <li class="dropdown-item" @click="navigateTo('/map')">Map</li>
-        <li class="dropdown-item" @click="navigateTo('/news')">News</li>
-        <li class="dropdown-item" @click="navigateTo('/general-info')">General Info</li>
+        <button class="dropdown-item" @click="navigateTo('/')">Home</button>
+        <button class="dropdown-item" @click="navigateTo('/map')">Map</button>
+        <button class="dropdown-item" @click="navigateTo('/news')">News</button>
+        <button class="dropdown-item" @click="navigateTo('/general-info')">General Info</button>
       </ul>
     </div>
 
@@ -91,29 +91,120 @@ onUnmounted(() => {
   align-items: center;
   padding: 0.5rem 1rem;
   border-bottom: 2px solid #333;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: white;
 }
 
-.left-section {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-}
-
+.left-section,
 .right-section {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
+.dropdown-menu {
+  position: absolute;
+  top: 45px;
+  left: 30px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  z-index: 100;
+  padding: 8px;
+  overflow: hidden;
+  animation: menu-fade 0.2s ease;
+  list-style: none;
+  margin: 0;
+}
+
+.dropdown-item {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2d3748;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+}
+
+.dropdown-item:hover {
+  background-color: #e6f0ff;
+  transform: translateX(3px);
+}
+
+.dropdown-item:active {
+  background-color: #dbeafe;
+  transform: translateX(3px) scale(0.98);
+}
+
+.dropdown-item:focus {
+  outline: none;
+  background-color: #eef6ff;
+  color: #1a56db;
+  box-shadow: 0 0 0 2px #3182ce;
+  position: relative;
+  transform: translateX(5px);
+}
+
+.dropdown-item:focus::before {
+  color: #1a56db;
+}
+
+.dropdown-item:focus-visible {
+  outline: none;
+  background-color: #eef6ff;
+  color: #1a56db;
+  box-shadow: 0 0 0 3px #3182ce;
+  transform: translateX(5px);
+}
+
+.dropdown-item::before {
+  margin-right: 8px;
+  font-size: 18px;
+  color: #a0aec0;
+  transition: color 0.15s ease;
+}
+
+.dropdown-item:hover::before {
+  color: #2d3748;
+}
+
+/* Animation and other styles */
+@keyframes menu-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.relative {
+  position: relative;
+}
+
 img {
   max-height: 40px;
   width: auto;
-  cursor: pointer;
 }
 
+/* Menu and button styles */
 .p-d-flex {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 8px;
 }
@@ -155,6 +246,12 @@ img {
   margin-right: 8px;
 }
 
+.p-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .custom-button {
   background-color: white;
   border: 1px solid white;
@@ -172,43 +269,18 @@ img {
 .custom-button:hover {
   background-color: #bbb;
   border-color: white;
-  color: #333;
 }
 
-.dropdown-menu {
-  position: absolute;
-  top: 35px;
-  left: 30px;
-  cursor: pointer;
+.profile-button {
   background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  min-width: 200px;
-  z-index: 100;
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-}
-
-.dropdown-item {
-  padding: 0.75rem 1rem;
-  font-size: 14px;
+  border: 1px solid white;
   color: #333;
-  border-bottom: 1px solid #eee;
-  border-radius: 8px;
 }
 
-.dropdown-item:last-child {
-  border-bottom: none;
-}
-
-.relative {
-  position: relative;
-}
-
-.dropdown-item:hover {
-  background-color: #b4b4b4;
+.profile-button.p-button:hover {
+  background-color: #bbb !important;
+  border-color: white !important;
+  color: #333 !important;
 }
 
 .login-button {
@@ -223,10 +295,12 @@ img {
   color: #333 !important;
 }
 
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background-color: white;
+@media (max-width: 430px) {
+  .menu-text {
+    display: none;
+  }
+  #p-text {
+    display: none;
+  }
 }
 </style>

@@ -726,7 +726,7 @@ const cancel = () => {
 }
 
 .share-button {
-  background-color: #c0c0c0;
+  background-color: #d6d6d6;
   color: black;
   border-radius: 9999px;
 

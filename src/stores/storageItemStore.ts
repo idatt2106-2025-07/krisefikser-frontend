@@ -34,7 +34,6 @@ export const useStorageItemStore = defineStore('storageItem', {
 
       try {
         this.individualItems = await storageItemService.fetchStorageItemsByItemId(itemId)
-        console.log('Raw API response:', this.individualItems)
         return this.individualItems
       } catch (err) {
         this.error = 'Failed to fetch storage items by item ID'

@@ -38,12 +38,15 @@ const adminError = ref<string | null>(null)
 // Validation functions
 function validateEmail(value: string, errorRef: Ref<boolean> | boolean) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const isValid = !emailRegex.test(value)
   if (typeof errorRef === 'boolean') {
-    return !emailRegex.test(value)
+    return isValid
   } else {
-    errorRef.value = !emailRegex.test(value)
+    errorRef.value = isValid
+    return isValid
   }
 }
+
 function validateResetEmail() {
   resetTouched.value = true
   validateEmail(resetEmail.value, resetEmailError)
@@ -51,7 +54,9 @@ function validateResetEmail() {
 }
 
 // Computed properties
-const formValid = computed(() => email.value && password.value && !emailError.value)
+const formValid = computed(() => {
+  return email.value && password.value && !validateEmail(email.value, emailError)
+})
 const resetValid = computed(() => !!resetEmail.value && !resetEmailError.value)
 const adminValid = computed(
   () => !!adminEmail.value && !!adminPassword.value && !adminEmailError.value,
@@ -196,6 +201,7 @@ function getErrorMessage(error: unknown, defaultMsg: string): string {
             v-model="email"
             placeholder="your@email.com"
             @blur="validateEmail(email, emailError)"
+            @input="emailError = validateEmail(email, emailError)"
             :class="{ 'input-error': emailError }"
           />
           <small v-if="emailError" class="error-message">Invalid email format</small>

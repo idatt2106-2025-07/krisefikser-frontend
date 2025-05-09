@@ -48,7 +48,7 @@ describe('Login Flow', () => {
     it('should show error for invalid credentials (wrong password)', () => {
       cy.intercept('POST', '/api/auth/login', {
         statusCode: 401,
-        body: { message: 'Invalid credentials' }
+        body: { message: 'Invalid credentials' },
       }).as('loginRequest')
 
       cy.get('input[id="email"]').type('user@example.com')
@@ -62,7 +62,7 @@ describe('Login Flow', () => {
     it('should show error for non-existent user', () => {
       cy.intercept('POST', '/api/auth/login', {
         statusCode: 401,
-        body: { message: 'User not found' }
+        body: { message: 'User not found' },
       }).as('loginRequest')
 
       cy.get('input[id="email"]').type('nonexistent@example.com')
@@ -76,7 +76,7 @@ describe('Login Flow', () => {
     it('should successfully login and redirect to home', () => {
       cy.intercept('POST', '/api/auth/login', {
         statusCode: 200,
-        body: { message: 'Login successful' }
+        body: { message: 'Login successful' },
       }).as('loginRequest')
 
       cy.get('input[id="email"]').type('user@example.com')
@@ -91,7 +91,7 @@ describe('Login Flow', () => {
     it('should handle 2FA required flow', () => {
       cy.intercept('POST', '/api/auth/login', {
         statusCode: 200,
-        body: { message: 'Two-factor authentication code sent' }
+        body: { message: 'Two-factor authentication code sent' },
       }).as('loginRequest')
 
       cy.get('input[id="email"]').type('user@example.com')
@@ -101,7 +101,10 @@ describe('Login Flow', () => {
       cy.wait('@loginRequest')
 
       // Verify we reached the 2FA notification page
-      cy.get('.notify-message').should('contain', 'We\'ve sent a secure verification link to your email address')
+      cy.get('.notify-message').should(
+        'contain',
+        "We've sent a secure verification link to your email address",
+      )
 
       // Additional checks to ensure we're on the correct page
       cy.get('.notify-title').should('contain', 'Check Your Email')
@@ -134,7 +137,7 @@ describe('Login Flow', () => {
       it('should show success message on valid reset request', () => {
         cy.intercept('POST', '/api/auth/new-password-link', {
           statusCode: 200,
-          body: { message: 'Reset link sent' }
+          body: { message: 'Reset link sent' },
         }).as('resetRequest')
 
         cy.get('input[id="reset-email"]').type('user@example.com')
@@ -147,7 +150,7 @@ describe('Login Flow', () => {
       it('should show error on failed reset request', () => {
         cy.intercept('POST', '/api/auth/new-password-link', {
           statusCode: 400,
-          body: { message: 'User not found' }
+          body: { message: 'User not found' },
         }).as('resetRequest')
 
         cy.get('input[id="reset-email"]').type('nonexistent@example.com')
@@ -162,5 +165,5 @@ describe('Login Flow', () => {
         cy.get('.auth-title').should('contain', 'Login')
       })
     })
-})
+  })
 })

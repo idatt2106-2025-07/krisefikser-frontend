@@ -2,7 +2,7 @@ name: Test and Deploy Coverage
 
 on:
   push:
-    branches: [ development, master, test-coverage ]
+    branches: [ development, master ]
   pull_request:
     branches: [ development, master ]
 

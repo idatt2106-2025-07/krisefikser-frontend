@@ -79,7 +79,7 @@ const navigateTo = (path: string) => {
     <div class="right-section p-d-flex p-ai-center gap-4">
       <Button class="custom-button profile-button p-button-sm" @click="navigateToProfile">
         <img src="@/assets/icons/profile_icon.svg" alt="Profile Icon" class="p-button-icon" />
-        <span>Profile</span>
+        <span id="p-text">Profile</span>
       </Button>
 
       <Button severity="danger" class="custom-button p-button-sm" @click="logout">
@@ -234,5 +234,15 @@ img {
   top: 0;
   z-index: 1000;
   background-color: white;
+}
+
+@media (max-width: 430px) {
+
+  .menu-text {
+    display: none;
+  }
+  #p-text {
+    display: none;
+  }
 }
 </style>

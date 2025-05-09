@@ -237,7 +237,6 @@ img {
 }
 
 @media (max-width: 430px) {
-
   .menu-text {
     display: none;
   }

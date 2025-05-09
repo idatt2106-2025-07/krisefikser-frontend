@@ -34,7 +34,7 @@ export const useStorageItemStore = defineStore('storageItem', {
 
       try {
         this.individualItems = await storageItemService.fetchStorageItemsByItemId(itemId)
-        console.log("Raw API response:", this.individualItems)
+        console.log('Raw API response:', this.individualItems)
         return this.individualItems
       } catch (err) {
         this.error = 'Failed to fetch storage items by item ID'
@@ -166,7 +166,7 @@ export const useStorageItemStore = defineStore('storageItem', {
         this.aggregatedItems = await storageItemService.filterAndSortAggregatedItems(
           types,
           sortBy,
-          sortDirection
+          sortDirection,
         )
       } catch (err) {
         this.error = 'Failed to filter and sort storage items'
@@ -208,17 +208,23 @@ export const useStorageItemStore = defineStore('storageItem', {
       this.error = null
 
       try {
-        const response = await storageItemService.updateStorageItemSharedStatus(id, isShared, quantity)
+        const response = await storageItemService.updateStorageItemSharedStatus(
+          id,
+          isShared,
+          quantity,
+        )
 
         if (response && Array.isArray(response)) {
-          const updatedIds = response.map(item => item.id)
+          const updatedIds = response.map((item) => item.id)
 
-          this.individualItems = this.individualItems.filter(item =>
-            item.id !== id || updatedIds.includes(item.id)
+          this.individualItems = this.individualItems.filter(
+            (item) => item.id !== id || updatedIds.includes(item.id),
           )
 
           for (const updatedItem of response) {
-            const existingIndex = this.individualItems.findIndex(item => item.id === updatedItem.id)
+            const existingIndex = this.individualItems.findIndex(
+              (item) => item.id === updatedItem.id,
+            )
 
             if (existingIndex !== -1) {
               this.individualItems[existingIndex] = updatedItem

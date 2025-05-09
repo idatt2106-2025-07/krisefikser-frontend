@@ -64,8 +64,8 @@ const formatDateForBackend = (dateString: string): string => {
 // Initialize modified items tracker
 const initializeModifiedItems = () => {
   storageItemStore.individualItems.forEach((item) => {
-    console.log("Processing item:", item)
-    console.log("Item shared value:", item.shared)
+    console.log('Processing item:', item)
+    console.log('Item shared value:', item.shared)
 
     const expirationDate = formatDateForInput(item.expirationDate)
 
@@ -79,9 +79,9 @@ const initializeModifiedItems = () => {
       originalData: {
         quantity: item.quantity,
         expirationDate: expirationDate,
-        is_shared: isShared
+        is_shared: isShared,
       },
-      changed: false
+      changed: false,
     }
   })
 }
@@ -132,7 +132,11 @@ const toggleShared = async (id: number) => {
 }
 
 const confirmSharing = async () => {
-  if (!itemToShare.value || sharingQuantity.value <= 0 || sharingQuantity.value > maxSharingQuantity.value) {
+  if (
+    !itemToShare.value ||
+    sharingQuantity.value <= 0 ||
+    sharingQuantity.value > maxSharingQuantity.value
+  ) {
     return
   }
 
@@ -164,13 +168,9 @@ const updateSharedStatus = async (id: number, isShared: boolean, quantity: numbe
 
     modifiedItems[id].is_shared = isShared
 
-    const response = await storageItemStore.updateStorageItemSharedStatus(
-      id,
-      isShared,
-      quantity
-    )
+    const response = await storageItemStore.updateStorageItemSharedStatus(id, isShared, quantity)
 
-    console.log("Update response:", response)
+    console.log('Update response:', response)
 
     modifiedItems[id].originalData.is_shared = isShared
 
@@ -204,7 +204,7 @@ const formatDateForDisplay = (dateString: string): string => {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   })
 }
 
@@ -253,7 +253,7 @@ const aggregatedItem = computed(() => {
     totalQuantity,
     unit: firstItem.item.unit,
     expirationDays,
-    expirationDate: displayDate
+    expirationDate: displayDate,
   }
 })
 
@@ -324,9 +324,10 @@ const saveChanges = async () => {
     savingChanges.value = true
 
     // Get items that have been modified
-    const changedItems = Object.values(modifiedItems).filter((item) =>
-      item.quantity !== item.originalData.quantity ||
-      item.expirationDate !== item.originalData.expirationDate
+    const changedItems = Object.values(modifiedItems).filter(
+      (item) =>
+        item.quantity !== item.originalData.quantity ||
+        item.expirationDate !== item.originalData.expirationDate,
     )
 
     if (changedItems.length === 0) {
@@ -380,11 +381,12 @@ const cancel = () => {
       <!-- Column headers -->
       <div class="item-header">
         <div class="col item-name">Aggregated Item</div>
-        <div class="col">&nbsp;</div> <!-- Empty second column -->
+        <div class="col">&nbsp;</div>
+        <!-- Empty second column -->
         <div class="col item-quantity">Total quantity</div>
         <div class="col item-expiration">Earliest expiration</div>
         <div class="col">&nbsp;</div>
-        <div class="col"> &nbsp;</div>
+        <div class="col">&nbsp;</div>
       </div>
 
       <!-- Aggregated item summary -->
@@ -433,10 +435,10 @@ const cancel = () => {
                 class="quantity-input"
                 @input="(e) => updateQuantity(item.id, (e.target as HTMLInputElement).value)"
                 :class="{
-            modified:
-              modifiedItems[item.id]?.quantity !==
-              modifiedItems[item.id]?.originalData.quantity,
-          }"
+                  modified:
+                    modifiedItems[item.id]?.quantity !==
+                    modifiedItems[item.id]?.originalData.quantity,
+                }"
               />
               <span class="unit-label">{{ item.item.unit }}</span>
             </div>
@@ -448,10 +450,10 @@ const cancel = () => {
                 lang="en"
                 @input="(e) => updateExpirationDate(item.id, (e.target as HTMLInputElement).value)"
                 :class="{
-            modified:
-              modifiedItems[item.id]?.expirationDate !==
-              modifiedItems[item.id]?.originalData.expirationDate,
-          }"
+                  modified:
+                    modifiedItems[item.id]?.expirationDate !==
+                    modifiedItems[item.id]?.originalData.expirationDate,
+                }"
               />
             </div>
             <div class="col item-shared-status">
@@ -520,23 +522,30 @@ const cancel = () => {
               class="quantity-input"
             />
             <span class="unit-label">{{
-                storageItemStore.individualItems.find(item => item.id === itemToShare)?.item.unit
-              }}</span>
+              storageItemStore.individualItems.find((item) => item.id === itemToShare)?.item.unit
+            }}</span>
           </div>
           <p class="quantity-hint">
-            Maximum available: {{ maxSharingQuantity.toFixed(1) }} {{
-              storageItemStore.individualItems.find(item => item.id === itemToShare)?.item.unit
+            Maximum available: {{ maxSharingQuantity.toFixed(1) }}
+            {{
+              storageItemStore.individualItems.find((item) => item.id === itemToShare)?.item.unit
             }}
           </p>
           <div class="confirmation-buttons">
             <button
               class="confirm-share-button"
               @click="confirmSharing"
-              :disabled="processingSharing || sharingQuantity <= 0 || sharingQuantity > maxSharingQuantity"
+              :disabled="
+                processingSharing || sharingQuantity <= 0 || sharingQuantity > maxSharingQuantity
+              "
             >
               {{ processingSharing ? 'Processing...' : 'Share' }}
             </button>
-            <button class="cancel-share-button" @click="cancelSharing" :disabled="processingSharing">
+            <button
+              class="cancel-share-button"
+              @click="cancelSharing"
+              :disabled="processingSharing"
+            >
               Cancel
             </button>
           </div>
@@ -584,7 +593,9 @@ const cancel = () => {
   color: #ff5c5f;
 }
 
-.item-header, .item-row, .item-summary-row {
+.item-header,
+.item-row,
+.item-summary-row {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   align-items: center;
@@ -612,13 +623,18 @@ const cancel = () => {
   text-align: center;
 }
 
-.item-name, .item-name-value {
+.item-name,
+.item-name-value {
   text-align: left;
   font-weight: 500;
 }
 
-.item-quantity, .item-expiration, .item-shared-status, .item-actions,
-.item-quantity-value, .item-expiration-value {
+.item-quantity,
+.item-expiration,
+.item-shared-status,
+.item-actions,
+.item-quantity-value,
+.item-expiration-value {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -702,27 +718,31 @@ const cancel = () => {
   font-weight: 500;
 }
 
-.share-button, .delete-button, .delete-all-button {
+.share-button,
+.delete-button,
+.delete-all-button {
   width: 100px;
   margin: 0 0.25rem;
 }
 
 .share-button {
-  background-color: #d19a41;
+  background-color: #c0c0c0;
   color: black;
-  border: none;
   border-radius: 9999px;
+
   padding: 0.5rem 1rem;
   cursor: pointer;
   font-weight: 500;
 }
 
 .share-button.unshare-button {
-  background-color: #c0c0c0;
+  background-color: white;
   color: black;
+  border: black solid 1px;
 }
 
-.delete-button, .delete-all-button {
+.delete-button,
+.delete-all-button {
   background-color: #ff5c5f;
   color: black;
   border: none;
@@ -864,7 +884,7 @@ const cancel = () => {
 }
 
 .confirm-share-button {
-  background-color: #5ADF7B;
+  background-color: #5adf7b;
   color: black;
   border: none;
   border-radius: 9999px;

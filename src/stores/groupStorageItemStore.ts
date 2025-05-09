@@ -5,7 +5,7 @@ import type {
   AggregatedStorageItem,
   StorageItem,
   GroupStorageItemRequest,
-  StorageItemGroupResponse
+  StorageItemGroupResponse,
 } from '@/types/storageItem'
 
 export const useGroupStorageItemStore = defineStore('groupStorageItem', {
@@ -99,11 +99,7 @@ export const useGroupStorageItemStore = defineStore('groupStorageItem', {
     },
 
     // Method to filter and sort group items
-    async filterAndSortGroupItems(
-      types: string[],
-      sortBy: string,
-      sortDirection: string = 'asc'
-    ) {
+    async filterAndSortGroupItems(types: string[], sortBy: string, sortDirection: string = 'asc') {
       if (!types?.length && !sortBy) {
         return this.fetchGroupItems()
       }
@@ -123,7 +119,7 @@ export const useGroupStorageItemStore = defineStore('groupStorageItem', {
         this.groupItems = await groupStorageItemService.filterAndSortGroupItems(
           types,
           sortBy,
-          sortDirection
+          sortDirection,
         )
         if (this.groupItems.length === 0) {
           this.error = 'No items found with selected filters'
@@ -156,6 +152,6 @@ export const useGroupStorageItemStore = defineStore('groupStorageItem', {
       } finally {
         this.loading = false
       }
-    }
-  }
+    },
+  },
 })

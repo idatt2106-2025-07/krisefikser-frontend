@@ -15,7 +15,7 @@ const router = useRouter()
 
 const tabs = [
   { path: '/storage', label: 'Household Storage' },
-  { path: '/group-storage', label: 'Group Storage' }
+  { path: '/group-storage', label: 'Group Storage' },
 ]
 
 const categories = [

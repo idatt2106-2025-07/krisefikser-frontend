@@ -8,7 +8,7 @@ const router = useRouter()
 
 const tabs = [
   { path: '/storage', name: 'Household Storage' },
-  { path: '/group-storage', name: 'Group Storage' }
+  { path: '/group-storage', name: 'Group Storage' },
 ]
 
 const currentPath = computed(() => route.path)
@@ -60,7 +60,9 @@ const navigateTo = (path: string) => {
   padding: 0.75rem 2rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
   text-align: center;
   white-space: nowrap;
 }

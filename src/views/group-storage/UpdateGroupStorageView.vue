@@ -2,7 +2,7 @@
 import { ref, onMounted, computed, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useGroupStorageItemStore } from '@/stores/groupStorageItemStore'
-import { useStorageItemStore} from '@/stores/storageItemStore.ts'
+import { useStorageItemStore } from '@/stores/storageItemStore.ts'
 import type { GroupStorageItemRequest, StorageItemGroupResponse } from '@/types/storageItem'
 
 const route = useRoute()
@@ -27,15 +27,15 @@ const deleteInProgress = ref(false)
 const groupItemDetails = ref<StorageItemGroupResponse[]>([])
 
 const formatDateForInput = (dateString: string): string => {
-  if (!dateString) return '';
+  if (!dateString) return ''
 
-  const datePart = dateString.split('T')[0];
-  if (!datePart) return '';
+  const datePart = dateString.split('T')[0]
+  if (!datePart) return ''
 
-  const parts = datePart.split('-');
-  if (parts.length !== 3) return '';
+  const parts = datePart.split('-')
+  if (parts.length !== 3) return ''
 
-  return datePart;
+  return datePart
 }
 
 // Format a date for the backend with timezone adjustment
@@ -82,9 +82,9 @@ const initializeModifiedItems = () => {
       expirationDate: expirationDate,
       originalData: {
         quantity: item.storageItem.quantity,
-        expirationDate: expirationDate
+        expirationDate: expirationDate,
       },
-      changed: false
+      changed: false,
     }
   })
 }
@@ -98,7 +98,8 @@ onMounted(async () => {
 
     // If the result is an empty array, set an appropriate error message
     if (result.length === 0) {
-      error.value = 'No shared items found for this item. The item might not be shared with your emergency group.'
+      error.value =
+        'No shared items found for this item. The item might not be shared with your emergency group.'
     }
 
     groupItemDetails.value = result
@@ -143,7 +144,7 @@ const formatDateForDisplay = (dateString: string): string => {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   })
 }
 
@@ -175,7 +176,7 @@ const aggregatedItem = computed(() => {
     totalQuantity,
     unit: firstItem.item.unit,
     expirationDays,
-    expirationDate: displayDate
+    expirationDate: displayDate,
   }
 })
 
@@ -202,7 +203,7 @@ const deleteItem = async () => {
     delete modifiedItems[itemToDelete.value]
 
     groupItemDetails.value = groupItemDetails.value.filter(
-      item => item.storageItem.id !== itemToDelete.value
+      (item) => item.storageItem.id !== itemToDelete.value,
     )
 
     if (groupItemDetails.value.length === 0) {
@@ -233,7 +234,7 @@ const saveChanges = async () => {
     // Update each changed item
     for (const item of changedItems) {
       const groupItem = groupItemDetails.value.find(
-        (groupItem) => groupItem.storageItem.id === item.id
+        (groupItem) => groupItem.storageItem.id === item.id,
       )
 
       if (groupItem) {
@@ -307,9 +308,7 @@ const cancel = () => {
           <div class="col item-expiration-value">
             <div class="expiration-pill">{{ aggregatedItem.expirationDays }} days</div>
           </div>
-          <div class="col item-actions">
-            &nbsp;
-          </div>
+          <div class="col item-actions">&nbsp;</div>
         </div>
       </div>
 
@@ -317,7 +316,8 @@ const cancel = () => {
       <div class="item-header">
         <div class="col item-name">Item</div>
         <div class="col item-household">Household</div>
-        <div class="col">&nbsp;</div> <!-- Empty third column -->
+        <div class="col">&nbsp;</div>
+        <!-- Empty third column -->
         <div class="col item-quantity">Quantity</div>
         <div class="col item-expiration">Expiration Date</div>
         <div class="col">&nbsp;</div>
@@ -340,12 +340,14 @@ const cancel = () => {
                 type="number"
                 step="0.1"
                 class="quantity-input"
-                @input="(e) => updateQuantity(item.storageItem.id, (e.target as HTMLInputElement).value)"
+                @input="
+                  (e) => updateQuantity(item.storageItem.id, (e.target as HTMLInputElement).value)
+                "
                 :class="{
-        modified:
-          modifiedItems[item.storageItem.id]?.quantity !==
-          modifiedItems[item.storageItem.id]?.originalData.quantity,
-      }"
+                  modified:
+                    modifiedItems[item.storageItem.id]?.quantity !==
+                    modifiedItems[item.storageItem.id]?.originalData.quantity,
+                }"
               />
               <span class="unit-label">{{ item.storageItem.item.unit }}</span>
             </div>
@@ -355,16 +357,21 @@ const cancel = () => {
                 type="date"
                 class="date-input"
                 lang="en"
-                @input="(e) => updateExpirationDate(item.storageItem.id, (e.target as HTMLInputElement).value)"
+                @input="
+                  (e) =>
+                    updateExpirationDate(item.storageItem.id, (e.target as HTMLInputElement).value)
+                "
                 :class="{
-        modified:
-          modifiedItems[item.storageItem.id]?.expirationDate !==
-          modifiedItems[item.storageItem.id]?.originalData.expirationDate,
-      }"
+                  modified:
+                    modifiedItems[item.storageItem.id]?.expirationDate !==
+                    modifiedItems[item.storageItem.id]?.originalData.expirationDate,
+                }"
               />
             </div>
             <div class="col item-actions">
-              <button class="delete-button" @click="confirmDeleteItem(item.storageItem.id)">Delete</button>
+              <button class="delete-button" @click="confirmDeleteItem(item.storageItem.id)">
+                Delete
+              </button>
             </div>
           </div>
         </div>
@@ -382,9 +389,7 @@ const cancel = () => {
       <div class="confirmation-overlay" v-if="showConfirmation">
         <div class="confirmation-popup">
           <h3 class="confirmation-title">Confirm Delete</h3>
-          <p class="confirmation-message">
-            Are you sure you want to delete this item?
-          </p>
+          <p class="confirmation-message">Are you sure you want to delete this item?</p>
           <div class="confirmation-buttons">
             <button
               class="confirm-delete-button"
@@ -470,7 +475,9 @@ const cancel = () => {
 }
 
 /* Grid layout styling */
-.item-header, .item-row, .item-summary-row {
+.item-header,
+.item-row,
+.item-summary-row {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   align-items: center;
@@ -478,9 +485,12 @@ const cancel = () => {
   gap: 0.5rem;
 }
 
-.item-name, .item-name-value,
-.item-household, .item-quantity,
-.item-expiration, .item-actions {
+.item-name,
+.item-name-value,
+.item-household,
+.item-quantity,
+.item-expiration,
+.item-actions {
   padding: 0.5rem;
   margin: 0;
 }
@@ -519,7 +529,8 @@ const cancel = () => {
 }
 
 /* Column-specific styling */
-.item-name, .item-name-value {
+.item-name,
+.item-name-value {
   font-weight: 500;
   text-align: left;
 }
@@ -531,8 +542,11 @@ const cancel = () => {
   text-align: left;
 }
 
-.item-quantity, .item-expiration, .item-actions,
-.item-quantity-value, .item-expiration-value {
+.item-quantity,
+.item-expiration,
+.item-actions,
+.item-quantity-value,
+.item-expiration-value {
   display: flex;
   align-items: center;
   justify-content: center;

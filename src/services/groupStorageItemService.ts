@@ -4,7 +4,7 @@ import type {
   AggregatedStorageItem,
   StorageItem,
   GroupStorageItemRequest,
-  StorageItemGroupResponse
+  StorageItemGroupResponse,
 } from '@/types/storageItem'
 
 export default {
@@ -12,14 +12,14 @@ export default {
   async fetchGroupItems(
     types?: string[],
     sortBy?: string,
-    sortDirection: string = 'asc'
+    sortDirection: string = 'asc',
   ): Promise<AggregatedStorageItem[]> {
     let url = '/api/storage-items/emergency-group'
     const params = new URLSearchParams()
 
     // Add types if provided
     if (types && types.length > 0) {
-      types.forEach(type => params.append('types', type))
+      types.forEach((type) => params.append('types', type))
     }
 
     // Add sort parameters if provided
@@ -125,7 +125,7 @@ export default {
   // Sort group items by a specific field
   async sortGroupItems(
     sortBy: string,
-    sortDirection: string = 'asc'
+    sortDirection: string = 'asc',
   ): Promise<AggregatedStorageItem[]> {
     if (!sortBy) {
       return this.fetchGroupItems()
@@ -138,12 +138,12 @@ export default {
   async filterAndSortGroupItems(
     types: string[],
     sortBy: string,
-    sortDirection: string = 'asc'
+    sortDirection: string = 'asc',
   ): Promise<AggregatedStorageItem[]> {
     if (!types?.length && !sortBy) {
       return this.fetchGroupItems()
     }
 
     return this.fetchGroupItems(types, sortBy, sortDirection)
-  }
+  },
 }

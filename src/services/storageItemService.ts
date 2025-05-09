@@ -10,7 +10,7 @@ export default {
         '/api/storage-items/household/aggregated',
         {
           withCredentials: true,
-        }
+        },
       )
       return response.data
     } catch (error) {
@@ -22,14 +22,11 @@ export default {
   // Fetch individual storage items by item ID
   async fetchStorageItemsByItemId(itemId: number): Promise<StorageItem[]> {
     try {
-      const response = await axios.get<any[]>(
-        `/api/storage-items/household/by-item/${itemId}`,
-        {
-          withCredentials: true,
-        }
-      )
+      const response = await axios.get<any[]>(`/api/storage-items/household/by-item/${itemId}`, {
+        withCredentials: true,
+      })
 
-      return response.data.map(item => ({
+      return response.data.map((item) => ({
         id: item.id,
         itemId: item.itemId,
         quantity: item.quantity,
@@ -37,7 +34,7 @@ export default {
         householdId: item.householdId,
         item: item.item,
         shared: item.shared,
-        isShared: item.shared
+        isShared: item.shared,
       }))
     } catch (error) {
       console.error(`Error fetching storage items for item ID ${itemId}:`, error)
@@ -93,7 +90,7 @@ export default {
     searchTerm: string,
     types?: string[],
     sortBy?: string,
-    sortDirection: string = 'asc'
+    sortDirection: string = 'asc',
   ): Promise<AggregatedStorageItem[]> {
     try {
       const params = new URLSearchParams()
@@ -128,7 +125,7 @@ export default {
   // Sort aggregated items
   async sortAggregatedItems(
     sortBy: string,
-    sortDirection: string = 'asc'
+    sortDirection: string = 'asc',
   ): Promise<AggregatedStorageItem[]> {
     try {
       const params = new URLSearchParams()
@@ -152,7 +149,7 @@ export default {
   async filterAndSortAggregatedItems(
     types: string[],
     sortBy: string,
-    sortDirection: string = 'asc'
+    sortDirection: string = 'asc',
   ): Promise<AggregatedStorageItem[]> {
     try {
       const params = new URLSearchParams()
@@ -194,10 +191,14 @@ export default {
   },
 
   // Update shared status of a storage item
-  async updateStorageItemSharedStatus(id: number, isShared: boolean, quantity: number): Promise<any> {
+  async updateStorageItemSharedStatus(
+    id: number,
+    isShared: boolean,
+    quantity: number,
+  ): Promise<any> {
     const request = {
       isShared: isShared,
-      quantity: quantity
+      quantity: quantity,
     }
 
     try {
@@ -206,7 +207,7 @@ export default {
         request,
         {
           withCredentials: true,
-        }
+        },
       )
       return response.data
     } catch (error) {

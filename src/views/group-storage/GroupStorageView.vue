@@ -102,7 +102,7 @@ const applyFiltersAndSort = () => {
     groupStorageItemStore.filterAndSortGroupItems(
       checkedCategories.value,
       selectedSort.value,
-      sortDirection.value
+      sortDirection.value,
     )
   } else if (hasCategories) {
     groupStorageItemStore.filterByItemType(checkedCategories.value)

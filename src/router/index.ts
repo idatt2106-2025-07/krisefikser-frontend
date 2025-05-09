@@ -27,9 +27,6 @@ import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
 import GroupStorageView from '@/views/group-storage/GroupStorageView.vue'
 import NewsDetailView from '@/views/news/NewsDetailView.vue'
 
-// Components
-import QuizCreator from '@/views/admin/QuizCreator.vue'
-
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
 import UpdateGroupStorageView from '@/views/group-storage/UpdateGroupStorageView.vue'
 import SpecificCrisisTimeView from '@/views/general/SpecificCrisisTimeView.vue'
@@ -112,11 +109,6 @@ const router = createRouter({
       meta: { requiresAuth: true, role: 'admin' },
     },
     {
-      path: '/quiz-creator',
-      name: 'quiz-creator',
-      component: QuizCreator,
-    },
-    {
       path: '/general-info',
       name: 'general-info',
       component: GeneralInfo,
@@ -125,11 +117,6 @@ const router = createRouter({
       path: '/news',
       name: 'news',
       component: News,
-    },
-    {
-      path: '/quiz',
-      name: 'quiz',
-      component: QuizCreator,
     },
     {
       path: '/verify-email',

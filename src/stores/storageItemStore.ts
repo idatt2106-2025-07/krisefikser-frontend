@@ -34,6 +34,8 @@ export const useStorageItemStore = defineStore('storageItem', {
 
       try {
         this.individualItems = await storageItemService.fetchStorageItemsByItemId(itemId)
+        console.log("Raw API response:", this.individualItems)
+        return this.individualItems
       } catch (err) {
         this.error = 'Failed to fetch storage items by item ID'
         console.error(`Error fetching storage items for item ID ${itemId}:`, err)
@@ -105,30 +107,7 @@ export const useStorageItemStore = defineStore('storageItem', {
       this.error = null
 
       try {
-        await this.fetchAggregatedItems()
-
-        if (sortBy === 'name') {
-          // Sort by name
-          this.aggregatedItems = [...this.aggregatedItems].sort((a, b) => {
-            const nameA = a.item?.name?.toLowerCase() || ''
-            const nameB = b.item?.name?.toLowerCase() || ''
-            return sortDirection === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
-          })
-        } else if (sortBy === 'quantity') {
-          // Sort by quantity
-          this.aggregatedItems = [...this.aggregatedItems].sort((a, b) => {
-            return sortDirection === 'asc'
-              ? a.totalQuantity - b.totalQuantity
-              : b.totalQuantity - a.totalQuantity
-          })
-        } else if (sortBy === 'expirationDate') {
-          // Sort by expiration date
-          this.aggregatedItems = [...this.aggregatedItems].sort((a, b) => {
-            const dateA = new Date(a.earliestExpirationDate).getTime()
-            const dateB = new Date(b.earliestExpirationDate).getTime()
-            return sortDirection === 'asc' ? dateA - dateB : dateB - dateA
-          })
-        }
+        this.aggregatedItems = await storageItemService.sortAggregatedItems(sortBy, sortDirection)
       } catch (err) {
         this.error = 'Failed to sort storage items'
         console.error('Error sorting aggregated storage items:', err)
@@ -184,32 +163,11 @@ export const useStorageItemStore = defineStore('storageItem', {
       this.error = null
 
       try {
-        // First filter by item type
-        await this.filterByItemType(types)
-
-        // Then sort the filtered results client-side
-        if (sortBy === 'name') {
-          // Sort by name
-          this.aggregatedItems = [...this.aggregatedItems].sort((a, b) => {
-            const nameA = a.item?.name?.toLowerCase() || ''
-            const nameB = b.item?.name?.toLowerCase() || ''
-            return sortDirection === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
-          })
-        } else if (sortBy === 'quantity') {
-          // Sort by quantity
-          this.aggregatedItems = [...this.aggregatedItems].sort((a, b) => {
-            return sortDirection === 'asc'
-              ? a.totalQuantity - b.totalQuantity
-              : b.totalQuantity - a.totalQuantity
-          })
-        } else if (sortBy === 'expirationDate') {
-          // Sort by expiration date
-          this.aggregatedItems = [...this.aggregatedItems].sort((a, b) => {
-            const dateA = new Date(a.earliestExpirationDate).getTime()
-            const dateB = new Date(b.earliestExpirationDate).getTime()
-            return sortDirection === 'asc' ? dateA - dateB : dateB - dateA
-          })
-        }
+        this.aggregatedItems = await storageItemService.filterAndSortAggregatedItems(
+          types,
+          sortBy,
+          sortDirection
+        )
       } catch (err) {
         this.error = 'Failed to filter and sort storage items'
         console.error('Error filtering and sorting aggregated storage items:', err)
@@ -238,6 +196,43 @@ export const useStorageItemStore = defineStore('storageItem', {
       } catch (err) {
         this.error = 'Failed to update storage item'
         console.error(`Error updating storage item with ID ${id}:`, err)
+        throw err
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // Method to update storage item shared status
+    async updateStorageItemSharedStatus(id: number, isShared: boolean, quantity: number) {
+      this.loading = true
+      this.error = null
+
+      try {
+        const response = await storageItemService.updateStorageItemSharedStatus(id, isShared, quantity)
+
+        if (response && Array.isArray(response)) {
+          const updatedIds = response.map(item => item.id)
+
+          this.individualItems = this.individualItems.filter(item =>
+            item.id !== id || updatedIds.includes(item.id)
+          )
+
+          for (const updatedItem of response) {
+            const existingIndex = this.individualItems.findIndex(item => item.id === updatedItem.id)
+
+            if (existingIndex !== -1) {
+              this.individualItems[existingIndex] = updatedItem
+            } else {
+              this.individualItems.push(updatedItem)
+            }
+          }
+        }
+
+        return response
+      } catch (err) {
+        const errorObj = err as Error
+        this.error = 'Failed to update item sharing status'
+        console.error(`Error updating shared status for item ID ${id}:`, errorObj.message)
         throw err
       } finally {
         this.loading = false

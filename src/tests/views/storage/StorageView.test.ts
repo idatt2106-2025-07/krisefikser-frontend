@@ -11,37 +11,37 @@ import { useRouter } from 'vue-router'
 // Mock components
 vi.mock('@/components/common/SearchBar.vue', () => ({
   default: {
-    template: '<input class="mock-search-bar" />'
-  }
+    template: '<input class="mock-search-bar" />',
+  },
 }))
 
 vi.mock('@/components/common/SortDropdown.vue', () => ({
   default: {
-    template: '<select class="mock-sort-dropdown"></select>'
-  }
+    template: '<select class="mock-sort-dropdown"></select>',
+  },
 }))
 
 vi.mock('@/components/storage/FilterSidebar.vue', () => ({
   default: {
-    template: '<div class="mock-filter-sidebar"></div>'
-  }
+    template: '<div class="mock-filter-sidebar"></div>',
+  },
 }))
 
 vi.mock('@/components/storage/TimeLeft.vue', () => ({
   default: {
-    template: '<div class="mock-time-left"></div>'
-  }
+    template: '<div class="mock-time-left"></div>',
+  },
 }))
 
 // Mock vue-router
 vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({
-    push: vi.fn()
-  }))
+    push: vi.fn(),
+  })),
 }))
 
 vi.mock('@/assets/three-dots-horizontal.svg', () => ({
-  default: 'mock-three-dots.svg'
+  default: 'mock-three-dots.svg',
 }))
 
 describe('StorageView', () => {
@@ -54,14 +54,14 @@ describe('StorageView', () => {
       itemId: 1,
       item: { id: 1, name: 'Water', unit: 'L', calories: 0, type: 'DRINK' },
       totalQuantity: 10,
-      earliestExpirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+      earliestExpirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     },
     {
       itemId: 2,
       item: { id: 2, name: 'Canned Beans', unit: 'can', calories: 200, type: 'FOOD' },
       totalQuantity: 5,
-      earliestExpirationDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString()
-    }
+      earliestExpirationDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
+    },
   ]
 
   beforeEach(async () => {
@@ -79,7 +79,7 @@ describe('StorageView', () => {
     store.$patch({
       aggregatedItems: [],
       loading: false,
-      error: null
+      error: null,
     })
 
     // Mock store methods
@@ -106,14 +106,11 @@ describe('StorageView', () => {
     expect(wrapper.find('button').text()).toContain('Add item')
   })
 
-
   it('shows loading indicator when loading', async () => {
     store.loading = true
     wrapper = mount(StorageView)
     expect(wrapper.find('[data-test="loading"]').exists()).toBe(false)
   })
-
-
 
   // Add more tests as needed...
 })

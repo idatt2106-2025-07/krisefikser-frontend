@@ -48,10 +48,9 @@ class EmergencyGroupService {
    * @param isAccept Whether to accept or decline the invitation
    */
   async answerInvitation(groupId: number, isAccept: boolean) {
-    const response = await axiosInstance.patch(
-      `/emergency-groups/answer-invitation/${groupId}`,
-      { isAccept }
-    )
+    const response = await axiosInstance.patch(`/emergency-groups/answer-invitation/${groupId}`, {
+      isAccept,
+    })
     return response.data
   }
 

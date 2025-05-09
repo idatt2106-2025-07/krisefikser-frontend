@@ -152,7 +152,9 @@ const submitLeaveHousehold = async () => {
     })
     closeLeaveModal()
     await fetchMembers()
-    alert('You have left your household and created a new one. (Any pending join request have been deleted)')
+    alert(
+      'You have left your household and created a new one. (Any pending join request have been deleted)',
+    )
   } catch (e) {
     addressError.value = 'Failed to create new household.'
   } finally {
@@ -322,7 +324,9 @@ onBeforeUnmount(() => {
                 <li v-for="req in joinRequests" :key="req.id">
                   User ID {{ req.userId }} wants to join your household
                   <button class="accept-button" @click="acceptJoinRequest(req.id)">Accept</button>
-                  <button class="decline-button" @click="declineJoinRequest(req.id)">Decline</button>
+                  <button class="decline-button" @click="declineJoinRequest(req.id)">
+                    Decline
+                  </button>
                 </li>
               </ul>
             </div>
@@ -365,7 +369,7 @@ onBeforeUnmount(() => {
 
           <template #group>
             <div class="group-content">
-              <EmergencyGroupContent/>
+              <EmergencyGroupContent />
             </div>
           </template>
         </SidebarContent>
@@ -481,7 +485,8 @@ onBeforeUnmount(() => {
   gap: 0.25rem;
 }
 
-.modal-content input[type='text'], .modal-content input[type='email'] {
+.modal-content input[type='text'],
+.modal-content input[type='email'] {
   width: 100%;
   padding: 0.6rem 0.75rem;
   border: 1px solid #cbd5e1;
@@ -495,7 +500,8 @@ onBeforeUnmount(() => {
   margin-top: 0.25rem;
 }
 
-.modal-content input[type='text']:focus, .modal-content input[type='email']:focus {
+.modal-content input[type='text']:focus,
+.modal-content input[type='email']:focus {
   border-color: #0ea5e9;
   box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15);
   background: #fff;
@@ -543,7 +549,6 @@ p {
 .blue-button {
   margin-bottom: 10px;
 }
-
 
 h3 {
   margin-bottom: 0;
@@ -616,8 +621,6 @@ h3 {
   display: flex;
   align-items: center;
 }
-
-
 
 .member-popup {
   position: absolute;

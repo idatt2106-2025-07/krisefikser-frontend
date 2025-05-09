@@ -4,16 +4,16 @@ import emergencyGroupService from '@/services/EmergencyGroupService'
 
 // Define interfaces for type safety
 interface EmergencyGroup {
-  id: number;
-  name: string;
-  memberCount?: number;
+  id: number
+  name: string
+  memberCount?: number
 }
 
 interface GroupInvitation {
-  id: number;
-  groupId: number;
-  groupName: string;
-  inviterName: string;
+  id: number
+  groupId: number
+  groupName: string
+  inviterName: string
 }
 
 // State management with proper typing
@@ -145,7 +145,6 @@ onMounted(fetchData)
 
 <template>
   <div class="group-content">
-
     <!-- Loading state -->
     <div v-if="isLoading" class="loading-container">
       <div class="loading-spinner"></div>
@@ -165,11 +164,7 @@ onMounted(fetchData)
           <h4>Your Emergency Group</h4>
           <hr />
           <!-- Only show create button if no group exists -->
-          <button
-            @click="showCreateGroupModal = true"
-          >
-            Create Group
-          </button>
+          <button @click="showCreateGroupModal = true">Create Group</button>
         </div>
 
         <div v-if="!group" class="empty-state">
@@ -181,9 +176,7 @@ onMounted(fetchData)
             <h3>{{ group.name }}</h3>
           </div>
           <div class="group-actions">
-            <button @click="showInviteModal = true" class="action-button">
-              Invite Household
-            </button>
+            <button @click="showInviteModal = true" class="action-button">Invite Household</button>
           </div>
         </div>
       </div>
@@ -205,7 +198,10 @@ onMounted(fetchData)
               <button @click="respondToInvitation(invitation.groupId, true)" class="accept-button">
                 Accept
               </button>
-              <button @click="respondToInvitation(invitation.groupId, false)" class="decline-button">
+              <button
+                @click="respondToInvitation(invitation.groupId, false)"
+                class="decline-button"
+              >
                 Decline
               </button>
             </div>
@@ -225,10 +221,7 @@ onMounted(fetchData)
         <div v-if="createError" class="error">{{ createError }}</div>
         <div class="modal-actions">
           <button @click="closeCreateModal" :disabled="creatingGroup">Cancel</button>
-          <button
-            @click="createEmergencyGroup"
-            :disabled="creatingGroup || !newGroupName.trim()"
-          >
+          <button @click="createEmergencyGroup" :disabled="creatingGroup || !newGroupName.trim()">
             {{ creatingGroup ? 'Creating...' : 'Create Group' }}
           </button>
         </div>
@@ -246,15 +239,11 @@ onMounted(fetchData)
         <div v-if="inviteError" class="error">{{ inviteError }}</div>
         <div class="modal-actions">
           <button @click="closeInviteModal" :disabled="isInviting">Cancel</button>
-          <button
-            @click="inviteHousehold"
-            :disabled="isInviting || !householdName.trim()"
-          >
+          <button @click="inviteHousehold" :disabled="isInviting || !householdName.trim()">
             {{ isInviting ? 'Inviting...' : 'Send Invite' }}
           </button>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -284,8 +273,12 @@ onMounted(fetchData)
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .section-header {
@@ -305,7 +298,8 @@ onMounted(fetchData)
   margin: 12px 0;
 }
 
-.groups-section, .invitations-section {
+.groups-section,
+.invitations-section {
   margin-bottom: 24px;
 }
 
@@ -318,7 +312,8 @@ onMounted(fetchData)
   color: #64748b;
 }
 
-.group-card, .invitation-card {
+.group-card,
+.invitation-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -329,12 +324,14 @@ onMounted(fetchData)
   background-color: white;
 }
 
-.group-info h5, .invitation-info h5 {
+.group-info h5,
+.invitation-info h5 {
   margin: 0 0 4px 0;
   font-size: 16px;
 }
 
-.group-info p, .invitation-info p {
+.group-info p,
+.invitation-info p {
   margin: 0;
   color: #64748b;
   font-size: 14px;
@@ -394,7 +391,7 @@ onMounted(fetchData)
   gap: 4px;
 }
 
-.modal-content input[type="text"] {
+.modal-content input[type='text'] {
   width: 100%;
   padding: 8px 12px;
   border: 1px solid #cbd5e1;
@@ -403,7 +400,7 @@ onMounted(fetchData)
   background: #f8fafc;
 }
 
-.modal-content input[type="text"]:focus {
+.modal-content input[type='text']:focus {
   border-color: #0ea5e9;
   outline: none;
   box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15);

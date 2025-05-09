@@ -162,7 +162,7 @@ const fetchExpiringStorageItems = async () => {
     }
 
     if (typeGroups.ACCESSORIES.count > 0) {
-      if (typeGroups.ACCESSORIES.count > 0) {
+      if (typeGroups.ACCESSORIES.count == 1) {
         typeNotifications.push({
           type: 'warning',
           message: `${typeGroups.ACCESSORIES.earliestItem?.item.name} needs your attention in ${typeGroups.ACCESSORIES.earliestDays} days`,

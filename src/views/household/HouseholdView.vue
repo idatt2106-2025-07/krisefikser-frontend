@@ -582,7 +582,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.title{
+.title {
   text-align: center;
 }
 
@@ -600,7 +600,6 @@ onBeforeUnmount(() => {
   z-index: 2000;
   animation: modal-fade-in 0.25s ease;
 }
-
 
 @keyframes modal-fade-in {
   from {

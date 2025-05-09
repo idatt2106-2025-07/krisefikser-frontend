@@ -2,6 +2,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import NotificationBar from '@/components/admin/NotificationBar.vue'
 import notificationService from '@/services/notificationService'
+import { createRouter, createWebHistory } from 'vue-router'
+
+// Create mock router
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    { path: '/map', name: 'map', component: { template: '<div>Map</div>' } },
+    { path: '/storage', name: 'storage', component: { template: '<div>Storage</div>' } },
+  ],
+})
 
 // Mock the notification service
 vi.mock('@/services/notificationService', () => ({
@@ -22,7 +32,11 @@ describe('NotificationBar.vue', () => {
     vi.mocked(notificationService.getIncidents).mockResolvedValue([])
     vi.mocked(notificationService.getExpiringStorageItems).mockResolvedValue([])
 
-    const wrapper = mount(NotificationBar)
+    const wrapper = mount(NotificationBar, {
+      global: {
+        plugins: [router], // Add router to global plugins
+      },
+    })
     await flushPromises() // Wait for promises to resolve
 
     // Check that no notifications are rendered
@@ -37,7 +51,11 @@ describe('NotificationBar.vue', () => {
     ])
     vi.mocked(notificationService.getExpiringStorageItems).mockResolvedValue([])
 
-    const wrapper = mount(NotificationBar)
+    const wrapper = mount(NotificationBar, {
+      global: {
+        plugins: [router],
+      },
+    })
     await flushPromises() // Wait for promises to resolve
 
     // Check that 2 notifications are rendered
@@ -78,7 +96,11 @@ describe('NotificationBar.vue', () => {
       },
     ])
 
-    const wrapper = mount(NotificationBar)
+    const wrapper = mount(NotificationBar, {
+      global: {
+        plugins: [router],
+      },
+    })
     await flushPromises() // Wait for promises to resolve
 
     // Check that 1 notification is rendered
@@ -150,7 +172,11 @@ describe('NotificationBar.vue', () => {
       },
     ])
 
-    const wrapper = mount(NotificationBar)
+    const wrapper = mount(NotificationBar, {
+      global: {
+        plugins: [router],
+      },
+    })
     await flushPromises() // Wait for promises to resolve
 
     // Check that 2 notifications are rendered (one for FOOD, one for DRINK)
@@ -171,7 +197,11 @@ describe('NotificationBar.vue', () => {
     vi.mocked(notificationService.getIncidents).mockRejectedValue(new Error('API error'))
     vi.mocked(notificationService.getExpiringStorageItems).mockRejectedValue(new Error('API error'))
 
-    const wrapper = mount(NotificationBar)
+    const wrapper = mount(NotificationBar, {
+      global: {
+        plugins: [router],
+      },
+    })
     await flushPromises() // Wait for promises to resolve
 
     // Check that error notification is shown

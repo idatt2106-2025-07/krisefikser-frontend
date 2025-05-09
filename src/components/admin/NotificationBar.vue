@@ -8,6 +8,7 @@ import notificationService from '@/services/notificationService'
 interface Notification {
   type: 'danger' | 'warning' | 'info'
   message: string
+  route?: string
 }
 
 interface Item {
@@ -75,6 +76,7 @@ const fetchIncidents = async () => {
       return {
         type: 'danger' as const,
         message: incident.message,
+        route: '/map',
       }
     })
 
@@ -132,11 +134,13 @@ const fetchExpiringStorageItems = async () => {
         typeNotifications.push({
           type: 'warning',
           message: `${typeGroups.FOOD.earliestItem?.item.name} expires in ${typeGroups.FOOD.earliestDays} days`,
+          route: '/storage',
         })
       } else {
         typeNotifications.push({
           type: 'warning',
           message: `${typeGroups.FOOD.count} food items expires within 7 days, first item in ${typeGroups.FOOD.earliestDays} days`,
+          route: '/storage',
         })
       }
     }
@@ -146,25 +150,29 @@ const fetchExpiringStorageItems = async () => {
         typeNotifications.push({
           type: 'warning',
           message: `${typeGroups.DRINK.earliestItem?.item.name} needs to be changed in ${typeGroups.DRINK.earliestDays} days`,
+          route: '/storage',
         })
       } else {
         typeNotifications.push({
           type: 'warning',
           message: `${typeGroups.DRINK.count} drinks needs to be changed in 7 days, first item in ${typeGroups.DRINK.earliestDays} days`,
+          route: '/storage',
         })
       }
     }
 
     if (typeGroups.ACCESSORIES.count > 0) {
-      if (typeGroups.ACCESSORIES.count > 0) {
+      if (typeGroups.ACCESSORIES.count == 1) {
         typeNotifications.push({
           type: 'warning',
           message: `${typeGroups.ACCESSORIES.earliestItem?.item.name} needs your attention in ${typeGroups.ACCESSORIES.earliestDays} days`,
+          route: '/storage',
         })
       } else {
         typeNotifications.push({
           type: 'warning',
           message: `${typeGroups.ACCESSORIES.count} accessories needs your attention within 7 days, first item in ${typeGroups.ACCESSORIES.earliestDays} days`,
+          route: '/storage',
         })
       }
     }
@@ -232,6 +240,8 @@ onMounted(() => {
       v-for="(notification, index) in notifications"
       :key="index"
       :class="['notification-item', getNotificationClass(notification.type)]"
+      @click="notification.route && $router.push(notification.route)"
+      :style="notification.route ? 'cursor: pointer' : ''"
     >
       <div :class="['notification-icon', getIconClass(notification.type)]"></div>
       <div class="notification-message">

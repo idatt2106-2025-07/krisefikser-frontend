@@ -136,4 +136,10 @@ h1 {
   margin-bottom: 1rem;
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  .article-card {
+    min-width: unset;
+  }
+}
 </style>

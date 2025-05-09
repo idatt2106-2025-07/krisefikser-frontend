@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 
 const router = useRouter()
-
 const isMenuOpen = ref(false)
+const menuRef = ref<HTMLElement | null>(null)
+const hamburgerRef = ref<HTMLElement | null>(null)
 
 function navigateToLogin() {
   router.push('/login')
@@ -23,6 +24,27 @@ function navigateTo(path: string) {
   router.push(path)
   isMenuOpen.value = false
 }
+
+// Close menu when clicking outside
+function handleClickOutside(event: MouseEvent) {
+  if (
+    isMenuOpen.value &&
+    menuRef.value &&
+    hamburgerRef.value &&
+    !menuRef.value.contains(event.target as Node) &&
+    !hamburgerRef.value.contains(event.target as Node)
+  ) {
+    isMenuOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <template>
@@ -31,7 +53,11 @@ function navigateTo(path: string) {
     <div class="left-section p-d-flex p-ai-center gap-2 relative">
       <img src="@/assets/logo.svg" alt="Logo" class="h-10 w-auto" @click="navigateToHome" />
 
-      <div class="custom-button hamburger-menu p-d-flex p-ai-center gap-2" @click="toggleMenu">
+      <div
+        ref="hamburgerRef"
+        class="custom-button hamburger-menu p-d-flex p-ai-center gap-2"
+        @click.stop="toggleMenu"
+      >
         <div class="hamburger-icon">
           <div class="line"></div>
           <div class="line"></div>
@@ -40,10 +66,11 @@ function navigateTo(path: string) {
         <span class="menu-text">Menu</span>
       </div>
 
-      <ul v-if="isMenuOpen" class="dropdown-menu">
+      <ul v-if="isMenuOpen" ref="menuRef" class="dropdown-menu">
         <li class="dropdown-item" @click="navigateTo('/')">Home</li>
-        <li class="dropdown-item" @click="navigateTo('/info')">General Info</li>
-        <li class="dropdown-item" @click="navigateTo('/quiz')">Quiz</li>
+        <li class="dropdown-item" @click="navigateTo('/map')">Map</li>
+        <li class="dropdown-item" @click="navigateTo('/news')">News</li>
+        <li class="dropdown-item" @click="navigateTo('/general-info')">General Info</li>
       </ul>
     </div>
 
@@ -159,6 +186,9 @@ img {
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 200px;
   z-index: 100;
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
 }
 
 .dropdown-item {

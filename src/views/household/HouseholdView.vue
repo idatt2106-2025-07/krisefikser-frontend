@@ -6,6 +6,8 @@ import { useAuthStore } from '@/stores/auth.ts'
 import { computed } from 'vue'
 import { getCoordinatesFromAddress } from '@/services/geoNorgeService'
 import EmergencyGroupContent from '@/components/user/EmergencyGroupContent.vue'
+import UserProfileTab from '@/components/user/UserProfileTab.vue'
+import UserProfileSettingsTab from '@/components/user/UserProfileSettingsTab.vue'
 
 /**
  * Interface representing a sidebar item.
@@ -32,6 +34,10 @@ interface Member {
  * @type {Ref<SidebarItem[]>}
  */
 const menuItems = ref<SidebarItem[]>([
+  {
+    id: 'profile',
+    title: 'Profile',
+  },
   {
     id: 'household',
     title: 'Household',
@@ -296,6 +302,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="page-container">
+    <h2>Profile Page</h2>
     <div class="content-container">
       <div class="sidebar-wrapper">
         <SidebarContent
@@ -363,6 +370,12 @@ onBeforeUnmount(() => {
           <template #group>
             <div class="group-content">
               <EmergencyGroupContent />
+            </div>
+          </template>
+
+          <template #profile>
+            <div class="group-content">
+              <UserProfileTab />
             </div>
           </template>
         </SidebarContent>

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 // Views
 import HomeView from '@/views/home/HomeView.vue'
@@ -24,7 +25,6 @@ import TwoFactorAuthView from '@/views/2fa/TwoFactorAuthView.vue'
 import TwoFactorNotifyView from '@/views/2fa/TwoFactorNotifyView.vue'
 import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
 import NewsDetailView from '@/views/news/NewsDetailView.vue'
-import UserProfile from '@/views/user/ProfileView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
@@ -56,6 +56,7 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: UserSettingsView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/map',
@@ -66,31 +67,37 @@ const router = createRouter({
       path: '/household',
       name: 'household',
       component: HouseholdView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/storage',
       name: 'storage',
       component: StorageView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/storage/add-storage-item',
       name: 'add-storage-item',
       component: AddStorageItemView,
+      meta: { requiresAuth: true, role: 'admin' },
     },
     {
       path: '/storage/add-item',
       name: 'add-item',
       component: AddItemView,
+      meta: { requiresAuth: true, role: 'admin' },
     },
     {
       path: '/storage/update/:itemId',
       name: 'update-item',
       component: UpdateItemView,
+      meta: { requiresAuth: true, role: 'admin' },
     },
     {
       path: '/admin',
       name: 'admin',
       component: AdminView,
+      meta: { requiresAuth: true, role: 'admin' },
     },
     {
       path: '/quiz-creator',
@@ -121,33 +128,39 @@ const router = createRouter({
       path: '/register-admin',
       name: 'register-admin',
       component: RegisterAdmin,
+      meta: { requiresAuth: true, role: 'superadmin' },
     },
     {
       path: '/admin/add/poi',
       name: 'addPOI',
       component: AddPOIView,
+      meta: { requiresAuth: true, role: 'admin' },
     },
     {
       path: '/admin/add/affected-area',
       name: 'addAffectedArea',
       component: AddAffectedAreaView,
+      meta: { requiresAuth: true, role: 'admin' },
     },
     {
       path: '/admin/update/poi',
       name: 'updatePOI',
       component: UpdatePOIView,
       props: true,
+      meta: { requiresAuth: true, role: 'admin' },
     },
     {
       path: '/admin/update/affected-area',
       name: 'updateAffectedArea',
       component: UpdateAffectedAreaView,
       props: true,
+      meta: { requiresAuth: true, role: 'admin' },
     },
     {
       path: '/invitation/verify',
       name: 'verifyinvitation',
       component: verifyHouseholdInvitationView,
+      meta: { requiresAuth: true, role: 'admin' },
     },
     {
       path: '/reset-password',
@@ -158,6 +171,7 @@ const router = createRouter({
       path: '/super-admin',
       name: 'super-admin',
       component: SuperAdminView,
+      meta: { requiresAuth: true, role: 'superadmin' },
     },
     {
       path: '/verify-admin',
@@ -188,10 +202,33 @@ const router = createRouter({
     {
       path: '/profile',
       name: 'UserProfile',
-      component: UserProfile,
+      component: HouseholdView,
       props: true,
+      meta: { requiresAuth: true },
     },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    console.log(authStore.isLoggedIn)
+    if (!authStore.isLoggedIn) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath },
+      })
+    } else if (to.meta.role == 'admin' && !authStore.isAdmin && !authStore.isSuperAdmin) {
+      next({ path: '/' })
+    } else if (to.meta.role == 'superadmin' && !authStore.isSuperAdmin) {
+      next({ path: '/' })
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
 })
 
 export default router

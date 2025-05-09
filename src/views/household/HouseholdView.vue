@@ -141,7 +141,7 @@ const closeLeaveModal = () => {
 const showAddNonUserModal = ref(false)
 const nonUserMemberData = ref({
   name: '',
-  type: 'CHILD' // Default value
+  type: 'CHILD',
 })
 const nonUserMemberError = ref('')
 const isAddingNonUser = ref(false)
@@ -150,7 +150,7 @@ const addMemberWithoutUser = () => {
   showAddNonUserModal.value = true
   nonUserMemberData.value = {
     name: '',
-    type: 'CHILD'
+    type: 'CHILD',
   }
   nonUserMemberError.value = ''
 }
@@ -288,15 +288,17 @@ const fetchMembers = async () => {
     const data = await householdService.getMyHouseholdDetails()
 
     // Combine regular members with non-user members
-    const regularMembers = data.members?.map(member => ({
-      ...member,
-      memberType: 'user'
-    })) || []
+    const regularMembers =
+      data.members?.map((member) => ({
+        ...member,
+        memberType: 'user',
+      })) || []
 
-    const nonUserMembers = data.nonUserMembers?.map(member => ({
-      ...member,
-      memberType: 'nonUser'
-    })) || []
+    const nonUserMembers =
+      data.nonUserMembers?.map((member) => ({
+        ...member,
+        memberType: 'nonUser',
+      })) || []
 
     // Combine both arrays into members
     members.value = [...regularMembers, ...nonUserMembers]
@@ -401,7 +403,9 @@ onBeforeUnmount(() => {
             <p>Household id: {{ householdId ?? '' }}</p>
             <button class="blue-button" @click="openInviteModal">Invite user</button>
             <br />
-            <button class="blue-button" @click="addMemberWithoutUser">Add member without user</button>
+            <button class="blue-button" @click="addMemberWithoutUser">
+              Add member without user
+            </button>
 
             <div class="join-requests-section" v-if="joinRequests.length">
               <h4>Pending Join Requests</h4>
@@ -430,14 +434,24 @@ onBeforeUnmount(() => {
               <div v-else class="members-list">
                 <div v-for="member in sortedMembers" :key="member.name" class="member-card">
                   <div class="member-info">
-                    <span class="member-name" :class="{ 'current-user': member.name === currentUserName }">
+                    <span
+                      class="member-name"
+                      :class="{ 'current-user': member.name === currentUserName }"
+                    >
                       {{ member.name }}{{ member.name === currentUserName ? ' (you)' : '' }}
                     </span>
                     <span class="member-description">
-                      {{ member.memberType === 'user' ? member.email : `Type: ${member.type?.toLowerCase()}` }}
+                      {{
+                        member.memberType === 'user'
+                          ? member.email
+                          : `Type: ${member.type?.toLowerCase()}`
+                      }}
                     </span>
                   </div>
-                  <div class="edit-container" v-if="member.name === currentUserName || member.memberType === 'nonUser'">
+                  <div
+                    class="edit-container"
+                    v-if="member.name === currentUserName || member.memberType === 'nonUser'"
+                  >
                     <button class="edit-button" @click="editMember(member, $event)">•••</button>
                     <div v-if="activePopupMember === member.name" class="member-popup">
                       <template v-if="member.name === currentUserName">
@@ -447,13 +461,17 @@ onBeforeUnmount(() => {
                         </div>
                       </template>
                       <template v-else-if="member.memberType === 'nonUser'">
-                        <div class="popup-option delete-option" @click.stop="deleteNonUserMember(member.id)">Delete member</div>
+                        <div
+                          class="popup-option delete-option"
+                          @click.stop="deleteNonUserMember(member.id)"
+                        >
+                          Delete member
+                        </div>
                       </template>
                     </div>
                   </div>
                 </div>
               </div>
-
             </div>
           </template>
 
@@ -559,7 +577,6 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
-
   </div>
 </template>
 

@@ -923,4 +923,116 @@ input:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease;
 }
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .update-item-title { font-size: 2.25rem; margin-bottom: 1.5rem; }
+  .content-wrapper { max-width: 95%; }
+  .item-header { background: #f5f5f5; border-radius: 8px 8px 0 0; font-weight: 500; }
+  .aggregated-item, .individual-items-container { border-radius: 0 0 8px 8px; }
+
+  /* Medium screens */
+  @media (min-width: 577px) and (max-width: 768px) {
+    .item-header, .item-row, .item-summary-row {
+      display: grid;
+      grid-template-columns: 3fr 1.5fr 1.5fr;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+    }
+
+    /* Instead of hiding columns, we're restructuring the grid */
+    .col.item-name, .col.item-name-value { grid-column: 1; text-align: left; }
+    .col.item-name-header::after { content: ""; display: block; height: 2px; background: #ddd; margin-top: 0.4rem; }
+
+    .col.item-quantity, .col.item-quantity-value, .col.item-expiration, .col.item-expiration-value {
+      grid-column: 2;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .col.item-shared-status, .col.item-actions {
+      grid-column: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    /* Only hide specific empty placeholder columns */
+    .col:empty { display: none; }
+    .col:nth-child(2) { display: none; }
+    .col:nth-child(5):not(.item-shared-status) { display: none; }
+    .col:nth-child(6):not(.item-actions) { display: none; }
+
+    .quantity-input, .date-input, .share-button, .delete-button, .delete-all-button { width: 100%; }
+    .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  }
+
+  /* Small screens */
+  @media (max-width: 576px) {
+    .update-item-title { font-size: 1.75rem; margin-bottom: 1rem; }
+
+    .item-header {
+      display: flex;
+      padding: 0.75rem 1rem;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+    .item-header:first-of-type { margin-top: 1rem; }
+    .item-header .col { display: none; }
+    .item-header .item-name { display: block; width: auto; }
+
+    .item-header:first-of-type::after, .item-header:nth-of-type(3)::after {
+      content: "Summary"; /* Will be overridden for the 3rd header */
+      font-size: 0.95rem;
+      font-weight: 500;
+      background: rgba(255,255,255,0.4);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+    .item-header:nth-of-type(3)::after { content: "Details"; }
+
+    .item-row, .item-summary-row { display: block; border-bottom: 1px solid #eee; padding: 1rem; }
+
+    .col {
+      display: flex;
+      width: 100%;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f0f0;
+      align-items: center;
+    }
+    .col:last-child { border-bottom: none; }
+    .col:first-child { padding-top: 0; }
+
+    /* Labels for fields */
+    .col.item-name::before, .col.item-quantity::before, .col.item-expiration::before,
+    .col.item-shared-status::before, .col.item-actions::before {
+      width: 80px; font-weight: 500; color: #666;
+    }
+    .col.item-name::before { content: "Item:"; }
+    .col.item-quantity::before { content: "Quantity:"; }
+    .col.item-expiration::before { content: "Expires:"; }
+    .col.item-shared-status::before { content: "Sharing:"; }
+    .col.item-actions::before { content: "Action:"; }
+
+    /* Only hide specific empty placeholder columns */
+    .col:empty { display: none; }
+    .col:nth-child(2) { display: none; }
+    .col:nth-child(5):not(.item-shared-status) { display: none; }
+    .col:nth-child(6):not(.item-actions) { display: none; }
+
+    .quantity-input, .date-input { flex-grow: 1; width: 100%; }
+    .share-button, .delete-button, .delete-all-button { width: 100%; }
+    .action-buttons { flex-direction: column-reverse; gap: 1rem; }
+  }
+}
+
+@media (max-width: 400px) {
+  .update-item-title { font-size: 1.5rem; }
+  .col::before { width: 70px; font-size: 0.9rem; }
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .individual-items-container { max-height: 200px; overflow-y: auto; }
+}
 </style>

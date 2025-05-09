@@ -10,7 +10,7 @@ vi.mock('axios')
 // Mock router
 const router = createRouter({
   history: createWebHistory(),
-  routes: [{ path: '/login', component: { template: '<div>Login</div>' } }]
+  routes: [{ path: '/login', component: { template: '<div>Login</div>' } }],
 })
 
 // Mock PrimeVue components
@@ -20,21 +20,21 @@ const mockPassword = {
   props: ['id', 'modelValue', 'feedback', 'toggleMask', 'class'],
   template:
     '<input :id="id" type="password" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" @blur="$emit(\'blur\')" />',
-  emits: ['update:modelValue', 'blur']
+  emits: ['update:modelValue', 'blur'],
 }
 
 const mockButton = {
   name: 'Button',
   props: ['type', 'label', 'loading', 'disabled'],
-  template: '<button :type="type || \'button\'" :disabled="disabled">{{ label }}</button>'
+  template: '<button :type="type || \'button\'" :disabled="disabled">{{ label }}</button>',
 }
 
 // Mock PrimeVue global plugins and config
 vi.mock('primevue/config', () => ({
   default: {
     install: () => {},
-    config: {}
-  }
+    config: {},
+  },
 }))
 
 describe('ResetPassword', () => {
@@ -49,21 +49,21 @@ describe('ResetPassword', () => {
       global: {
         plugins: [router],
         stubs: {
-          'Password': mockPassword,
-          'Button': mockButton
+          Password: mockPassword,
+          Button: mockButton,
         },
         mocks: {
           $route: {
             query: {
               token: 'test-token',
-              email: 'test@example.com'
-            }
+              email: 'test@example.com',
+            },
           },
           $primevue: {
-            config: {}
-          }
-        }
-      }
+            config: {},
+          },
+        },
+      },
     })
   })
 
@@ -80,7 +80,9 @@ describe('ResetPassword', () => {
     await wrapper.find('#new-password').setValue('weakpassword')
     await wrapper.find('#new-password').trigger('blur')
     await flushPromises()
-    expect(wrapper.find('.p-error').text()).toBe('Password must contain an uppercase letter and a number')
+    expect(wrapper.find('.p-error').text()).toBe(
+      'Password must contain an uppercase letter and a number',
+    )
 
     // Set valid password
     await wrapper.find('#new-password').setValue('Strong1')
@@ -125,9 +127,9 @@ describe('ResetPassword', () => {
       isAxiosError: true,
       response: {
         data: {
-          message: 'Failed to reset password.'
-        }
-      }
+          message: 'Failed to reset password.',
+        },
+      },
     }
     vi.spyOn(axios, 'post').mockRejectedValue(errorResponse)
 

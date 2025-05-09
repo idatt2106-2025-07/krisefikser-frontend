@@ -68,8 +68,9 @@ onUnmounted(() => {
 
       <ul v-if="isMenuOpen" ref="menuRef" class="dropdown-menu">
         <li class="dropdown-item" @click="navigateTo('/')">Home</li>
-        <li class="dropdown-item" @click="navigateTo('/info')">General Info</li>
-        <li class="dropdown-item" @click="navigateTo('/quiz')">Quiz</li>
+        <li class="dropdown-item" @click="navigateTo('/map')">Map</li>
+        <li class="dropdown-item" @click="navigateTo('/news')">News</li>
+        <li class="dropdown-item" @click="navigateTo('/general-info')">General Info</li>
       </ul>
     </div>
 

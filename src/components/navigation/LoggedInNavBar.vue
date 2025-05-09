@@ -90,9 +90,10 @@ onUnmounted(() => {
       <ul v-if="isMenuOpen" ref="menuRef" class="dropdown-menu">
         <li class="dropdown-item" @click="navigateTo('/')">Home</li>
         <li class="dropdown-item" @click="navigateTo('/storage')">Emergency storage</li>
-        <li class="dropdown-item" @click="navigateTo('/info')">General info</li>
-        <li class="dropdown-item" @click="navigateTo('/quiz')">Quiz</li>
         <li class="dropdown-item" @click="navigateTo('/household')">Household</li>
+        <li class="dropdown-item" @click="navigateTo('/map')">Map</li>
+        <li class="dropdown-item" @click="navigateTo('/news')">News</li>
+        <li class="dropdown-item" @click="navigateTo('/general-info')">General info</li>
         <li v-if="authStore.isAdmin" class="dropdown-item" @click="navigateTo('/admin')">
           Admin Dashboard
         </li>

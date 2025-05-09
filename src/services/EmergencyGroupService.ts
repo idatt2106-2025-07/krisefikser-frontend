@@ -1,5 +1,5 @@
 // src/services/EmergencyGroupService.ts
-import axiosInstance from '@/services/axiosService.ts'
+import axios from 'axios'
 
 /**
  * Interface for emergency group request
@@ -16,7 +16,7 @@ class EmergencyGroupService {
    * @returns A promise that resolves to the emergency group details
    */
   async getEmergencyGroup() {
-    const response = await axiosInstance.get(`/emergency-groups`)
+    const response = await axios.get(`/api/emergency-groups`)
     return response.data
   }
 
@@ -27,7 +27,7 @@ class EmergencyGroupService {
    * @returns A promise that resolves to the created emergency group
    */
   async addEmergencyGroup(request: EmergencyGroupRequest) {
-    const response = await axiosInstance.post('/emergency-groups', request)
+    const response = await axios.post('/api/emergency-groups', request)
     return response.data
   }
 
@@ -37,7 +37,7 @@ class EmergencyGroupService {
    * @param householdName The name of the household to invite
    */
   async inviteHouseholdByName(householdName: string) {
-    const response = await axiosInstance.post(`/emergency-groups/invite/${householdName}`)
+    const response = await axios.post(`/api/emergency-groups/invite/${householdName}`)
     return response.data
   }
 
@@ -48,7 +48,7 @@ class EmergencyGroupService {
    * @param isAccept Whether to accept or decline the invitation
    */
   async answerInvitation(groupId: number, isAccept: boolean) {
-    const response = await axiosInstance.patch(`/emergency-groups/answer-invitation/${groupId}`, {
+    const response = await axios.patch(`/api/emergency-groups/answer-invitation/${groupId}`, {
       isAccept,
     })
     return response.data
@@ -60,7 +60,7 @@ class EmergencyGroupService {
    * @returns A promise that resolves to the list of invitations
    */
   async getInvitations() {
-    const response = await axiosInstance.get('/emergency-groups/invitations')
+    const response = await axios.get('/api/emergency-groups/invitations')
     return response.data
   }
 }

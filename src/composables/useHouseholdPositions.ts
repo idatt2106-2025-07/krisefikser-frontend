@@ -84,7 +84,7 @@ export function useHouseholdPositions(
         .setLngLat([position.longitude, position.latitude])
         .setPopup(popup)
         .addTo(map.value!)
-
+      //@ts-expect-error fix
       positionMarkers.value.push(marker)
     })
   }

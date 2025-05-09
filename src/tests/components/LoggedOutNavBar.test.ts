@@ -13,10 +13,10 @@ vi.mock('primevue/button', () => ({
     name: 'Button',
     props: {
       label: String,
-      icon: String
+      icon: String,
     },
-    template: '<button class="p-button"><slot></slot></button>'
-  }
+    template: '<button class="p-button"><slot></slot></button>',
+  },
 }))
 
 describe('LoggedOutNavBar.vue', () => {
@@ -30,8 +30,8 @@ describe('LoggedOutNavBar.vue', () => {
       { path: '/login', name: 'login' },
       { path: '/map', name: 'map' },
       { path: '/news', name: 'news' },
-      { path: '/general-info', name: 'general-info' }
-    ]
+      { path: '/general-info', name: 'general-info' },
+    ],
   })
 
   beforeEach(() => {
@@ -43,9 +43,9 @@ describe('LoggedOutNavBar.vue', () => {
       global: {
         plugins: [router],
         stubs: {
-          Button: true
-        }
-      }
+          Button: true,
+        },
+      },
     })
   })
 
@@ -157,9 +157,9 @@ describe('LoggedOutNavBar.vue', () => {
       global: {
         plugins: [router],
         stubs: {
-          Button: true
-        }
-      }
+          Button: true,
+        },
+      },
     })
 
     // Check that event listener was added

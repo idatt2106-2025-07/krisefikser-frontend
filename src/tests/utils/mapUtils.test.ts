@@ -25,7 +25,7 @@ describe('mapUtils', () => {
     it('should create an empty feature collection with empty location data', () => {
       const emptyLocationData: LocationData = {
         pointsOfInterest: [],
-        affectedAreas: []
+        affectedAreas: [],
       }
 
       const result = createSearchableGeoJSON(emptyLocationData)
@@ -42,10 +42,10 @@ describe('mapUtils', () => {
             type: 'HOSPITAL',
             latitude: 59.9139,
             longitude: 10.7522,
-            description: 'Oslo Hospital'
-          } as PointOfInterest
+            description: 'Oslo Hospital',
+          } as PointOfInterest,
         ],
-        affectedAreas: []
+        affectedAreas: [],
       }
 
       const result = createSearchableGeoJSON(locationData)
@@ -59,12 +59,12 @@ describe('mapUtils', () => {
           description: 'Oslo Hospital',
           category: 'HOSPITAL',
           id: 1,
-          poiType: 'HOSPITAL'
+          poiType: 'HOSPITAL',
         },
         geometry: {
           type: 'Point',
-          coordinates: [10.7522, 59.9139]
-        }
+          coordinates: [10.7522, 59.9139],
+        },
       })
     })
 
@@ -79,9 +79,9 @@ describe('mapUtils', () => {
             description: 'Flood Area',
             lowDangerRadiusKm: 5,
             mediumDangerRadiusKm: 2,
-            highDangerRadiusKm: 1
-          } as AffectedArea
-        ]
+            highDangerRadiusKm: 1,
+          } as AffectedArea,
+        ],
       }
 
       const result = createSearchableGeoJSON(locationData)
@@ -95,12 +95,12 @@ describe('mapUtils', () => {
           description: 'Affected Area',
           category: 'affected_area',
           id: 1,
-          radius: 5
+          radius: 5,
         },
         geometry: {
           type: 'Point',
-          coordinates: [10.7522, 59.9139]
-        }
+          coordinates: [10.7522, 59.9139],
+        },
       })
     })
 
@@ -112,8 +112,8 @@ describe('mapUtils', () => {
             type: 'SHELTER',
             latitude: 59.9139,
             longitude: 10.7522,
-            description: 'Oslo Shelter'
-          } as PointOfInterest
+            description: 'Oslo Shelter',
+          } as PointOfInterest,
         ],
         affectedAreas: [
           {
@@ -123,9 +123,9 @@ describe('mapUtils', () => {
             description: 'Bergen Flooding',
             lowDangerRadiusKm: 10,
             mediumDangerRadiusKm: 5,
-            highDangerRadiusKm: 2
-          } as AffectedArea
-        ]
+            highDangerRadiusKm: 2,
+          } as AffectedArea,
+        ],
       }
 
       const result = createSearchableGeoJSON(locationData)

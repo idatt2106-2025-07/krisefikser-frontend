@@ -14,8 +14,8 @@ vi.mock('@/stores/auth', () => ({
   useAuthStore: vi.fn(() => ({
     clearToken: vi.fn(),
     isAdmin: false,
-    isSuperAdmin: false
-  }))
+    isSuperAdmin: false,
+  })),
 }))
 
 // Mock PrimeVue button
@@ -24,10 +24,10 @@ vi.mock('primevue/button', () => ({
     name: 'Button',
     props: {
       severity: String,
-      class: String
+      class: String,
     },
-    template: '<button :class="class"><slot></slot></button>'
-  }
+    template: '<button :class="class"><slot></slot></button>',
+  },
 }))
 
 describe('LoggedInNavBar.vue', () => {
@@ -47,8 +47,8 @@ describe('LoggedInNavBar.vue', () => {
       { path: '/news', name: 'news' },
       { path: '/general-info', name: 'general-info' },
       { path: '/admin', name: 'admin' },
-      { path: '/super-admin', name: 'super-admin' }
-    ]
+      { path: '/super-admin', name: 'super-admin' },
+    ],
   })
 
   beforeEach(() => {
@@ -69,9 +69,9 @@ describe('LoggedInNavBar.vue', () => {
       global: {
         plugins: [router],
         stubs: {
-          Button: true
-        }
-      }
+          Button: true,
+        },
+      },
     })
   })
 
@@ -156,7 +156,7 @@ describe('LoggedInNavBar.vue', () => {
     vi.mocked(useAuthStore).mockReturnValueOnce({
       clearToken: vi.fn(),
       isAdmin: true,
-      isSuperAdmin: false
+      isSuperAdmin: false,
     })
 
     // Remount with updated store
@@ -165,9 +165,9 @@ describe('LoggedInNavBar.vue', () => {
       global: {
         plugins: [router],
         stubs: {
-          Button: true
-        }
-      }
+          Button: true,
+        },
+      },
     })
 
     // Open menu
@@ -184,7 +184,7 @@ describe('LoggedInNavBar.vue', () => {
     vi.mocked(useAuthStore).mockReturnValueOnce({
       clearToken: vi.fn(),
       isAdmin: true,
-      isSuperAdmin: true
+      isSuperAdmin: true,
     })
 
     // Remount with updated store
@@ -193,9 +193,9 @@ describe('LoggedInNavBar.vue', () => {
       global: {
         plugins: [router],
         stubs: {
-          Button: true
-        }
-      }
+          Button: true,
+        },
+      },
     })
 
     // Open menu
@@ -215,9 +215,9 @@ describe('LoggedInNavBar.vue', () => {
       global: {
         plugins: [router],
         stubs: {
-          Button: true
-        }
-      }
+          Button: true,
+        },
+      },
     })
 
     // Check that event listener was added

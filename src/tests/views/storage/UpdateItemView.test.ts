@@ -10,7 +10,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 
 // Mock the router
 const mockRouter = {
-  push: vi.fn()
+  push: vi.fn(),
 }
 
 vi.mock('vue-router', async () => {
@@ -18,9 +18,9 @@ vi.mock('vue-router', async () => {
   return {
     ...actual,
     useRoute: vi.fn(() => ({
-      params: { itemId: '123' }
+      params: { itemId: '123' },
     })),
-    useRouter: vi.fn(() => mockRouter)
+    useRouter: vi.fn(() => mockRouter),
   }
 })
 
@@ -34,12 +34,12 @@ const mockIndividualItems = [
       name: 'Test Item 1',
       unit: 'kg',
       calories: 0,
-      type: 'FOOD'
+      type: 'FOOD',
     },
     quantity: 2.5,
     expirationDate: '2025-06-01T12:00:00',
     householdId: 1,
-    shared: false
+    shared: false,
   },
   {
     id: 2,
@@ -49,13 +49,13 @@ const mockIndividualItems = [
       name: 'Test Item 1',
       unit: 'kg',
       calories: 0,
-      type: 'FOOD'
+      type: 'FOOD',
     },
     quantity: 1.5,
     expirationDate: '2025-05-15T12:00:00',
     householdId: 1,
-    shared: true
-  }
+    shared: true,
+  },
 ]
 
 describe('UpdateItemView.vue', () => {
@@ -83,8 +83,8 @@ describe('UpdateItemView.vue', () => {
     // Mount the component
     wrapper = mount(UpdateItemView, {
       global: {
-        plugins: [pinia]
-      }
+        plugins: [pinia],
+      },
     })
   })
 
@@ -96,13 +96,15 @@ describe('UpdateItemView.vue', () => {
 
   it('should show error message when loading fails', async () => {
     // Reset the mocks
-    storageItemStore.fetchStorageItemsByItemId = vi.fn().mockRejectedValue(new Error('Failed to load'))
+    storageItemStore.fetchStorageItemsByItemId = vi
+      .fn()
+      .mockRejectedValue(new Error('Failed to load'))
 
     // Mount the component again
     wrapper = mount(UpdateItemView, {
       global: {
-        plugins: [createPinia()]
-      }
+        plugins: [createPinia()],
+      },
     })
 
     // Wait for all promises to resolve

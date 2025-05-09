@@ -66,7 +66,11 @@ const getIconClass = (type: string) => {
  *
  * @returns A promise that resolves to the coordinates {latitude, longitude, usingFallback}
  */
-const getCurrentLocation = async (): Promise<{latitude: number, longitude: number, usingFallback: boolean}> => {
+const getCurrentLocation = async (): Promise<{
+  latitude: number
+  longitude: number
+  usingFallback: boolean
+}> => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
       reject(new Error('Geolocation is not supported by this browser'))
@@ -78,7 +82,7 @@ const getCurrentLocation = async (): Promise<{latitude: number, longitude: numbe
         resolve({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-          usingFallback: false // This is real geolocation data
+          usingFallback: false, // This is real geolocation data
         })
       },
       (error) => {
@@ -87,14 +91,14 @@ const getCurrentLocation = async (): Promise<{latitude: number, longitude: numbe
         resolve({
           latitude: 59.9139, // Oslo latitude
           longitude: 10.7522, // Oslo longitude
-          usingFallback: true // This indicates we're using fallback data
+          usingFallback: true, // This indicates we're using fallback data
         })
       },
       {
         enableHighAccuracy: true,
         timeout: 5000,
-        maximumAge: 0
-      }
+        maximumAge: 0,
+      },
     )
   })
 }
@@ -106,30 +110,30 @@ const fetchIncidents = async () => {
   try {
     // First check if geolocation is supported
     if (!navigator.geolocation) {
-      console.log('Geolocation is not supported by this browser');
-      return []; // No incidents without geolocation
+      console.log('Geolocation is not supported by this browser')
+      return [] // No incidents without geolocation
     }
 
     // Try to get the current location
-    let location;
+    let location
     try {
-      location = await getCurrentLocation();
+      location = await getCurrentLocation()
 
       // If using fallback location (location denied), don't show incidents
       if (location.usingFallback) {
-        console.log('User denied geolocation, not showing incidents');
-        return [];
+        console.log('User denied geolocation, not showing incidents')
+        return []
       }
 
       // Call the API with the location data
       const response = await notificationService.getIncidents(
         location.latitude,
         location.longitude,
-        10 // Optional radius parameter, default 10km
-      );
+        10, // Optional radius parameter, default 10km
+      )
 
       if (!response || response.length === 0) {
-        return [];
+        return []
       }
 
       const incidentNotifications = response.map((incident: Incident) => {
@@ -137,17 +141,17 @@ const fetchIncidents = async () => {
           type: 'danger' as const,
           message: incident.message,
           route: '/map',
-        };
-      });
+        }
+      })
 
-      return incidentNotifications;
+      return incidentNotifications
     } catch (error) {
-      console.error('Error getting location or fetching incidents:', error);
-      return []; // Don't show error notification for location issues
+      console.error('Error getting location or fetching incidents:', error)
+      return [] // Don't show error notification for location issues
     }
   } catch (error) {
-    console.error('Error fetching incidents:', error);
-    return []; // Don't show incidents if there's an error
+    console.error('Error fetching incidents:', error)
+    return [] // Don't show incidents if there's an error
   }
 }
 

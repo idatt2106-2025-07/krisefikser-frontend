@@ -42,19 +42,19 @@ class HouseholdService {
   }
 
   async createInvitation(email: string) {
-    const response = await axios.post('/household-invitations', { email })
+    const response = await axios.post('/api/household-invitations', { email })
     return response.data
   }
 
   async verifyInvitation(token: string) {
-    const response = await axios.get('/household-invitations/verify', {
+    const response = await axios.get('/api/household-invitations/verify', {
       params: { token },
     })
     return response.data
   }
 
   async acceptInvitation(token: string) {
-    const response = await axios.post('/household-invitations/accept', { token })
+    const response = await axios.post('/api/household-invitations/accept', { token })
     return response.data
   }
 }

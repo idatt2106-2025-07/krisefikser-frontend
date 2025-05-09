@@ -76,6 +76,7 @@ const createEmergencyGroup = async () => {
     group.value = createdGroup
     newGroupName.value = ''
     showCreateGroupModal.value = false
+    alert('Group created successfully!')
   } catch (err) {
     createError.value = 'Failed to create emergency group'
     console.error(err)
@@ -98,6 +99,7 @@ const inviteHousehold = async () => {
     await emergencyGroupService.inviteHouseholdByName(householdName.value)
     householdName.value = ''
     showInviteModal.value = false
+    alert('Invitation sent successfully!')
     fetchData()
   } catch (err) {
     inviteError.value = 'Failed to invite household'
@@ -111,6 +113,7 @@ const inviteHousehold = async () => {
 const respondToInvitation = async (groupId: number, isAccept: boolean) => {
   try {
     await emergencyGroupService.answerInvitation(groupId, isAccept)
+    alert(`Invitation ${isAccept ? 'accepted' : 'declined'} successfully!`)
     fetchData()
   } catch (err: any) {
     // More specific error handling for network issues
@@ -320,7 +323,7 @@ onMounted(fetchData)
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #444343;
   border-radius: 6px;
   margin-bottom: 12px;
   background-color: white;

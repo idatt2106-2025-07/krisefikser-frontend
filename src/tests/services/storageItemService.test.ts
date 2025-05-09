@@ -6,11 +6,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import axios from 'axios'
 import storageItemService from '@/services/storageItemService'
-import type {
-  AggregatedStorageItem,
-  StorageItem,
-  AddStorageItemRequest,
-} from '@/types/storageItem'
+import type { AggregatedStorageItem, StorageItem, AddStorageItemRequest } from '@/types/storageItem'
 
 vi.mock('axios')
 
@@ -35,10 +31,9 @@ describe('storageItemService', () => {
 
       const result = await storageItemService.fetchAggregatedItems()
 
-      expect(axios.get).toHaveBeenCalledWith(
-        '/api/storage-items/household/aggregated',
-        { withCredentials: true }
-      )
+      expect(axios.get).toHaveBeenCalledWith('/api/storage-items/household/aggregated', {
+        withCredentials: true,
+      })
       expect(result).toEqual(mockAggregatedItems)
     })
   })
@@ -50,10 +45,9 @@ describe('storageItemService', () => {
 
       const result = await storageItemService.fetchStorageItemsByItemId(itemId)
 
-      expect(axios.get).toHaveBeenCalledWith(
-        `/api/storage-items/household/by-item/${itemId}`,
-        { withCredentials: true }
-      )
+      expect(axios.get).toHaveBeenCalledWith(`/api/storage-items/household/by-item/${itemId}`, {
+        withCredentials: true,
+      })
       expect(result).toEqual(mockStorageItems)
     })
   })
@@ -63,7 +57,7 @@ describe('storageItemService', () => {
       const request: AddStorageItemRequest = {
         itemId: 1,
         quantity: 5,
-        expirationDate: '2023-12-31'
+        expirationDate: '2023-12-31',
       }
       vi.mocked(axios.post).mockResolvedValue({ data: { id: 3 } })
 
@@ -74,9 +68,9 @@ describe('storageItemService', () => {
         {
           itemId: 1,
           quantity: 5,
-          expirationDate: '2023-12-31T00:00:00'
+          expirationDate: '2023-12-31T00:00:00',
         },
-        { withCredentials: true }
+        { withCredentials: true },
       )
       expect(result).toEqual({ id: 3 })
     })
@@ -89,10 +83,9 @@ describe('storageItemService', () => {
 
       await storageItemService.deleteStorageItem(id)
 
-      expect(axios.delete).toHaveBeenCalledWith(
-        `/api/storage-items/${id}`,
-        { withCredentials: true }
-      )
+      expect(axios.delete).toHaveBeenCalledWith(`/api/storage-items/${id}`, {
+        withCredentials: true,
+      })
     })
   })
 
@@ -105,7 +98,7 @@ describe('storageItemService', () => {
 
       expect(axios.get).toHaveBeenCalledWith(
         '/api/storage-items/household/aggregated/filter-by-type?types=type1&types=type2',
-        { withCredentials: true }
+        { withCredentials: true },
       )
       expect(result).toEqual([mockAggregatedItems[0]])
     })
@@ -122,10 +115,9 @@ describe('storageItemService', () => {
       const result = await storageItemService.filterByItemType([])
 
       // Verify it called the unfiltered endpoint
-      expect(axios.get).toHaveBeenCalledWith(
-        '/api/storage-items/household/aggregated',
-        { withCredentials: true }
-      )
+      expect(axios.get).toHaveBeenCalledWith('/api/storage-items/household/aggregated', {
+        withCredentials: true,
+      })
       expect(result).toEqual(mockAggregatedItems)
     })
   })
@@ -143,14 +135,11 @@ describe('storageItemService', () => {
         searchTerm,
         types,
         sortBy,
-        sortDirection
+        sortDirection,
       )
 
       const expectedUrl = `/api/storage-items/household/aggregated/search?searchTerm=test&types=type1&sortBy=name&sortDirection=desc`
-      expect(axios.get).toHaveBeenCalledWith(
-        expectedUrl,
-        { withCredentials: true }
-      )
+      expect(axios.get).toHaveBeenCalledWith(expectedUrl, { withCredentials: true })
       expect(result).toEqual(mockAggregatedItems)
     })
 
@@ -161,10 +150,7 @@ describe('storageItemService', () => {
       const result = await storageItemService.searchAggregatedItems(searchTerm)
 
       const expectedUrl = `/api/storage-items/household/aggregated/search?searchTerm=test`
-      expect(axios.get).toHaveBeenCalledWith(
-        expectedUrl,
-        { withCredentials: true }
-      )
+      expect(axios.get).toHaveBeenCalledWith(expectedUrl, { withCredentials: true })
       expect(result).toEqual(mockAggregatedItems)
     })
   })
@@ -175,7 +161,7 @@ describe('storageItemService', () => {
       const updatedItem: Partial<StorageItem> = {
         itemId: 2,
         quantity: 10,
-        expirationDate: '2024-01-01'
+        expirationDate: '2024-01-01',
       }
       vi.mocked(axios.put).mockResolvedValue({ data: { ...updatedItem, id } })
 
@@ -186,9 +172,9 @@ describe('storageItemService', () => {
         {
           itemId: 2,
           quantity: 10,
-          expirationDate: '2024-01-01'
+          expirationDate: '2024-01-01',
         },
-        { withCredentials: true }
+        { withCredentials: true },
       )
       expect(result).toEqual({ ...updatedItem, id })
     })

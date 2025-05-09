@@ -57,7 +57,7 @@ describe('Readiness Store', () => {
     it('should set loading state correctly during execution', async () => {
       const mockData = { days: 1, hours: 6 }
       vi.mocked(itemService.getReadinessLevel).mockImplementation(async () => {
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 100))
         return mockData
       })
 

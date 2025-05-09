@@ -67,7 +67,7 @@ async function saveIncident() {
   }
 
   try {
-    await axios.post('http://localhost:8080/api/affected-area', payload)
+    await axios.post('http://dev.krisefikser.localhost:8080/api/affected-area', payload)
     alert('Incident saved!')
     clearForm()
   } catch (error) {

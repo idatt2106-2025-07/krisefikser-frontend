@@ -135,7 +135,7 @@ export function useMapInitialization(
         .setPopup(new mapboxgl.Popup().setHTML('<strong>Destination</strong>'))
         .addTo(map.value as unknown as mapboxgl.Map)
 
-      //ts-expect-error fix
+      //@ts-expect-error fix
       currentMarkers.value.push(startMarker, endMarker)
 
       const bounds = new mapboxgl.LngLatBounds().extend(origin).extend(destination)

@@ -86,7 +86,7 @@ const router = createRouter({
       path: '/storage/add-storage-item',
       name: 'add-storage-item',
       component: AddStorageItemView,
-      meta: { requiresAuth: true, role: 'admin' },
+      meta: { requiresAuth: true },
     },
     {
       path: '/group-storage/update/:itemId',
@@ -97,7 +97,7 @@ const router = createRouter({
       path: '/storage/add-item',
       name: 'add-item',
       component: AddItemView,
-      meta: { requiresAuth: true, role: 'admin' },
+      meta: { requiresAuth: true },
     },
     {
       path: '/storage/update/:itemId',
@@ -140,7 +140,6 @@ const router = createRouter({
       path: '/register-admin',
       name: 'register-admin',
       component: RegisterAdmin,
-      meta: { requiresAuth: true, role: 'superadmin' },
     },
     {
       path: '/admin/add/poi',
@@ -172,7 +171,6 @@ const router = createRouter({
       path: '/invitation/verify',
       name: 'verifyinvitation',
       component: verifyHouseholdInvitationView,
-      meta: { requiresAuth: true, role: 'admin' },
     },
     {
       path: '/reset-password',

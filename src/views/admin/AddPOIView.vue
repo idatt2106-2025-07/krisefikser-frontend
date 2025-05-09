@@ -1,12 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Dropdown from 'primevue/dropdown'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import axios from 'axios'
 
-const router = useRouter()
+const props = defineProps({
+  longitude: {
+    type: String,
+    default: '',
+  },
+  latitude: {
+    type: String,
+    default: '',
+  },
+})
+
+const emit = defineEmits(['poi-added'])
 
 const types = [
   { label: 'Defibrillator', value: 'defibrillator' },
@@ -22,8 +33,21 @@ const description = ref('')
 const openingHours = ref('')
 const closingHours = ref('')
 const contactInfo = ref('')
-const lng = ref('')
-const lat = ref('')
+const lng = ref(props.longitude)
+const lat = ref(props.latitude)
+
+watch(
+  () => props.longitude,
+  (newLng) => {
+    lng.value = newLng
+  },
+)
+watch(
+  () => props.latitude,
+  (newLat) => {
+    lat.value = newLat
+  },
+)
 
 async function savePOI() {
   if (!type.value || !lng.value || !lat.value) {
@@ -46,7 +70,7 @@ async function savePOI() {
       withCredentials: true,
     })
     alert('Point of Interest saved successfully!')
-    // Clear form fields instead of redirecting
+    emit('poi-added')
     clearForm()
   } catch (error) {
     console.error('Failed to save POI:', error)

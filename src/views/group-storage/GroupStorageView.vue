@@ -375,4 +375,151 @@ onMounted(async () => {
 .error-message {
   color: #ff5c5f;
 }
+
+@media (max-width: 768px) {
+  .storage-title {
+    font-size: 2.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .content-wrapper {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .actions-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .sort-section {
+    width: 100%;
+  }
+
+  :deep(.my-dropdown-select),
+  :deep(.my-dropdown-container) {
+    width: 100%;
+  }
+
+  .item-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .item-card {
+    padding: 0.75rem 1rem;
+    height: auto;
+    min-height: 50px;
+  }
+
+  .item-expiration-header,
+  .item-quantity-header {
+    width: 6rem;
+  }
+
+  .item-expiration,
+  .item-quantity {
+    width: 6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .storage-container {
+    padding: 1rem 0.5rem;
+  }
+
+  .storage-title {
+    font-size: 1.75rem;
+  }
+
+  .item-header {
+    display: none;
+  }
+
+  .item-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem;
+    height: auto;
+  }
+
+  .item-info {
+    width: 100%;
+  }
+
+  .item-name {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .item-expiration,
+  .item-quantity {
+    width: 100%;
+    padding: 0;
+    margin-bottom: 0.25rem;
+  }
+
+  .status-pill {
+    width: 100%;
+    text-align: left;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .item-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .options-button {
+    padding: 0.5rem;
+  }
+
+  .options-button img {
+    height: 1.25rem;
+    width: 1.25rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 992px) {
+  .storage-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .content-wrapper {
+    max-width: 100%;
+  }
+
+  .items-container {
+    max-width: 100%;
+  }
+
+  .item-expiration-header,
+  .item-quantity-header {
+    width: 7rem;
+  }
+
+  .item-expiration,
+  .item-quantity {
+    width: 7rem;
+  }
+}
+
+@media (max-width: 768px) {
+  :deep(.my-filter-sidebar) {
+    width: 100%;
+    margin-bottom: 1rem;
+    position: static !important;
+    top: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  :deep(.my-filter-sidebar > div),
+  :deep(.my-filter-sidebar > aside) {
+    position: static !important;
+    top: auto !important;
+    height: auto !important;
+  }
+}
 </style>

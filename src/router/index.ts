@@ -107,11 +107,6 @@ const router = createRouter({
       component: News,
     },
     {
-      path: '/quiz',
-      name: 'quiz',
-      component: QuizCreator,
-    },
-    {
       path: '/verify-email',
       name: 'verifyEmail',
       component: VerifyEmailView,

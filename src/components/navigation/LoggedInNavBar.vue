@@ -223,6 +223,9 @@ img {
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 200px;
   z-index: 100;
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
 }
 
 .dropdown-item {

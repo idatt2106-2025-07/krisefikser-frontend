@@ -117,7 +117,7 @@ async function handleSubmit() {
         toastMessage.value = null
         toastType.value = ''
         router.push('/login')
-      }, 2000)
+      }, 5000)
       return
     }
 
@@ -221,11 +221,10 @@ async function fetchCoordinates() {
       <InputText
         id="address"
         v-model="address"
-        placeholder="Address"
+        placeholder="Karl Johans gate 1"
         :disabled="isLoading"
         @blur="fetchCoordinates"
       />
-      <div v-if="coordinates">Coordinates: {{ coordinates.lat }}, {{ coordinates.lon }}</div>
 
       <div class="checkbox-container">
         <input type="checkbox" id="agreeToTerms" v-model="agreeToTerms" :disabled="isLoading" />

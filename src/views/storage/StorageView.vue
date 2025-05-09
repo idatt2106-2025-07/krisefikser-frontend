@@ -1,5 +1,7 @@
+<!-- StorageView.vue (updated) -->
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
+import TabBar from '@/components/common/TabBar.vue'
 import SearchBar from '@/components/common/SearchBar.vue'
 import SortDropdown from '@/components/common/SortDropdown.vue'
 import DaysCircle from '@/components/common/DaysCircle.vue'
@@ -10,6 +12,11 @@ import { useRouter } from 'vue-router'
 
 const storageItemStore = useStorageItemStore()
 const router = useRouter()
+
+const tabs = [
+  { path: '/storage', label: 'Household Storage' },
+  { path: '/group-storage', label: 'Group Storage' }
+]
 
 const categories = [
   { id: 'DRINK', name: 'Drink' },
@@ -41,7 +48,6 @@ const selectedSortOption = ref('')
 const searchQuery = ref('')
 const checkedCategories = ref<string[]>([])
 
-// Add a debounce timer ref - only for search
 const searchDebounceTimeout = ref<number | null>(null)
 
 const selectedSort = computed(() => {
@@ -59,7 +65,6 @@ const sortDirection = computed(() => {
   return parts.length > 1 ? parts[1] : 'asc'
 })
 
-// Get items with expiration days calculated
 const items = computed(() => {
   return storageItemStore.aggregatedItems.map((item) => {
     const expirationDate = new Date(item.earliestExpirationDate)
@@ -79,8 +84,6 @@ const items = computed(() => {
   })
 })
 
-// Placeholder for days left calculation
-// In a real implementation, this would be calculated based on water and food quantities
 const daysLeft = ref(13)
 
 watch(searchQuery, () => {
@@ -112,12 +115,10 @@ const handleSearch = (value: string | Event) => {
   }
 }
 
-// Function to handle sort option change
 const handleSort = (value: string) => {
   selectedSortOption.value = value
 }
 
-// Handler for filter clear event
 const handleFilterClear = () => {
   checkedCategories.value = []
 }
@@ -172,6 +173,8 @@ onMounted(async () => {
 <template>
   <div class="storage-container">
     <h1 class="storage-title">Emergency Storage</h1>
+
+    <TabBar :tabs="tabs" />
 
     <div class="content-wrapper">
       <FilterSidebar
@@ -285,7 +288,7 @@ onMounted(async () => {
 .storage-title {
   font-size: 3rem;
   font-weight: bold;
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
 }
 
 .content-wrapper {

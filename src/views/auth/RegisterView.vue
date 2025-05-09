@@ -35,7 +35,7 @@ function validateEmail() {
 }
 
 const validatePassword = () => {
-  console.log("Validating password")
+  console.log('Validating password')
   const pass = password.value
   if (
     !pass ||
@@ -45,7 +45,7 @@ const validatePassword = () => {
     !/[0-9]/.test(pass) ||
     !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass)
   ) {
-     passwordError.value = true
+    passwordError.value = true
   } else {
     passwordError.value = false
   }
@@ -55,19 +55,17 @@ const passwordsMatch = computed(() => password.value === confirmpassword.value)
 
 const formValid = computed(
   () =>
-    (
-      name.value &&
-      email.value &&
-      password.value &&
-      confirmpassword.value &&
-      householdName.value &&
-      address.value &&
-      agreeToTerms.value &&
-      passwordsMatch.value &&
-      !emailError.value &&
-      hcaptchaToken.value &&
-      !passwordError.value
-    ),
+    name.value &&
+    email.value &&
+    password.value &&
+    confirmpassword.value &&
+    householdName.value &&
+    address.value &&
+    agreeToTerms.value &&
+    passwordsMatch.value &&
+    !emailError.value &&
+    hcaptchaToken.value &&
+    !passwordError.value,
 )
 
 async function handleSubmit() {
@@ -110,8 +108,7 @@ async function handleSubmit() {
     )
 
     if (res.status === 201) {
-      toastMessage.value =
-        'A verification email has been sent. Redirecting to login…'
+      toastMessage.value = 'A verification email has been sent. Redirecting to login…'
       toastType.value = 'warning'
       setTimeout(() => {
         toastMessage.value = null
@@ -184,7 +181,8 @@ async function fetchCoordinates() {
         />
         <small v-if="passwordError" class="p-error"
           >Password must be at least 8 characters long and contain at least one uppercase letter,
-          one lowercase letter, one number, and one special character.</small>
+          one lowercase letter, one number, and one special character.</small
+        >
       </div>
 
       <div class="field">

@@ -11,7 +11,7 @@ class MapService {
    * @returns A promise that resolves to the data containing the points of interest.
    */
   async getPointsOfInterest(filters: string[]) {
-    const response = await axiosInstance.get('/point-of-interest', {
+    const response = await axios.get('/api/point-of-interest', {
       params: { types: filters.join(',') },
     })
     return response.data
@@ -23,7 +23,7 @@ class MapService {
    * @returns A promise that resolves to the data containing the affected areas.
    */
   async getAffectedAreas() {
-    const response = await axiosInstance.get('/affected-area')
+    const response = await axios.get('/api/affected-area')
     return response.data
   }
 
@@ -44,7 +44,7 @@ class MapService {
       'food_central',
       'meeting_place',
     ]
-    const response = await axiosInstance.get('/point-of-interest', {
+    const response = await axios.get('/api/point-of-interest', {
       params: { types: allTypes.join(',') },
     })
     return response.data
@@ -58,7 +58,7 @@ class MapService {
    * @returns A promise that resolves when the point of interest is successfully deleted.
    */
   async deletePointOfInterest(id: number) {
-    await axiosInstance.delete(`/point-of-interest/${id}`)
+    await axios.delete(`/api/point-of-interest/${id}`)
   }
 
   /**
@@ -69,7 +69,7 @@ class MapService {
    * @returns A promise that resolves when the point of interest is successfully updated.
    */
   async updatePointOfInterest(id: number, data: any) {
-    await axiosInstance.put(`/point-of-interest/${id}`, data)
+    await axios.put(`/api/point-of-interest/${id}`, data)
   }
 
   /**
@@ -80,7 +80,7 @@ class MapService {
    * @returns A promise that resolves when the affected area is successfully updated.
    */
   async updateAffectedArea(id: number, data: any) {
-    await axiosInstance.put(`/affected-area/${id}`, data)
+    await axios.put(`/api/affected-area/${id}`, data)
   }
 
   /**
@@ -90,7 +90,7 @@ class MapService {
    * @returns A promise that resolves when the affected area is successfully deleted.
    */
   async deleteAffectedArea(id: number) {
-    await axiosInstance.delete(`/affected-area/${id}`)
+    await axios.delete(`/api/affected-area/${id}`)
   }
 
   /**

@@ -10,8 +10,8 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/map', name: 'map', component: { template: '<div>Map</div>' } },
-    { path: '/storage', name: 'storage', component: { template: '<div>Storage</div>' } }
-  ]
+    { path: '/storage', name: 'storage', component: { template: '<div>Storage</div>' } },
+  ],
 })
 
 // Mock the notification service
@@ -35,8 +35,8 @@ describe('NotificationBar.vue', () => {
 
     const wrapper = mount(NotificationBar, {
       global: {
-        plugins: [router] // Add router to global plugins
-      }
+        plugins: [router], // Add router to global plugins
+      },
     })
     await flushPromises() // Wait for promises to resolve
 
@@ -49,8 +49,8 @@ describe('NotificationBar.vue', () => {
     // ...existing test code
     const wrapper = mount(NotificationBar, {
       global: {
-        plugins: [router]
-      }
+        plugins: [router],
+      },
     })
     // ...rest of the test
   })

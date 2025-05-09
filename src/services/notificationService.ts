@@ -1,4 +1,4 @@
-import axiosInstance from '@/services/axiosService'
+import axios from 'axios'
 
 class NotificationService {
   /**
@@ -7,7 +7,7 @@ class NotificationService {
    * @returns A promise that resolves to the data containing the expiring storage items.
    */
   async getExpiringStorageItems() {
-    const response = await axiosInstance.get('/storage-items/household/expiring')
+    const response = await axios.get('/api/storage-items/household/expiring')
     return response.data
   }
 
@@ -17,7 +17,7 @@ class NotificationService {
    * @returns A promise that resolves to the data containing the incidents.
    */
   async getIncidents(latitude: number, longitude: number) {
-    const response = await axiosInstance.post('/notification/incidents', {
+    const response = await axios.post('/api/notification/incidents', {
       latitude,
       longitude,
     })

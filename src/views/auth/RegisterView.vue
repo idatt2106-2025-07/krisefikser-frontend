@@ -75,7 +75,7 @@ async function handleSubmit() {
     }
 
     const res = await axios.post(
-      'http://dev.krisefikser.com:8080/api/auth/register',
+      'http://dev.krisefikser.localhost:8080/api/auth/register',
       {
         name: name.value,
         email: email.value,

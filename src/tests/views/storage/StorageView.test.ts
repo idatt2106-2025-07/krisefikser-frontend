@@ -6,7 +6,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import StorageView from '@/views/storage/StorageView.vue'
 import { createPinia, setActivePinia } from 'pinia'
 import { useStorageItemStore } from '@/stores/storageItemStore'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 // Mock components
 vi.mock('@/components/common/SearchBar.vue', () => ({
@@ -33,10 +33,18 @@ vi.mock('@/components/storage/TimeLeft.vue', () => ({
   },
 }))
 
+vi.mock('@/components/common/TabBar.vue', () => ({
+  default: {
+    template: '<div class="mock-tab-bar"></div>',
+  },
+}))
 // Mock vue-router
 vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({
     push: vi.fn(),
+  })),
+  useRoute: vi.fn(() => ({
+    query: {},
   })),
 }))
 
@@ -47,6 +55,7 @@ vi.mock('@/assets/three-dots-horizontal.svg', () => ({
 describe('StorageView', () => {
   let wrapper
   const mockRouter = { push: vi.fn() }
+  const mockRoute = { params: {}, query: {} }
   let store
 
   const mockAggregatedItems = [
@@ -71,6 +80,7 @@ describe('StorageView', () => {
 
     // Setup mocked router
     vi.mocked(useRouter).mockReturnValue(mockRouter)
+    vi.mocked(useRoute).mockReturnValue(mockRoute)
 
     // Get actual store instance
     store = useStorageItemStore()

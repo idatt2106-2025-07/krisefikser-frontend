@@ -102,7 +102,7 @@ onMounted(async () => {
                       :loading="readinessIsLoading"
                     />
                   </div>
-                  <p>View Emergency Storage -></p>
+                  <p id="emergancy-storage-text">View Emergency Storage -></p>
                 </InfoCard>
               </div>
 
@@ -170,13 +170,13 @@ onMounted(async () => {
   gap: 2rem;
   flex: 1;
   margin-bottom: 2rem;
+  align-items: center;
 }
 
 .map-area {
   display: flex;
   width: 50%;
   height: 508px;
-  margin: 20px;
   border-radius: 10px;
   overflow: hidden;
 }
@@ -188,6 +188,7 @@ onMounted(async () => {
 
 .buttons-column {
   width: 50%;
+  height: 508px;
 }
 
 .page-buttons {
@@ -205,7 +206,6 @@ onMounted(async () => {
 }
 
 .button-container {
-  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -231,7 +231,14 @@ onMounted(async () => {
   padding-bottom: 0.5rem;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1156px) {
+  #emergancy-storage-text {
+    display: none;
+  }
+}
+
+
+@media (max-width: 768px) {
   .main-content {
     flex-direction: column;
   }
@@ -242,6 +249,19 @@ onMounted(async () => {
 
   .buttons-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .map-area {
+    order: 2;
+    width: 100%;
+    height: 400px;
+  }
+
+  .buttons-column {
+    order: 1;
+    width: 100%;
+    height: auto;
+    margin-bottom: 16px;
   }
 }
 
@@ -256,6 +276,10 @@ onMounted(async () => {
   }
 
   .button-container p {
+    display: none;
+  }
+
+  .days-circle-wrapper {
     display: none;
   }
 }

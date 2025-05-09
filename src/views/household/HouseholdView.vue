@@ -8,6 +8,7 @@ import { getCoordinatesFromAddress } from '@/services/geoNorgeService'
 import EmergencyGroupContent from '@/components/user/EmergencyGroupContent.vue'
 import UserProfileTab from '@/components/user/UserProfileTab.vue'
 import UserProfileSettingsTab from '@/components/user/UserProfileSettingsTab.vue'
+import nonMemberUserService from '@/services/NonMemberUserService'
 
 /**
  * Interface representing a sidebar item.
@@ -27,6 +28,10 @@ interface SidebarItem {
  */
 interface Member {
   name: string
+  id?: number
+  email?: string
+  type?: string
+  memberType: 'user' | 'nonUser' // To distinguish between user and non-user members
 }
 
 /**
@@ -134,6 +139,49 @@ const closeLeaveModal = () => {
   addressError.value = ''
 }
 
+const showAddNonUserModal = ref(false)
+const nonUserMemberData = ref({
+  name: '',
+  type: 'CHILD',
+})
+const nonUserMemberError = ref('')
+const isAddingNonUser = ref(false)
+
+const addMemberWithoutUser = () => {
+  showAddNonUserModal.value = true
+  nonUserMemberData.value = {
+    name: '',
+    type: 'CHILD',
+  }
+  nonUserMemberError.value = ''
+}
+
+const closeAddNonUserModal = () => {
+  showAddNonUserModal.value = false
+  nonUserMemberError.value = ''
+}
+
+const submitAddNonUserMember = async () => {
+  if (!nonUserMemberData.value.name) {
+    nonUserMemberError.value = 'Name is required.'
+    return
+  }
+
+  isAddingNonUser.value = true
+  nonUserMemberError.value = ''
+
+  try {
+    await nonMemberUserService.addNonUserMember(nonUserMemberData.value)
+    await fetchMembers() // Refresh the member list
+    closeAddNonUserModal()
+  } catch (e) {
+    nonUserMemberError.value = 'Failed to add non-user member. Please try again.'
+    console.error(e)
+  } finally {
+    isAddingNonUser.value = false
+  }
+}
+
 const submitLeaveHousehold = async () => {
   isSubmitting.value = true
   addressError.value = ''
@@ -183,6 +231,22 @@ const submitJoinRequest = async () => {
   }
 }
 
+const deleteNonUserMember = async (id?: number) => {
+  if (id === undefined) {
+    console.error('Cannot delete member: ID is undefined')
+    return
+  }
+
+  try {
+    await nonMemberUserService.deleteNonUserMember(id)
+    await fetchMembers()
+    activePopupMember.value = null
+  } catch (e) {
+    console.error('Failed to delete non-user member:', e)
+    alert('Failed to delete non-user member')
+  }
+}
+
 const submitInvite = async () => {
   if (!inviteEmail.value || !inviteEmail.value.includes('@')) {
     inviteError.value = 'Please enter a valid email address.'
@@ -202,6 +266,21 @@ const submitInvite = async () => {
   }
 }
 
+const sortedMembers = computed(() => {
+  return [...members.value].sort((a, b) => {
+    // Put current user at the top
+    if (a.name === currentUserName.value) return -1
+    if (b.name === currentUserName.value) return 1
+
+    // Then sort by member type (user members before non-user members)
+    if (a.memberType === 'user' && b.memberType === 'nonUser') return -1
+    if (a.memberType === 'nonUser' && b.memberType === 'user') return 1
+
+    // Finally sort alphabetically by name
+    return a.name.localeCompare(b.name)
+  })
+})
+
 /**
  * Fetches the list of household members.
  * Simulates an API call with a delay.
@@ -214,7 +293,21 @@ const fetchMembers = async () => {
   try {
     const data = await householdService.getMyHouseholdDetails()
 
-    members.value = data.members || []
+    // Combine regular members with non-user members
+    const regularMembers =
+      data.members?.map((member: ApiMember) => ({
+        ...member,
+        memberType: 'user' as const,
+      })) || []
+
+    const nonUserMembers =
+      data.nonUserMembers?.map((member: ApiNonUserMember) => ({
+        ...member,
+        memberType: 'nonUser' as const,
+      })) || []
+
+    // Combine both arrays into members
+    members.value = [...regularMembers, ...nonUserMembers]
     householdTitle.value = data.name
     householdId.value = data.id
   } catch (e) {
@@ -223,6 +316,24 @@ const fetchMembers = async () => {
   } finally {
     isLoading.value = false
   }
+}
+
+/**
+ * Interface representing API response for regular members.
+ */
+interface ApiMember {
+  name: string
+  id?: number
+  email?: string
+}
+
+/**
+ * Interface representing API response for non-user members.
+ */
+interface ApiNonUserMember {
+  name: string
+  id: number
+  type: string
 }
 
 const fetchJoinRequests = async () => {
@@ -307,16 +418,19 @@ onBeforeUnmount(() => {
       <div class="sidebar-wrapper">
         <SidebarContent
           :content-title="householdTitle"
-          sidebar-title="household"
+          sidebar-title="householdTitle"
           :sidebar-items="menuItems"
           @item-selected="handleItemSelected"
           class="sidebar-component"
         >
           <template #household>
+            <h3 class="title">{{ householdTitle ?? '' }}</h3>
             <p>Household id: {{ householdId ?? '' }}</p>
             <button class="blue-button" @click="openInviteModal">Invite user</button>
             <br />
-            <button class="blue-button">Add member without user</button>
+            <button class="blue-button" @click="addMemberWithoutUser">
+              Add member without user
+            </button>
 
             <div class="join-requests-section" v-if="joinRequests.length">
               <h4>Pending Join Requests</h4>
@@ -345,20 +459,41 @@ onBeforeUnmount(() => {
               </div>
 
               <div v-else class="members-list">
-                <div v-for="member in members" :key="member.name" class="member-card">
-                  <span>{{ member.name }}</span>
-                  <div class="edit-container">
+                <div v-for="member in sortedMembers" :key="member.name" class="member-card">
+                  <div class="member-info">
+                    <span
+                      class="member-name"
+                      :class="{ 'current-user': member.name === currentUserName }"
+                    >
+                      {{ member.name }}{{ member.name === currentUserName ? ' (you)' : '' }}
+                    </span>
+                    <span class="member-description">
+                      {{
+                        member.memberType === 'user'
+                          ? member.email
+                          : `Type: ${member.type?.toLowerCase()}`
+                      }}
+                    </span>
+                  </div>
+                  <div
+                    class="edit-container"
+                    v-if="member.name === currentUserName || member.memberType === 'nonUser'"
+                  >
                     <button class="edit-button" @click="editMember(member, $event)">•••</button>
                     <div v-if="activePopupMember === member.name" class="member-popup">
                       <template v-if="member.name === currentUserName">
                         <div class="popup-option" @click.stop="openLeaveModal">Leave household</div>
-                        <div class="popup-option" @click="requestToJoinAnotherHousehold">
+                        <div class="popup-option" @click.stop="requestToJoinAnotherHousehold">
                           Request to join another household
                         </div>
                       </template>
-                      <template v-else>
-                        <div class="popup-option">Delete member</div>
-                        <div class="popup-option">Show position</div>
+                      <template v-else-if="member.memberType === 'nonUser'">
+                        <div
+                          class="popup-option delete-option"
+                          @click.stop="deleteNonUserMember(member.id)"
+                        >
+                          Delete member
+                        </div>
                       </template>
                     </div>
                   </div>
@@ -440,10 +575,43 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
+
+    <!-- Add Non-User Member Modal -->
+    <div v-if="showAddNonUserModal" class="modal-overlay">
+      <div class="modal-content">
+        <h3>Add Household Member Without User Account</h3>
+        <label>
+          Name:
+          <input v-model="nonUserMemberData.name" type="text" required />
+        </label>
+        <label>
+          Type:
+          <select v-model="nonUserMemberData.type">
+            <option value="CHILD">Child</option>
+            <option value="ANIMAL">Animal</option>
+            <option value="OTHER">Other</option>
+          </select>
+        </label>
+        <div v-if="nonUserMemberError" class="error">{{ nonUserMemberError }}</div>
+        <div class="modal-actions">
+          <button @click="closeAddNonUserModal" :disabled="isAddingNonUser">Cancel</button>
+          <button
+            @click="submitAddNonUserMember"
+            :disabled="isAddingNonUser || !nonUserMemberData.name"
+          >
+            {{ isAddingNonUser ? 'Adding...' : 'Add Member' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.title {
+  text-align: center;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -468,6 +636,11 @@ onBeforeUnmount(() => {
   }
 }
 
+.delete-option:hover {
+  color: #dc2626 !important;
+  background-color: #fee2e2 !important;
+}
+
 .modal-content {
   background: #fff;
   border-radius: 8px;
@@ -475,6 +648,21 @@ onBeforeUnmount(() => {
   min-width: 320px;
   max-width: 500px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+}
+
+.member-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.member-name {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.member-description {
+  font-size: 0.85rem;
+  color: #64748b;
 }
 
 .modal-actions {

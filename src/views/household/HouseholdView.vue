@@ -319,18 +319,18 @@ const fetchMembers = async () => {
  * Interface representing API response for regular members.
  */
 interface ApiMember {
-  name: string;
-  id?: number;
-  email?: string;
+  name: string
+  id?: number
+  email?: string
 }
 
 /**
  * Interface representing API response for non-user members.
  */
 interface ApiNonUserMember {
-  name: string;
-  id: number;
-  type: string;
+  name: string
+  id: number
+  type: string
 }
 
 const fetchJoinRequests = async () => {

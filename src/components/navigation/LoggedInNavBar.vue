@@ -97,11 +97,14 @@ onUnmounted(() => {
         <button v-if="authStore.isAdmin" class="dropdown-item" @click="navigateTo('/admin')">
           Admin Dashboard
         </button>
-        <button v-if="authStore.isSuperAdmin" class="dropdown-item" @click="navigateTo('/super-admin')">
+        <button
+          v-if="authStore.isSuperAdmin"
+          class="dropdown-item"
+          @click="navigateTo('/super-admin')"
+        >
           SuperAdmin Dashboard
         </button>
       </ul>
-
     </div>
 
     <!-- Rest of component remains unchanged -->

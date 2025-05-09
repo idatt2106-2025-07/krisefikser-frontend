@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import axios from 'axios'
@@ -9,6 +9,8 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const isMenuOpen = ref(false)
+const menuRef = ref<HTMLElement | null>(null)
+const hamburgerRef = ref<HTMLElement | null>(null)
 
 const navigateToProfile = () => {
   router.push('/profile')
@@ -36,6 +38,27 @@ const navigateTo = (path: string) => {
   router.push(path)
   isMenuOpen.value = false
 }
+
+// Close menu when clicking outside
+function handleClickOutside(event: MouseEvent) {
+  if (
+    isMenuOpen.value &&
+    menuRef.value &&
+    hamburgerRef.value &&
+    !menuRef.value.contains(event.target as Node) &&
+    !hamburgerRef.value.contains(event.target as Node)
+  ) {
+    isMenuOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <template>
@@ -51,7 +74,11 @@ const navigateTo = (path: string) => {
       />
 
       <!-- Custom Hamburger Icon and Menu Text -->
-      <div class="custom-button hamburger-menu p-d-flex p-ai-center gap-2" @click="toggleMenu">
+      <div
+        ref="hamburgerRef"
+        class="custom-button hamburger-menu p-d-flex p-ai-center gap-2"
+        @click.stop="toggleMenu"
+      >
         <div class="hamburger-icon">
           <div class="line"></div>
           <div class="line"></div>
@@ -60,7 +87,7 @@ const navigateTo = (path: string) => {
         <span class="menu-text">Menu</span>
       </div>
 
-      <ul v-if="isMenuOpen" class="dropdown-menu">
+      <ul v-if="isMenuOpen" ref="menuRef" class="dropdown-menu">
         <li class="dropdown-item" @click="navigateTo('/')">Home</li>
         <li class="dropdown-item" @click="navigateTo('/storage')">Emergency storage</li>
         <li class="dropdown-item" @click="navigateTo('/info')">General info</li>
@@ -75,7 +102,7 @@ const navigateTo = (path: string) => {
       </ul>
     </div>
 
-    <!-- Right side: Profile and Logout -->
+    <!-- Rest of component remains unchanged -->
     <div class="right-section p-d-flex p-ai-center gap-4">
       <Button class="custom-button profile-button p-button-sm" @click="navigateToProfile">
         <img src="@/assets/icons/profile_icon.svg" alt="Profile Icon" class="p-button-icon" />

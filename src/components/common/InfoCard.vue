@@ -25,11 +25,16 @@ const handleClick = () => {
 </script>
 
 <template>
-  <div :class="['info-card', cardClass, { clickable: clickable }]" @click="handleClick">
+  <component
+    :is="clickable ? 'button' : 'div'"
+    :class="['info-card', cardClass, { clickable: clickable }]"
+    @click="handleClick"
+    :type="clickable ? 'button' : undefined"
+  >
     <div class="card-content">
       <slot></slot>
     </div>
-  </div>
+  </component>
 </template>
 
 <style scoped>
@@ -48,18 +53,37 @@ const handleClick = () => {
   transition:
     transform 0.2s,
     box-shadow 0.2s;
+  border: none;
+  font: inherit;
+  color: inherit;
+  background-color: white;
 }
 
 .clickable {
   cursor: pointer;
 }
 
-.clickable:hover {
+.clickable:hover, .clickable:focus-visible {
   transform: translateY(-5px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  outline: none;
+  background-color: white;
+  border: none;
+}
+
+.clickable:focus-visible {
+  outline: 3px solid #0066cc;
+  outline-offset: 2px;
+  background-color: white;
 }
 
 .card-content {
   width: 100%;
+}
+
+button.info-card:hover {
+  background-color: white !important;
+  border: none;
+  color: inherit;
 }
 </style>

@@ -82,8 +82,8 @@ async function handleSubmit() {
         password: password.value,
         householdRequest: {
           name: householdName.value,
-          longitude: coordinates.value?.lat,
-          latitude: coordinates.value?.lon,
+          longitude: coordinates.value?.lon,
+          latitude: coordinates.value?.lat,
         },
       },
       { withCredentials: true },

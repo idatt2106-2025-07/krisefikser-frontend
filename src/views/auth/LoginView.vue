@@ -8,6 +8,7 @@ import Password from 'primevue/password'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 
 // Form states
@@ -77,7 +78,11 @@ async function handleLogin() {
     } else {
       await authStore.fetchUser()
       loginSuccess.value = 'Login successful, redirecting...'
-      setTimeout(() => router.push('/'), 1500)
+
+      const redirect = route.query.redirect
+      const redirectPath: string = typeof redirect === 'string' ? redirect : '/'
+
+      setTimeout(() => router.push(redirectPath), 1500)
     }
   } catch (error) {
     handleLoginError(error)

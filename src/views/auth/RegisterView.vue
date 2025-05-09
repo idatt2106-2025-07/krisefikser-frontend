@@ -23,7 +23,7 @@ const coordinates = ref<{ lat: number; lon: number } | null>(null)
 
 // toast state
 const toastMessage = ref<string | null>(null)
-const toastType = ref<'' | 'success' | 'error'>('')
+const toastType = ref<'' | 'warning' | 'error'>('')
 
 const siteKey = 'a754b964-3852-4810-a35e-c13ad84ce644'
 
@@ -111,8 +111,8 @@ async function handleSubmit() {
 
     if (res.status === 201) {
       toastMessage.value =
-        'Registered successfully. A verification email has been sent. Redirecting to login…'
-      toastType.value = 'success'
+        'A verification email has been sent. Redirecting to login…'
+      toastType.value = 'warning'
       setTimeout(() => {
         toastMessage.value = null
         toastType.value = ''

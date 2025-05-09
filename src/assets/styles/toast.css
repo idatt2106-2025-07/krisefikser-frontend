@@ -24,6 +24,15 @@
   border: 1px solid #c6f6d5;
 }
 
+.notification.warning,
+.toast.warning,
+.toast-message.warning {
+  background-color: #fff8dc; /* Cornsilk */
+  color: #856404; /* Dark yellow-brown */
+  border: 1px solid #ffeeba; /* Light yellow */
+
+}
+
 /* Error toast style */
 .notification.error,
 .toast.error,

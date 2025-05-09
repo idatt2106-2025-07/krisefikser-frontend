@@ -23,9 +23,6 @@ import SuperAdminView from '@/views/admin/SuperAdminView.vue'
 import TwoFactorAuthView from '@/views/2fa/TwoFactorAuthView.vue'
 import TwoFactorNotifyView from '@/views/2fa/TwoFactorNotifyView.vue'
 import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
-import BeforeCrisisView from '@/views/general/BeforeCrisisView.vue'
-import DuringCrisisView from '@/views/general/DuringCrisisView.vue'
-import AfterCrisisView from '@/views/general/AfterCrisisView.vue'
 import NewsDetailView from '@/views/news/NewsDetailView.vue'
 import UserProfile from '@/views/user/ProfileView.vue'
 
@@ -33,6 +30,7 @@ import UserProfile from '@/views/user/ProfileView.vue'
 import QuizCreator from '@/views/admin/QuizCreator.vue'
 
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
+import SpecificCrisisTimeView from '@/views/general/SpecificCrisisTimeView.vue'
 import UpdatePOIView from '@/views/admin/UpdatePOIView.vue'
 import UpdateAffectedAreaView from '@/views/admin/UpdateAffectedAreaView.vue'
 
@@ -177,19 +175,10 @@ const router = createRouter({
       component: PrivacyPolicyView,
     },
     {
-      path: '/general-info/before-crisis',
-      name: 'before-crisis',
-      component: BeforeCrisisView,
-    },
-    {
-      path: '/general-info/during-crisis',
-      name: 'during-crisis',
-      component: DuringCrisisView,
-    },
-    {
-      path: '/general-info/after-crisis',
-      name: 'after-crisis',
-      component: AfterCrisisView,
+      path: '/general-info/:time',
+      name: 'general-info-time',
+      component: SpecificCrisisTimeView,
+      props: true,
     },
     {
       path: '/news/:id',

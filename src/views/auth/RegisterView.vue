@@ -75,7 +75,7 @@ async function handleSubmit() {
     }
 
     const res = await axios.post(
-      'http://dev.krisefikser.com:8080/api/auth/register',
+      'http://dev.krisefikser.localhost:8080/api/auth/register',
       {
         name: name.value,
         email: email.value,
@@ -204,8 +204,11 @@ async function fetchCoordinates() {
       <div v-if="coordinates">Coordinates: {{ coordinates.lat }}, {{ coordinates.lon }}</div>
 
       <div class="checkbox-container">
-        <input type="checkbox" class="agreeToTerms" v-model="agreeToTerms" :disabled="isLoading" />
-        <label for="agreeToTerms">I agree to the terms and conditions</label>
+        <input type="checkbox" id="agreeToTerms" v-model="agreeToTerms" :disabled="isLoading" />
+        <label for="agreeToTerms"
+          >I agree to the
+          <router-link to="/privacy-policy">terms and conditions</router-link></label
+        >
       </div>
 
       <vue-hcaptcha
@@ -276,7 +279,6 @@ async function fetchCoordinates() {
 /* — misc controls — */
 .checkbox-container {
   display: flex;
-  align-items: center;
   gap: 0.5rem;
   margin: 1rem 0;
 }
@@ -307,5 +309,12 @@ button:disabled {
 p {
   font-size: 16px;
   font-weight: bold;
+}
+#agreeToTerms {
+  margin: 0;
+}
+.checkbox-container label {
+  margin: 0;
+  line-height: 1;
 }
 </style>

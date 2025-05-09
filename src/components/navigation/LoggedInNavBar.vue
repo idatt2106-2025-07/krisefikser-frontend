@@ -11,7 +11,7 @@ const authStore = useAuthStore()
 const isMenuOpen = ref(false)
 
 const navigateToProfile = () => {
-  router.push('/settings')
+  router.push('/profile')
 }
 
 const logout = async () => {
@@ -65,6 +65,7 @@ const navigateTo = (path: string) => {
         <li class="dropdown-item" @click="navigateTo('/storage')">Emergency storage</li>
         <li class="dropdown-item" @click="navigateTo('/info')">General info</li>
         <li class="dropdown-item" @click="navigateTo('/quiz')">Quiz</li>
+        <li class="dropdown-item" @click="navigateTo('/household')">Household</li>
         <li v-if="authStore.isAdmin" class="dropdown-item" @click="navigateTo('/admin')">
           Admin Dashboard
         </li>

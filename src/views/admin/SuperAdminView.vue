@@ -18,6 +18,51 @@
         </summary>
         <PrivacyPolicyEditor policyType="registered" />
       </details>
+
+      <details class="editor-menu">
+        <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right arrow-icon"></i>
+          <i class="fas fa-info-circle"></i>
+          General Information Management
+        </summary>
+        <ManageGeneralInfo />
+      </details>
+
+      <details class="editor-menu">
+        <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right arrow-icon"></i>
+          <i class="fas fa-map-marker-alt"></i>
+          Add Point of Interest
+        </summary>
+        <AddPOIView />
+      </details>
+
+      <details class="editor-menu">
+        <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right arrow-icon"></i>
+          <i class="fas fa-edit"></i>
+          Update Point of Interest
+        </summary>
+        <UpdatePOIView />
+      </details>
+
+      <details class="editor-menu">
+        <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right arrow-icon"></i>
+          <i class="fas fa-exclamation-triangle"></i>
+          Add Affected Area
+        </summary>
+        <AddAffectedAreaView />
+      </details>
+
+      <details class="editor-menu">
+        <summary class="editor-menu-summary">
+          <i class="fas fa-chevron-right arrow-icon"></i>
+          <i class="fas fa-pencil-alt"></i>
+          Update Affected Area
+        </summary>
+        <UpdateAffectedAreaView />
+      </details>
     </div>
   </div>
 </template>
@@ -25,6 +70,11 @@
 <script setup lang="ts">
 import AdminManagement from '@/components/admin/AdminManager.vue'
 import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor.vue'
+import ManageGeneralInfo from '@/components/admin/ManageGeneralInfo.vue'
+import AddPOIView from './AddPOIView.vue'
+import UpdatePOIView from './UpdatePOIView.vue'
+import AddAffectedAreaView from './AddAffectedAreaView.vue'
+import UpdateAffectedAreaView from './UpdateAffectedAreaView.vue'
 </script>
 
 <style scoped>
@@ -75,5 +125,10 @@ import PrivacyPolicyEditor from '@/components/privacy-policy/PrivacyPolicyEditor
 }
 .editor-menu[open] .editor-menu-summary .arrow-icon {
   transform: rotate(90deg);
+}
+
+/* Add padding to the content inside the details */
+.editor-menu > :not(summary) {
+  padding: 1rem;
 }
 </style>

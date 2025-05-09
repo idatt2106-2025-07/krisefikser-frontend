@@ -126,7 +126,6 @@ onMounted(async () => {
                   <p>View and administrate your profile, household and emergency group</p>
                 </InfoCard>
               </div>
-
             </div>
           </div>
         </div>
@@ -237,7 +236,6 @@ onMounted(async () => {
     display: none;
   }
 }
-
 
 @media (max-width: 768px) {
   .main-content {

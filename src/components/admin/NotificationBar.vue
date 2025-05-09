@@ -126,10 +126,7 @@ const fetchIncidents = async () => {
       }
 
       // Call the API with the location data
-      const response = await notificationService.getIncidents(
-        location.latitude,
-        location.longitude,
-      )
+      const response = await notificationService.getIncidents(location.latitude, location.longitude)
 
       if (!response || response.length === 0) {
         return []

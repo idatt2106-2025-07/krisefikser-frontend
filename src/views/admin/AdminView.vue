@@ -27,7 +27,14 @@
           <i class="fas fa-chevron-right"></i>
           Add Point of Interest
         </summary>
-        <AddPOIView />
+        <div class="editor-content">
+          <div class="map-container">
+            <TheMap :isAdminPage="true" @map-click="handleMapClick" />
+          </div>
+          <div class="form-container">
+            <AddPOIView :longitude="selectedLng" :latitude="selectedLat" />
+          </div>
+        </div>
       </details>
 
       <details class="editor-menu">
@@ -35,7 +42,21 @@
           <i class="fas fa-chevron-right"></i>
           Update Point of Interest
         </summary>
-        <UpdatePOIView />
+        <div class="editor-content">
+          <div class="map-container">
+            <TheMap :isAdminPage="true" @marker-click="handleMarkerClick" @edit-poi="handleEditPOI" />
+          </div>
+          <div class="form-container">
+            <div v-if="selectedPoiId === null" class="placeholder-text">
+              <p>Click on a POI and select "Edit" to update.</p>
+            </div>
+
+            <UpdatePOIView
+              v-else
+              :poi-id="selectedPoiId"
+            />
+          </div>
+        </div>
       </details>
 
       <details class="editor-menu">
@@ -43,7 +64,14 @@
           <i class="fas fa-chevron-right"></i>
           Add Affected Area
         </summary>
-        <AddAffectedAreaView />
+        <div class="editor-content">
+          <div class="map-container">
+            <TheMap :isAdminPage="true" @map-click="handleMapClick" />
+          </div>
+          <div class="form-container">
+            <AddAffectedAreaView :longitude="selectedLng" :latitude="selectedLat" />
+          </div>
+        </div>
       </details>
 
       <details class="editor-menu">
@@ -51,7 +79,22 @@
           <i class="fas fa-chevron-right"></i>
           Update Affected Area
         </summary>
-        <UpdateAffectedAreaView />
+        <div class="editor-content">
+          <div class="map-container">
+            <TheMap :isAdminPage="true" @edit-affected-area="handleEditAffectedArea" />
+          </div>
+          <div class="form-container">
+            <div v-if="!selectedAffectedAreaId" class="placeholder-text">
+              <p>Click on an Affected Area and select "Edit" to update.</p>
+            </div>
+
+            <UpdateAffectedAreaView
+              v-else
+              :affected-area-id="selectedAffectedAreaId"
+              @update:affectedAreaId="handleAffectedAreaUpdate"
+            />
+          </div>
+        </div>
       </details>
     </div>
   </div>
@@ -65,6 +108,7 @@ import AddPOIView from './AddPOIView.vue'
 import UpdatePOIView from './UpdatePOIView.vue'
 import AddAffectedAreaView from './AddAffectedAreaView.vue'
 import UpdateAffectedAreaView from './UpdateAffectedAreaView.vue'
+import TheMap from '@/components/map/TheMap.vue'
 
 const email = ref('')
 const tabs = ref([
@@ -72,17 +116,21 @@ const tabs = ref([
   { label: 'Map', type: 'Map' },
   { label: 'Invite Admin', type: 'InviteAdmin' },
 ])
-const value = ref('0') // Initialize value as a ref with a default value
+const value = ref('0')
 const loading = ref(false)
 const message = ref('')
 const success = ref(false)
+
+const selectedLng = ref('')
+const selectedLat = ref('')
+const selectedPoiId = ref<number | null>(null)
+const selectedAffectedAreaId = ref<number | null>(null)
 
 function handleInviteAdmin() {
   loading.value = true
   message.value = ''
   success.value = false
 
-  // Simulate an API call
   setTimeout(() => {
     if (email.value) {
       message.value = 'Invite sent successfully!'
@@ -93,6 +141,36 @@ function handleInviteAdmin() {
     }
     loading.value = false
   }, 1000)
+}
+
+function handleMapClick({ lng, lat }: { lng: number; lat: number }) {
+  selectedLng.value = lng.toString()
+  selectedLat.value = lat.toString()
+}
+
+function handleMarkerClick(poiId: number) {
+  console.log(`Marker clicked with POI ID: ${poiId}`)
+  selectedPoiId.value = poiId
+}
+
+function handleEditPOI(poiId: number) {
+  console.log(`Edit POI event received for POI ID: ${poiId}`)
+  selectedPoiId.value = poiId
+}
+
+function handlePoiUpdate(updatedPoiId: number) {
+  console.log(`POI updated with ID: ${updatedPoiId}`)
+  selectedPoiId.value = null
+}
+
+function handleEditAffectedArea(affectedAreaId: number) {
+  console.log(`Edit Affected Area event received for ID: ${affectedAreaId}`)
+  selectedAffectedAreaId.value = affectedAreaId
+}
+
+function handleAffectedAreaUpdate(updatedAffectedAreaId: number) {
+  console.log(`Affected Area updated with ID: ${updatedAffectedAreaId}`)
+  selectedAffectedAreaId.value = null
 }
 </script>
 
@@ -172,5 +250,30 @@ function handleInviteAdmin() {
 /* Add padding to the content inside the details */
 .editor-menu > :not(summary) {
   padding: 1rem;
+}
+
+.editor-content {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.map-container {
+  flex: 1;
+  height: 400px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.form-container {
+  flex: 1;
+}
+
+.placeholder-text {
+  font-size: 1rem;
+  color: #718096;
+  text-align: center;
+  margin-top: 2rem;
 }
 </style>

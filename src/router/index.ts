@@ -35,6 +35,7 @@ import QuizCreator from '@/views/admin/QuizCreator.vue'
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
 import UpdatePOIView from '@/views/admin/UpdatePOIView.vue'
 import UpdateAffectedAreaView from '@/views/admin/UpdateAffectedAreaView.vue'
+import SpecificCrisisTimeView from '@/views/general/SpecificCrisisTimeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -177,19 +178,10 @@ const router = createRouter({
       component: PrivacyPolicyView,
     },
     {
-      path: '/general-info/before-crisis',
-      name: 'before-crisis',
-      component: BeforeCrisisView,
-    },
-    {
-      path: '/general-info/during-crisis',
-      name: 'during-crisis',
-      component: DuringCrisisView,
-    },
-    {
-      path: '/general-info/after-crisis',
-      name: 'after-crisis',
-      component: AfterCrisisView,
+      path: '/general-info/:time',
+      name: 'general-info-time',
+      component: SpecificCrisisTimeView,
+      props: true,
     },
     {
       path: '/news/:id',

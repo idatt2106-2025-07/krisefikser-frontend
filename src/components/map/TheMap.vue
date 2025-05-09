@@ -368,10 +368,22 @@ watch(
  * Waits for the map to be loaded.
  */
 onMounted(() => {
-  watch([isMapLoaded, isStyleLoaded], ([mapLoaded, styleLoaded]) => {
+  watch([isMapLoaded, isStyleLoaded], async ([mapLoaded, styleLoaded]) => {
     if (mapLoaded && styleLoaded) {
+      // First, check if user is logged in and get household coordinates before other initializations
+      await initializeHouseholdMarker()
+
+      // If household marker exists, center map on it
+      if (householdMarker.value && isHouseholdVisible.value) {
+        const coordinates = householdMarker.value.getLngLat();
+        map.value?.flyTo({
+          center: [coordinates.lng, coordinates.lat],
+          zoom: 9,
+          essential: true
+        });
+      }
+
       setTimeout(() => {
-        initializeHouseholdMarker()
         if (filtersRef.value.household_positions) {
           startPositionTracking()
         }

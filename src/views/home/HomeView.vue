@@ -42,8 +42,8 @@ const navigateToInfo = () => {
   router.push('/general-info')
 }
 
-const navigateToQuiz = () => {
-  router.push('/quiz')
+const navigateToProfile = () => {
+  router.push('/profile')
 }
 
 const navigateToNews = () => {
@@ -113,19 +113,20 @@ onMounted(async () => {
                 </InfoCard>
               </div>
 
-              <div class="button-container" @click="navigateToQuiz">
-                <InfoCard clickable>
-                  <h2>Quiz</h2>
-                  <p>Test your emergency knowledge</p>
-                </InfoCard>
-              </div>
-
               <div class="button-container" @click="navigateToNews">
                 <InfoCard clickable>
                   <h2>News</h2>
-                  <p>The news</p>
+                  <p>Get the latest new related to emergencies</p>
                 </InfoCard>
               </div>
+
+              <div class="button-container" @click="navigateToProfile">
+                <InfoCard clickable>
+                  <h2>Profile</h2>
+                  <p>View and administrate your profile, household and emergency group</p>
+                </InfoCard>
+              </div>
+
             </div>
           </div>
         </div>

@@ -20,14 +20,12 @@ import RegisterAdmin from '@/views/admin/RegisterAdmin.vue'
 import TwoFactorAuthView from '@/views/2fa/TwoFactorAuthView.vue'
 import TwoFactorNotifyView from '@/views/2fa/TwoFactorNotifyView.vue'
 import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
-import BeforeCrisisView from '@/views/general/BeforeCrisisView.vue'
-import DuringCrisisView from '@/views/general/DuringCrisisView.vue'
-import AfterCrisisView from '@/views/general/AfterCrisisView.vue'
 
 // Components
 import QuizCreator from '@/views/admin/QuizCreator.vue'
 
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
+import SpecificCrisisTimeView from '@/views/general/SpecificCrisisTimeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -148,19 +146,10 @@ const router = createRouter({
       component: PrivacyPolicyView,
     },
     {
-      path: '/general-info/before-crisis',
-      name: 'before-crisis',
-      component: BeforeCrisisView,
-    },
-    {
-      path: '/general-info/during-crisis',
-      name: 'during-crisis',
-      component: DuringCrisisView,
-    },
-    {
-      path: '/general-info/after-crisis',
-      name: 'after-crisis',
-      component: AfterCrisisView,
+      path: '/general-info/:time',
+      name: 'general-info-time',
+      component: SpecificCrisisTimeView,
+      props: true,
     },
   ],
 })

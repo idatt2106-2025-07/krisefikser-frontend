@@ -7,6 +7,7 @@ import { computed } from 'vue'
 import { getCoordinatesFromAddress } from '@/services/geoNorgeService'
 import UserProfileTab from '@/components/user/UserProfileTab.vue'
 import UserProfileSettingsTab from '@/components/user/UserProfileSettingsTab.vue'
+import nonMemberUserService from '@/services/NonMemberUserService'
 
 /**
  * Interface representing a sidebar item.
@@ -26,6 +27,10 @@ interface SidebarItem {
  */
 interface Member {
   name: string
+  id?: number
+  email?: string
+  type?: string
+  memberType: 'user' | 'nonUser' // To distinguish between user and non-user members
 }
 
 /**
@@ -133,6 +138,49 @@ const closeLeaveModal = () => {
   addressError.value = ''
 }
 
+const showAddNonUserModal = ref(false)
+const nonUserMemberData = ref({
+  name: '',
+  type: 'CHILD' // Default value
+})
+const nonUserMemberError = ref('')
+const isAddingNonUser = ref(false)
+
+const addMemberWithoutUser = () => {
+  showAddNonUserModal.value = true
+  nonUserMemberData.value = {
+    name: '',
+    type: 'CHILD'
+  }
+  nonUserMemberError.value = ''
+}
+
+const closeAddNonUserModal = () => {
+  showAddNonUserModal.value = false
+  nonUserMemberError.value = ''
+}
+
+const submitAddNonUserMember = async () => {
+  if (!nonUserMemberData.value.name) {
+    nonUserMemberError.value = 'Name is required.'
+    return
+  }
+
+  isAddingNonUser.value = true
+  nonUserMemberError.value = ''
+
+  try {
+    await nonMemberUserService.addNonUserMember(nonUserMemberData.value)
+    await fetchMembers() // Refresh the member list
+    closeAddNonUserModal()
+  } catch (e) {
+    nonUserMemberError.value = 'Failed to add non-user member. Please try again.'
+    console.error(e)
+  } finally {
+    isAddingNonUser.value = false
+  }
+}
+
 const submitLeaveHousehold = async () => {
   isSubmitting.value = true
   addressError.value = ''
@@ -211,7 +259,19 @@ const fetchMembers = async () => {
   try {
     const data = await householdService.getMyHouseholdDetails()
 
-    members.value = data.members || []
+    // Combine regular members with non-user members
+    const regularMembers = data.members?.map(member => ({
+      ...member,
+      memberType: 'user'
+    })) || []
+
+    const nonUserMembers = data.nonUserMembers?.map(member => ({
+      ...member,
+      memberType: 'nonUser'
+    })) || []
+
+    // Combine both arrays into members
+    members.value = [...regularMembers, ...nonUserMembers]
     householdTitle.value = data.name
     householdId.value = data.id
   } catch (e) {
@@ -313,7 +373,7 @@ onBeforeUnmount(() => {
             <p>Household id: {{ householdId ?? '' }}</p>
             <button class="blue-button" @click="openInviteModal">Invite user</button>
             <br />
-            <button class="blue-button">Add member without user</button>
+            <button class="blue-button" @click="addMemberWithoutUser">Add member without user</button>
 
             <div class="join-requests-section" v-if="joinRequests.length">
               <h4>Pending Join Requests</h4>
@@ -353,7 +413,6 @@ onBeforeUnmount(() => {
                       </template>
                       <template v-else>
                         <div class="popup-option">Delete member</div>
-                        <div class="popup-option">Show position</div>
                       </template>
                     </div>
                   </div>
@@ -435,6 +494,36 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
+
+    <!-- Add Non-User Member Modal -->
+    <div v-if="showAddNonUserModal" class="modal-overlay">
+      <div class="modal-content">
+        <h3>Add Household Member Without User Account</h3>
+        <label>
+          Name:
+          <input v-model="nonUserMemberData.name" type="text" required />
+        </label>
+        <label>
+          Type:
+          <select v-model="nonUserMemberData.type">
+            <option value="CHILD">Child</option>
+            <option value="ANIMAL">Animal</option>
+            <option value="OTHER">Other</option>
+          </select>
+        </label>
+        <div v-if="nonUserMemberError" class="error">{{ nonUserMemberError }}</div>
+        <div class="modal-actions">
+          <button @click="closeAddNonUserModal" :disabled="isAddingNonUser">Cancel</button>
+          <button
+            @click="submitAddNonUserMember"
+            :disabled="isAddingNonUser || !nonUserMemberData.name"
+          >
+            {{ isAddingNonUser ? 'Adding...' : 'Add Member' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 

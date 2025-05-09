@@ -126,7 +126,7 @@ onMounted(() => {
     <!-- Content Area -->
     <div class="content-area">
       <div v-if="activeItem" class="content-wrapper">
-        <h1 class="content-title">{{ props.contentTitle ?? activeItem.title }}</h1>
+        <h1 class="content-title">{{ activeItem.title }}</h1>
         <div class="content-body">
           <slot :name="activeItem.id" :item="activeItem"></slot>
         </div>
@@ -232,6 +232,7 @@ onMounted(() => {
 
 .content-wrapper {
   height: 100%;
+  position: relative;
 }
 
 .mobile-menu-button {
@@ -273,11 +274,13 @@ onMounted(() => {
     align-items: center;
   }
   .sidebar-container {
+    position: relative;
     flex-direction: column;
   }
 
   .sidebar {
-    position: fixed;
+    position: absolute;
+
     top: 0;
     left: -100%;
     z-index: 100;
@@ -294,6 +297,8 @@ onMounted(() => {
   .mobile-menu-button {
     display: flex;
     z-index: 99;
+    position: absolute;
+    margin: 20px;
   }
 
   .close-mobile-menu {

@@ -48,5 +48,21 @@ export const useUserStore = defineStore('user', {
       this.userInfo = null
       this.error = null
     },
+
+    async updateIsSharingLocation(
+      isSharing: boolean,
+      latitude: number | null,
+      longitude: number | null,
+    ) {
+      if (this.userInfo) {
+        try {
+          await userService.updateLocationSharing(isSharing, latitude, longitude)
+          await this.fetchUserInfo()
+        } catch (error) {
+          return error instanceof Error ? error.message : 'Failed to update sharing location'
+        }
+        this.userInfo.sharingLocation = isSharing
+      }
+    },
   },
 })

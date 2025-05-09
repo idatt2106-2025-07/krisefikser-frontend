@@ -228,6 +228,19 @@ const submitJoinRequest = async () => {
   }
 }
 
+const deleteNonUserMember = async (id: number) => {
+  if (!id) return
+
+  try {
+    await nonMemberUserService.deleteNonUserMember(id)
+    await fetchMembers()
+    activePopupMember.value = null
+  } catch (e) {
+    console.error('Failed to delete non-user member:', e)
+    alert('Failed to delete non-user member')
+  }
+}
+
 const submitInvite = async () => {
   if (!inviteEmail.value || !inviteEmail.value.includes('@')) {
     inviteError.value = 'Please enter a valid email address.'
@@ -246,6 +259,21 @@ const submitInvite = async () => {
     isInviting.value = false
   }
 }
+
+const sortedMembers = computed(() => {
+  return [...members.value].sort((a, b) => {
+    // Put current user at the top
+    if (a.name === currentUserName.value) return -1
+    if (b.name === currentUserName.value) return 1
+
+    // Then sort by member type (user members before non-user members)
+    if (a.memberType === 'user' && b.memberType === 'nonUser') return -1
+    if (a.memberType === 'nonUser' && b.memberType === 'user') return 1
+
+    // Finally sort alphabetically by name
+    return a.name.localeCompare(b.name)
+  })
+})
 
 /**
  * Fetches the list of household members.
@@ -400,24 +428,32 @@ onBeforeUnmount(() => {
               </div>
 
               <div v-else class="members-list">
-                <div v-for="member in members" :key="member.name" class="member-card">
-                  <span>{{ member.name }}</span>
-                  <div class="edit-container">
+                <div v-for="member in sortedMembers" :key="member.name" class="member-card">
+                  <div class="member-info">
+                    <span class="member-name" :class="{ 'current-user': member.name === currentUserName }">
+                      {{ member.name }}{{ member.name === currentUserName ? ' (you)' : '' }}
+                    </span>
+                    <span class="member-description">
+                      {{ member.memberType === 'user' ? member.email : `Type: ${member.type?.toLowerCase()}` }}
+                    </span>
+                  </div>
+                  <div class="edit-container" v-if="member.name === currentUserName || member.memberType === 'nonUser'">
                     <button class="edit-button" @click="editMember(member, $event)">•••</button>
                     <div v-if="activePopupMember === member.name" class="member-popup">
                       <template v-if="member.name === currentUserName">
                         <div class="popup-option" @click.stop="openLeaveModal">Leave household</div>
-                        <div class="popup-option" @click="requestToJoinAnotherHousehold">
+                        <div class="popup-option" @click.stop="requestToJoinAnotherHousehold">
                           Request to join another household
                         </div>
                       </template>
-                      <template v-else>
-                        <div class="popup-option">Delete member</div>
+                      <template v-else-if="member.memberType === 'nonUser'">
+                        <div class="popup-option delete-option" @click.stop="deleteNonUserMember(member.id)">Delete member</div>
                       </template>
                     </div>
                   </div>
                 </div>
               </div>
+
             </div>
           </template>
 
@@ -552,6 +588,11 @@ onBeforeUnmount(() => {
   }
 }
 
+.delete-option:hover {
+  color: #dc2626 !important;
+  background-color: #fee2e2 !important;
+}
+
 .modal-content {
   background: #fff;
   border-radius: 8px;
@@ -559,6 +600,21 @@ onBeforeUnmount(() => {
   min-width: 320px;
   max-width: 500px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+}
+
+.member-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.member-name {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.member-description {
+  font-size: 0.85rem;
+  color: #64748b;
 }
 
 .modal-actions {

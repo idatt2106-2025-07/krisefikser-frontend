@@ -16,8 +16,13 @@ class NotificationService {
    *
    * @returns A promise that resolves to the data containing the incidents.
    */
-  async getIncidents() {
-    const response = await axiosInstance.get('/notification/incidents')
+  async getIncidents(latitude: number, longitude: number) {
+    const response = await axiosInstance.post('/notification/incidents',
+      {
+        latitude,
+        longitude
+      }
+  )
     return response.data
   }
 }

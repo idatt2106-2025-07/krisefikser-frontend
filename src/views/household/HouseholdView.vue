@@ -5,6 +5,7 @@ import SidebarContent from '@/components/navigation/SidebarContent.vue'
 import { useAuthStore } from '@/stores/auth.ts'
 import { computed } from 'vue'
 import { getCoordinatesFromAddress } from '@/services/geoNorgeService'
+import EmergencyGroupContent from '@/components/user/EmergencyGroupContent.vue'
 
 /**
  * Interface representing a sidebar item.
@@ -37,7 +38,7 @@ const menuItems = ref<SidebarItem[]>([
   },
   {
     id: 'group',
-    title: 'Group',
+    title: 'Emergency Group',
   },
 ])
 
@@ -145,7 +146,7 @@ const submitLeaveHousehold = async () => {
     })
     closeLeaveModal()
     await fetchMembers()
-    alert('You have left your household and created a new one.')
+    alert('You have left your household and created a new one. (Any pending join request have been deleted)')
   } catch (e) {
     addressError.value = 'Failed to create new household.'
   } finally {
@@ -313,8 +314,8 @@ onBeforeUnmount(() => {
               <ul>
                 <li v-for="req in joinRequests" :key="req.id">
                   User ID {{ req.userId }} wants to join your household
-                  <button class="accept-btn" @click="acceptJoinRequest(req.id)">Accept</button>
-                  <button class="decline-btn" @click="declineJoinRequest(req.id)">Decline</button>
+                  <button class="accept-button" @click="acceptJoinRequest(req.id)">Accept</button>
+                  <button class="decline-button" @click="declineJoinRequest(req.id)">Decline</button>
                 </li>
               </ul>
             </div>
@@ -357,7 +358,7 @@ onBeforeUnmount(() => {
 
           <template #group>
             <div class="group-content">
-              <span>groups</span>
+              <EmergencyGroupContent/>
             </div>
           </template>
         </SidebarContent>
@@ -473,7 +474,7 @@ onBeforeUnmount(() => {
   gap: 0.25rem;
 }
 
-.modal-content input[type='text'] {
+.modal-content input[type='text'], .modal-content input[type='email'] {
   width: 100%;
   padding: 0.6rem 0.75rem;
   border: 1px solid #cbd5e1;
@@ -487,7 +488,7 @@ onBeforeUnmount(() => {
   margin-top: 0.25rem;
 }
 
-.modal-content input[type='text']:focus {
+.modal-content input[type='text']:focus, .modal-content input[type='email']:focus {
   border-color: #0ea5e9;
   box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15);
   background: #fff;
@@ -532,18 +533,10 @@ p {
   margin-bottom: 8px;
 }
 
-.leave-household {
-  background-color: var(--danger-color);
-  margin-bottom: 20px;
-}
-
 .blue-button {
   margin-bottom: 10px;
 }
 
-.leave-household:hover {
-  background-color: rgb(186, 0, 0);
-}
 
 h3 {
   margin-bottom: 0;
@@ -617,6 +610,8 @@ h3 {
   align-items: center;
 }
 
+
+
 .member-popup {
   position: absolute;
   top: 0;
@@ -635,6 +630,25 @@ h3 {
   cursor: pointer;
   transition: background-color 0.2s;
   border-bottom: 1px solid #eee;
+}
+
+.accept-button {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.decline-button {
+  background-color: #f87171;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .popup-option:hover {

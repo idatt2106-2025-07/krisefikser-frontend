@@ -1,7 +1,8 @@
+<!-- UpdateItemView.vue -->
 <script setup lang="ts">
 import { ref, onMounted, computed, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useStorageItemStore } from '@/stores/storageItemStore.ts'
+import { useStorageItemStore } from '@/stores/storageItemStore'
 
 const route = useRoute()
 const router = useRouter()
@@ -9,10 +10,6 @@ const storageItemStore = useStorageItemStore()
 
 const navigateToStorage = () => {
   router.push('/storage')
-}
-
-const navigateToAddStorageItem = () => {
-  router.push('/storage/add-storage-item')
 }
 
 const itemId = parseInt(route.params.itemId as string)
@@ -26,41 +23,69 @@ const deleteAllMode = ref(false)
 const itemToDelete = ref<number | null>(null)
 const deleteInProgress = ref(false)
 
+const showSharingDialog = ref(false)
+const itemToShare = ref<number | null>(null)
+const sharingQuantity = ref<number>(0)
+const maxSharingQuantity = ref<number>(0)
+const processingSharing = ref(false)
+
 interface ModifiedItem {
   id: number
   quantity: number
-  expirationDays: number
+  expirationDate: string
+  is_shared: boolean
   originalData: {
     quantity: number
-    expirationDays: number
+    expirationDate: string
+    is_shared: boolean
   }
   changed: boolean
 }
 
 const modifiedItems = reactive<Record<number, ModifiedItem>>({})
 
+// Format a date to YYYY-MM-DD format ensuring correct timezone handling
+const formatDateForInput = (dateString: string): string => {
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+// Format a date for the backend with timezone adjustment
+const formatDateForBackend = (dateString: string): string => {
+  const [year, month, day] = dateString.split('-').map(Number)
+
+  // Create a date at noon to avoid timezone issues (noon UTC will be the same day in all timezones)
+  return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T12:00:00`
+}
+
 // Initialize modified items tracker
 const initializeModifiedItems = () => {
   storageItemStore.individualItems.forEach((item) => {
-    const expirationDate = new Date(item.expirationDate)
-    const today = new Date()
-    const diffTime = expirationDate.getTime() - today.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    console.log("Processing item:", item)
+    console.log("Item shared value:", item.shared)
+
+    const expirationDate = formatDateForInput(item.expirationDate)
+
+    const isShared = item.shared === true
 
     modifiedItems[item.id] = {
       id: item.id,
       quantity: item.quantity,
-      expirationDays: diffDays > 0 ? diffDays : 0,
+      expirationDate: expirationDate,
+      is_shared: isShared,
       originalData: {
         quantity: item.quantity,
-        expirationDays: diffDays > 0 ? diffDays : 0,
+        expirationDate: expirationDate,
+        is_shared: isShared
       },
-      changed: false,
+      changed: false
     }
   })
 }
 
-// Fetch data on component mount
 onMounted(async () => {
   try {
     loading.value = true
@@ -79,21 +104,121 @@ const updateQuantity = (id: number, value: string) => {
   const quantity = parseFloat(value)
   if (!isNaN(quantity) && quantity >= 0) {
     modifiedItems[id].quantity = quantity
-    modifiedItems[id].changed =
-      quantity !== modifiedItems[id].originalData.quantity ||
-      modifiedItems[id].expirationDays !== modifiedItems[id].originalData.expirationDays
+    checkIfItemChanged(id)
   }
 }
 
-// Update expiration days when input changes
-const updateExpirationDays = (id: number, value: string) => {
-  const days = parseInt(value)
-  if (!isNaN(days) && days >= 0) {
-    modifiedItems[id].expirationDays = days
-    modifiedItems[id].changed =
-      days !== modifiedItems[id].originalData.expirationDays ||
-      modifiedItems[id].quantity !== modifiedItems[id].originalData.quantity
+// Update expiration date when date input changes
+const updateExpirationDate = (id: number, value: string) => {
+  modifiedItems[id].expirationDate = value
+  checkIfItemChanged(id)
+}
+
+const toggleShared = async (id: number) => {
+  const item = storageItemStore.individualItems.find((item) => item.id === id)
+
+  if (!item) return
+
+  // If the item is already shared, make it private immediately
+  if (modifiedItems[id].is_shared) {
+    await updateSharedStatus(id, false, modifiedItems[id].quantity)
+  } else {
+    // If the item is private, show the dialog to ask for quantity
+    itemToShare.value = id
+    maxSharingQuantity.value = modifiedItems[id].quantity
+    sharingQuantity.value = modifiedItems[id].quantity
+    showSharingDialog.value = true
   }
+}
+
+const confirmSharing = async () => {
+  if (!itemToShare.value || sharingQuantity.value <= 0 || sharingQuantity.value > maxSharingQuantity.value) {
+    return
+  }
+
+  processingSharing.value = true
+
+  try {
+    await updateSharedStatus(itemToShare.value, true, sharingQuantity.value)
+    showSharingDialog.value = false
+    itemToShare.value = null
+  } catch (err) {
+    console.error('Error sharing item:', err)
+  } finally {
+    processingSharing.value = false
+  }
+}
+
+const cancelSharing = () => {
+  showSharingDialog.value = false
+  itemToShare.value = null
+}
+
+const updateSharedStatus = async (id: number, isShared: boolean, quantity: number) => {
+  try {
+    const item = storageItemStore.individualItems.find((item) => item.id === id)
+
+    if (!item) return
+
+    console.log(`Updating shared status for item ${id} to ${isShared} with quantity ${quantity}`)
+
+    modifiedItems[id].is_shared = isShared
+
+    const response = await storageItemStore.updateStorageItemSharedStatus(
+      id,
+      isShared,
+      quantity
+    )
+
+    console.log("Update response:", response)
+
+    modifiedItems[id].originalData.is_shared = isShared
+
+    item.shared = isShared
+
+    if (Array.isArray(response) && response.length > 1) {
+      await storageItemStore.fetchStorageItemsByItemId(itemId)
+      initializeModifiedItems()
+    }
+
+    error.value = null
+  } catch (err: any) {
+    modifiedItems[id].is_shared = !isShared
+    error.value = `Failed to update shared status: ${err.response?.data?.message || err.message}`
+    console.error('Error updating shared status:', err)
+    throw err
+  }
+}
+
+// Check if item has been modified from its original state
+const checkIfItemChanged = (id: number) => {
+  const item = modifiedItems[id]
+  item.changed =
+    item.quantity !== item.originalData.quantity ||
+    item.expirationDate !== item.originalData.expirationDate
+}
+
+// Format a date for display
+const formatDateForDisplay = (dateString: string): string => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
+// Calculate days until expiration for a given date
+const calculateDaysUntilExpiration = (dateString: string): number => {
+  const [year, month, day] = dateString.split('-').map(Number)
+  const expirationDate = new Date(year, month - 1, day)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const diffTime = expirationDate.getTime() - today.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+  return diffDays > 0 ? diffDays : 0
 }
 
 // Compute the aggregated information
@@ -108,26 +233,29 @@ const aggregatedItem = computed(() => {
   const totalQuantity = Object.values(modifiedItems).reduce((sum, item) => sum + item.quantity, 0)
 
   // Find the earliest expiration date from modified values
-  const earliestExpirationDays = Object.values(modifiedItems).reduce(
-    (earliest, item) => Math.min(earliest, item.expirationDays || Infinity),
-    Infinity,
-  )
+  let earliestDate: string | null = null
+
+  for (const item of Object.values(modifiedItems)) {
+    if (!earliestDate || item.expirationDate < earliestDate) {
+      earliestDate = item.expirationDate
+    }
+  }
+
+  // Calculate days until earliest expiration
+  const expirationDays = earliestDate ? calculateDaysUntilExpiration(earliestDate) : 0
+
+  // Format date for display
+  const displayDate = earliestDate ? formatDateForDisplay(earliestDate) : 'Not set'
 
   return {
     id: itemId,
     name: firstItem.item.name,
     totalQuantity,
     unit: firstItem.item.unit,
-    expirationDays: earliestExpirationDays === Infinity ? 0 : earliestExpirationDays,
+    expirationDays,
+    expirationDate: displayDate
   }
 })
-
-// Calculate future date based on days
-const calculateFutureDate = (days: number): string => {
-  const date = new Date()
-  date.setDate(date.getDate() + days)
-  return date.toISOString()
-}
 
 // Show confirmation for single item delete
 const confirmDeleteItem = (id: number) => {
@@ -177,8 +305,6 @@ const deleteItem = async () => {
 const deleteAll = async () => {
   try {
     deleteInProgress.value = true
-    // Implementation would depend on your delete all functionality
-    // Could be a batch delete API call or multiple individual deletes
     for (const item of storageItemStore.individualItems) {
       await storageItemStore.deleteStorageItem(item.id)
     }
@@ -198,10 +324,12 @@ const saveChanges = async () => {
     savingChanges.value = true
 
     // Get items that have been modified
-    const changedItems = Object.values(modifiedItems).filter((item) => item.changed)
+    const changedItems = Object.values(modifiedItems).filter((item) =>
+      item.quantity !== item.originalData.quantity ||
+      item.expirationDate !== item.originalData.expirationDate
+    )
 
     if (changedItems.length === 0) {
-      // No changes to save
       navigateToStorage()
       return
     }
@@ -211,8 +339,8 @@ const saveChanges = async () => {
       const originalItem = storageItemStore.individualItems.find((i) => i.id === item.id)
 
       if (originalItem) {
-        // Convert expiration days to a date
-        const expirationDate = calculateFutureDate(item.expirationDays)
+        // Format the date for the backend with timezone adjustment
+        const expirationDate = formatDateForBackend(item.expirationDate)
 
         await storageItemStore.updateStorageItem(item.id, {
           itemId: originalItem.itemId,
@@ -222,8 +350,6 @@ const saveChanges = async () => {
         })
       }
     }
-
-    // Navigate back to storage page after all updates are done
     navigateToStorage()
   } catch (err) {
     error.value = 'Failed to save changes'
@@ -233,7 +359,6 @@ const saveChanges = async () => {
   }
 }
 
-// Handle cancel
 const cancel = () => {
   navigateToStorage()
 }
@@ -254,24 +379,29 @@ const cancel = () => {
     <div v-else class="content-wrapper">
       <!-- Column headers -->
       <div class="item-header">
-        <div class="item-name">Aggregated Item</div>
-        <div class="item-quantity">Total <br />quantity</div>
-        <div class="item-expiration">Earliest expiration<br />date</div>
+        <div class="col item-name">Aggregated Item</div>
+        <div class="col">&nbsp;</div> <!-- Empty second column -->
+        <div class="col item-quantity">Total quantity</div>
+        <div class="col item-expiration">Earliest expiration</div>
+        <div class="col">&nbsp;</div>
+        <div class="col"> &nbsp;</div>
       </div>
 
       <!-- Aggregated item summary -->
       <div class="aggregated-item">
         <div class="item-summary-row">
-          <div class="item-name-value">{{ aggregatedItem.name }}</div>
-          <div class="item-quantity-value">
+          <div class="col item-name-value">{{ aggregatedItem.name }}</div>
+          <div class="col">&nbsp;</div>
+          <div class="col item-quantity-value">
             <div class="quantity-pill">
               {{ aggregatedItem.totalQuantity.toFixed(1) }} {{ aggregatedItem.unit }}
             </div>
           </div>
-          <div class="item-expiration-value">
+          <div class="col item-expiration-value">
             <div class="expiration-pill">{{ aggregatedItem.expirationDays }} days</div>
           </div>
-          <div class="item-actions">
+          <div class="col">&nbsp;</div>
+          <div class="col item-actions">
             <button class="delete-all-button" @click="confirmDeleteAll">Delete all</button>
           </div>
         </div>
@@ -279,23 +409,23 @@ const cancel = () => {
 
       <!-- Individual items header -->
       <div class="item-header">
-        <div class="item-name">Single item</div>
-        <div class="item-quantity">Quantity</div>
-        <div class="item-expiration">Expiration date</div>
-        <div></div>
+        <div class="col item-name">Single item</div>
+        <div class="col">&nbsp;</div>
+        <div class="col item-quantity">Quantity</div>
+        <div class="col item-expiration">Expiration Date</div>
+        <div class="col item-shared-status">Group Storage</div>
+        <div class="col">&nbsp;</div>
       </div>
 
       <!-- Individual items list -->
       <div class="individual-items-container">
         <div class="individual-items-list">
           <div v-for="item in storageItemStore.individualItems" :key="item.id" class="item-row">
-            <div class="item-type">
-              {{ item.item.name }} ({{
-                modifiedItems[item.id]?.quantity.toFixed(1) || item.quantity.toFixed(1)
-              }}
-              {{ item.item.unit }})
+            <div class="col item-name">
+              {{ item.item.name }}
             </div>
-            <div class="item-inputs">
+            <div class="col">&nbsp;</div>
+            <div class="col item-quantity">
               <input
                 :value="modifiedItems[item.id]?.quantity.toFixed(1)"
                 type="number"
@@ -303,28 +433,37 @@ const cancel = () => {
                 class="quantity-input"
                 @input="(e) => updateQuantity(item.id, (e.target as HTMLInputElement).value)"
                 :class="{
-                  modified:
-                    modifiedItems[item.id]?.quantity !==
-                    modifiedItems[item.id]?.originalData.quantity,
-                }"
+            modified:
+              modifiedItems[item.id]?.quantity !==
+              modifiedItems[item.id]?.originalData.quantity,
+          }"
               />
               <span class="unit-label">{{ item.item.unit }}</span>
             </div>
-            <div class="expiration-inputs">
+            <div class="col item-expiration">
               <input
-                :value="modifiedItems[item.id]?.expirationDays"
-                type="number"
-                class="expiration-input"
-                @input="(e) => updateExpirationDays(item.id, (e.target as HTMLInputElement).value)"
+                :value="modifiedItems[item.id]?.expirationDate"
+                type="date"
+                class="date-input"
+                lang="en"
+                @input="(e) => updateExpirationDate(item.id, (e.target as HTMLInputElement).value)"
                 :class="{
-                  modified:
-                    modifiedItems[item.id]?.expirationDays !==
-                    modifiedItems[item.id]?.originalData.expirationDays,
-                }"
+            modified:
+              modifiedItems[item.id]?.expirationDate !==
+              modifiedItems[item.id]?.originalData.expirationDate,
+          }"
               />
-              <span class="days-label">days</span>
             </div>
-            <div class="individual-item-actions">
+            <div class="col item-shared-status">
+              <button
+                :class="['share-button', modifiedItems[item.id]?.is_shared ? 'unshare-button' : '']"
+                @click="toggleShared(item.id)"
+                :title="modifiedItems[item.id]?.is_shared ? 'Make private' : 'Make shared'"
+              >
+                {{ modifiedItems[item.id]?.is_shared ? 'Shared' : 'Private' }}
+              </button>
+            </div>
+            <div class="col item-actions">
               <button class="delete-button" @click="confirmDeleteItem(item.id)">Delete</button>
             </div>
           </div>
@@ -333,12 +472,9 @@ const cancel = () => {
 
       <!-- Action buttons -->
       <div class="action-buttons">
+        <button class="cancel-button" @click="cancel" :disabled="savingChanges">Cancel</button>
         <button class="save-button" @click="saveChanges" :disabled="savingChanges">
           {{ savingChanges ? 'Saving...' : 'Save changes' }}
-        </button>
-        <button class="cancel-button" @click="cancel" :disabled="savingChanges">Cancel</button>
-        <button class="add-button" @click="navigateToAddStorageItem" :disabled="savingChanges">
-          Add new item
         </button>
       </div>
 
@@ -362,6 +498,45 @@ const cancel = () => {
               {{ deleteInProgress ? 'Deleting...' : 'Yes, delete' }}
             </button>
             <button class="cancel-delete-button" @click="cancelDelete" :disabled="deleteInProgress">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="confirmation-overlay" v-if="showSharingDialog">
+        <div class="confirmation-popup">
+          <h3 class="confirmation-title">Share Item</h3>
+          <p class="confirmation-message">
+            How much of this item would you like to share with your emergency group?
+          </p>
+          <div class="quantity-input-container">
+            <input
+              v-model="sharingQuantity"
+              type="number"
+              step="0.1"
+              min="0.1"
+              :max="maxSharingQuantity"
+              class="quantity-input"
+            />
+            <span class="unit-label">{{
+                storageItemStore.individualItems.find(item => item.id === itemToShare)?.item.unit
+              }}</span>
+          </div>
+          <p class="quantity-hint">
+            Maximum available: {{ maxSharingQuantity.toFixed(1) }} {{
+              storageItemStore.individualItems.find(item => item.id === itemToShare)?.item.unit
+            }}
+          </p>
+          <div class="confirmation-buttons">
+            <button
+              class="confirm-share-button"
+              @click="confirmSharing"
+              :disabled="processingSharing || sharingQuantity <= 0 || sharingQuantity > maxSharingQuantity"
+            >
+              {{ processingSharing ? 'Processing...' : 'Share' }}
+            </button>
+            <button class="cancel-share-button" @click="cancelSharing" :disabled="processingSharing">
               Cancel
             </button>
           </div>
@@ -392,7 +567,7 @@ const cancel = () => {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 800px;
+  max-width: 1000px;
   gap: 1rem;
   position: relative;
 }
@@ -409,58 +584,53 @@ const cancel = () => {
   color: #ff5c5f;
 }
 
-.item-header {
+.item-header, .item-row, .item-summary-row {
   display: grid;
-  grid-template-columns: minmax(200px, 1fr) 120px 180px 120px;
+  grid-template-columns: repeat(6, 1fr);
   align-items: center;
-  padding: 0 2rem;
+  width: 100%;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.item-header {
   margin-bottom: 0.5rem;
   color: #666;
   font-weight: 500;
 }
 
-.item-name {
+.item-row {
+  border-bottom: 1px solid #eee;
+}
+
+.item-row:last-child {
+  border-bottom: none;
+}
+
+.col {
+  padding: 0 0.5rem;
+  text-align: center;
+}
+
+.item-name, .item-name-value {
   text-align: left;
+  font-weight: 500;
 }
 
-.item-quantity {
-  text-align: center;
-  margin-left: 10px;
-}
-
-.item-expiration {
-  text-align: center;
+.item-quantity, .item-expiration, .item-shared-status, .item-actions,
+.item-quantity-value, .item-expiration-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .aggregated-item {
   background-color: white;
   font-size: 1.1rem;
   border-radius: 10px;
-  padding: 1rem 2rem;
+  padding: 1rem 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-bottom: 1rem;
-}
-
-.item-summary-row {
-  display: grid;
-  grid-template-columns: minmax(200px, 1fr) 120px 180px 120px;
-  align-items: center;
-}
-
-.item-name-value {
-  font-weight: 500;
-  text-align: left;
-}
-
-.item-quantity-value {
-  display: flex;
-  justify-content: center;
-  margin-left: 10px;
-}
-
-.item-expiration-value {
-  display: flex;
-  justify-content: center;
 }
 
 .quantity-pill {
@@ -483,25 +653,10 @@ const cancel = () => {
   min-width: 80px;
 }
 
-.item-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.delete-all-button {
-  background-color: #ff5c5f;
-  color: white;
-  border: none;
-  border-radius: 9999px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  font-weight: 500;
-}
-
 .individual-items-container {
   background-color: white;
   border-radius: 10px;
-  padding: 1rem;
+  padding: 1rem 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   max-height: 300px;
   overflow-y: auto;
@@ -510,63 +665,34 @@ const cancel = () => {
 .individual-items-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-
-.item-row {
-  display: grid;
-  grid-template-columns: minmax(200px, 1fr) 120px 180px 120px;
-  align-items: center;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #eee;
-}
-
-.item-row:last-child {
-  border-bottom: none;
-}
-
-.item-type {
-  font-weight: 450;
-  font-size: 1.1rem;
-}
-
-.item-inputs {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.expiration-inputs {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 100%;
 }
 
 .quantity-input,
-.expiration-input {
-  width: 70px;
-  text-align: right;
+.date-input {
+  text-align: center;
   padding: 0.3rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   transition:
     border-color 0.2s,
     background-color 0.2s;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
 }
 
-.quantity-input.modified,
-.expiration-input.modified {
-  border-color: #5adf7b;
-  background-color: rgba(90, 223, 123, 0.1);
+.quantity-input {
+  width: 70px;
 }
 
-.save-button:disabled,
-.cancel-button:disabled,
-.add-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.date-input {
+  width: 140px;
+}
+
+.quantity-input.modified,
+.date-input.modified {
+  border-color: #5adf7b;
+  background-color: rgba(90, 223, 123, 0.1);
 }
 
 .unit-label,
@@ -576,23 +702,34 @@ const cancel = () => {
   font-weight: 500;
 }
 
-.unit-toggle {
-  cursor: pointer;
-  margin-left: 0.5rem;
+.share-button, .delete-button, .delete-all-button {
+  width: 100px;
+  margin: 0 0.25rem;
 }
 
-.individual-item-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.delete-button {
-  background-color: #ff5c5f;
-  color: white;
+.share-button {
+  background-color: #d19a41;
+  color: black;
   border: none;
   border-radius: 9999px;
   padding: 0.5rem 1rem;
   cursor: pointer;
+  font-weight: 500;
+}
+
+.share-button.unshare-button {
+  background-color: #c0c0c0;
+  color: black;
+}
+
+.delete-button, .delete-all-button {
+  background-color: #ff5c5f;
+  color: black;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 500;
 }
 
 .action-buttons {
@@ -631,6 +768,13 @@ const cancel = () => {
   font-weight: 500;
 }
 
+.save-button:disabled,
+.cancel-button:disabled,
+.add-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .confirmation-overlay {
   position: fixed;
   top: 0;
@@ -642,18 +786,6 @@ const cancel = () => {
   justify-content: center;
   align-items: center;
   z-index: 100;
-}
-
-input:focus {
-  outline: none;
-  border-color: #18daff;
-  box-shadow: 0 0 0 3px rgba(76, 199, 144, 0.2);
-}
-
-input:hover {
-  border-color: #b8b8b8;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
 }
 
 .confirmation-popup {
@@ -716,5 +848,59 @@ input:hover {
 .cancel-delete-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.quantity-input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.quantity-hint {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.confirm-share-button {
+  background-color: #5ADF7B;
+  color: black;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  flex: 1;
+  max-width: 130px;
+}
+
+.confirm-share-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancel-share-button {
+  background-color: #e0e0e0;
+  color: black;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  flex: 1;
+  max-width: 130px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #18daff;
+  box-shadow: 0 0 0 3px rgba(76, 199, 144, 0.2);
+}
+
+input:hover {
+  border-color: #b8b8b8;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
 }
 </style>

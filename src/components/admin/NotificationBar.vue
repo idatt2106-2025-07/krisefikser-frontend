@@ -129,7 +129,6 @@ const fetchIncidents = async () => {
       const response = await notificationService.getIncidents(
         location.latitude,
         location.longitude,
-        10, // Optional radius parameter, default 10km
       )
 
       if (!response || response.length === 0) {

@@ -1,11 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import axios from 'axios'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 
-const lng = ref('')
-const lat = ref('')
+const props = defineProps({
+  longitude: {
+    type: String,
+    default: '',
+  },
+  latitude: {
+    type: String,
+    default: '',
+  },
+})
+
+const lng = ref(props.longitude)
+const lat = ref(props.latitude)
 const name = ref('')
 const highDangerRadius = ref('')
 const mediumDangerRadius = ref('')
@@ -13,6 +24,19 @@ const lowDangerRadius = ref('')
 const threatLevel = ref('')
 const description = ref('')
 const timeStarted = ref('')
+
+watch(
+  () => props.longitude,
+  (newLng) => {
+    lng.value = newLng
+  },
+)
+watch(
+  () => props.latitude,
+  (newLat) => {
+    lat.value = newLat
+  },
+)
 
 async function saveIncident() {
   if (

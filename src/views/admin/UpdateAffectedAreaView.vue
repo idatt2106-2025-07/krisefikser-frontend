@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import mapService from '@/services/mapService'
 import Dropdown from 'primevue/dropdown'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 
-// Define the interface for affected area
 interface AffectedArea {
   id: number
   longitude: number
@@ -18,7 +17,13 @@ interface AffectedArea {
   startDate: string
 }
 
-const affectedAreaId = ref('')
+const props = defineProps({
+  affectedAreaId: {
+    type: Number,
+    required: true,
+  },
+})
+
 const loadedAreas = ref([])
 
 const affectedArea = ref<AffectedArea>({
@@ -32,6 +37,8 @@ const affectedArea = ref<AffectedArea>({
   description: '',
   startDate: '',
 })
+
+const selectedAreaId = ref<number | null>(props.affectedAreaId)
 
 const highDangerRadiusKm = ref('')
 const mediumDangerRadiusKm = ref('')
@@ -52,26 +59,27 @@ onMounted(async () => {
   }
 })
 
-const loadArea = async () => {
-  if (!affectedAreaId.value) {
-    alert('Please select an affected area!')
-    return
-  }
+watch(
+  () => props.affectedAreaId,
+  async (newAreaId) => {
+    console.log('New affected area ID received:', newAreaId)
+    selectedAreaId.value = newAreaId
 
+    if (newAreaId !== null) {
+      await loadAffectedArea(newAreaId)
+    }
+  },
+)
+
+async function loadAffectedArea(areaId: number) {
   try {
-    console.log('Fetching all affected areas...')
+    console.log('Fetching affected area data for ID:', areaId)
     const allAffectedAreas = await mapService.getAffectedAreas()
-    const foundArea = allAffectedAreas.find(
-      (area: AffectedArea) => area.id === Number(affectedAreaId.value),
-    )
+    const foundArea = allAffectedAreas.find((area: AffectedArea) => area.id === areaId)
 
     if (foundArea) {
+      console.log('Affected Area found:', foundArea)
       affectedArea.value = foundArea
-
-      highDangerRadiusKm.value = foundArea.highDangerRadiusKm.toString()
-      mediumDangerRadiusKm.value = foundArea.mediumDangerRadiusKm.toString()
-      lowDangerRadiusKm.value = foundArea.lowDangerRadiusKm.toString()
-      severityLevel.value = foundArea.severityLevel.toString()
     } else {
       alert('Affected Area not found!')
       affectedArea.value = {
@@ -87,7 +95,7 @@ const loadArea = async () => {
       }
     }
   } catch (error) {
-    console.error('Error fetching affected areas:', error)
+    console.error('Error fetching affected area:', error)
     alert('Failed to load affected area. Please try again.')
   }
 }
@@ -102,8 +110,6 @@ const saveChanges = async () => {
     await mapService.updateAffectedArea(affectedArea.value.id, affectedArea.value)
     alert('Affected Area updated successfully!')
 
-    // Reset form instead of redirecting
-    affectedAreaId.value = ''
     resetForm()
   } catch (error) {
     console.error('Error updating affected area:', error)
@@ -132,15 +138,6 @@ function resetForm() {
 
 <template>
   <div class="form-container">
-    <Dropdown
-      v-model="affectedAreaId"
-      :options="loadedAreas"
-      optionLabel="label"
-      optionValue="value"
-      placeholder="Select Affected Area to Update"
-    />
-    <Button label="Load Affected Area" @click="loadArea" />
-
     <div v-if="affectedArea.id" class="area-edit-form">
       <h3>Edit Affected Area #{{ affectedArea.id }}</h3>
       <InputText v-model="affectedArea.description" placeholder="Description" />

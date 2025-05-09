@@ -13,6 +13,7 @@ export function useMapLayers(
   filters: Ref<Filters>,
   isAdminPage: Ref<boolean>,
   router: ReturnType<typeof useRouter>,
+  emit: (event: 'map-click' | 'edit-poi' | 'edit-affected-area', ...args: any[]) => void, // Add emit as a parameter
 ) {
   const circleLayers = ref<string[]>([])
   const layersInitialized = ref(false)
@@ -30,7 +31,11 @@ export function useMapLayers(
     }
   }
 
-  const addPopupHandler = (layerId: string, area: AffectedArea) => {
+  const addPopupHandler = (
+    layerId: string,
+    area: AffectedArea,
+    emit: (event: 'map-click' | 'edit-poi' | 'edit-affected-area', ...args: any[]) => void,
+  ) => {
     map.value?.on('click', layerId, (e) => {
       if (e.features && e.features.length > 0) {
         const popupContent = `
@@ -63,14 +68,12 @@ export function useMapLayers(
         const popupElement = popup.getElement()
 
         if (popupElement) {
-          console.log('Popup element found:', popupElement)
-
           const editButton = popupElement.querySelector('.edit-affected-area')
           if (editButton) {
-            console.log('Attaching event listener to Edit button')
             editButton.addEventListener('click', () => {
-              console.log(`Navigating to Update Affected Area View for ID: ${area.id}`)
-              router.push({ name: 'updateAffectedArea', query: { id: area.id.toString() } })
+              console.log(`Edit button clicked for Affected Area ID: ${area.id}`)
+              emit('edit-affected-area', area.id) // Use the emit function passed as a parameter
+              popup.remove()
             })
           } else {
             console.error('Edit button not found in popup')
@@ -78,7 +81,6 @@ export function useMapLayers(
 
           const deleteButton = popupElement.querySelector('.delete-affected-area')
           if (deleteButton) {
-            console.log('Attaching event listener to Delete button')
             deleteButton.addEventListener('click', async () => {
               const confirmed = confirm('Are you sure you want to delete this Affected Area?')
               if (confirmed) {
@@ -163,7 +165,7 @@ export function useMapLayers(
             },
           })
 
-          addPopupHandler(highLayerId, area)
+          addPopupHandler(highLayerId, area, emit)
         }
 
         if (area.mediumDangerRadiusKm && area.highDangerRadiusKm) {
@@ -212,7 +214,7 @@ export function useMapLayers(
             },
           })
 
-          addPopupHandler(mediumLayerId, area)
+          addPopupHandler(mediumLayerId, area, emit)
         }
 
         if (area.lowDangerRadiusKm && area.mediumDangerRadiusKm) {
@@ -260,7 +262,7 @@ export function useMapLayers(
             },
           })
 
-          addPopupHandler(lowLayerId, area)
+          addPopupHandler(lowLayerId, area, emit)
         }
 
         ;['high', 'medium', 'low'].forEach((level, i) => {
@@ -403,6 +405,7 @@ export function useAffectedAreaManagement(
   locationData: Ref<LocationData>,
   isAdminPage: Ref<boolean>,
   router: ReturnType<typeof useRouter>,
+  emit: (event: 'map-click' | 'edit-poi' | 'edit-affected-area', ...args: any[]) => void, // Add emit as a parameter
 ) {
   const initializeAffectedAreaPopups = () => {
     if (!map.value) return
@@ -410,8 +413,6 @@ export function useAffectedAreaManagement(
     console.log('Initializing affected area popups...')
 
     locationData.value.affectedAreas.forEach((area) => {
-      console.log('isAdminPage:', isAdminPage.value)
-
       const popupContent = `
         <div class="popup-content">
           <h3>Emergency alert!</h3>
@@ -431,8 +432,6 @@ export function useAffectedAreaManagement(
         </div>
       `
 
-      console.log('Popup content:', popupContent)
-
       const popup = new mapboxgl.Popup({
         closeButton: true,
         closeOnClick: true,
@@ -444,41 +443,15 @@ export function useAffectedAreaManagement(
       const popupElement = popup.getElement()
 
       if (popupElement) {
-        console.log('Popup element found:', popupElement)
-
         const editButton = popupElement.querySelector('.edit-affected-area')
         if (editButton) {
-          console.log('Attaching event listener to Edit button')
           editButton.addEventListener('click', () => {
-            console.log(`Navigating to Update Affected Area View for ID: ${area.id}`)
-            router.push({ name: 'updateAffectedArea', query: { id: area.id.toString() } })
+            console.log(`Edit button clicked for Affected Area ID: ${area.id}`)
+            emit('edit-affected-area', area.id) // Use the emit function passed as a parameter
+            popup.remove()
           })
         } else {
           console.error('Edit button not found in popup')
-        }
-
-        const deleteButton = popupElement.querySelector('.delete-affected-area')
-        if (deleteButton) {
-          console.log('Attaching event listener to Delete button')
-          deleteButton.addEventListener('click', async () => {
-            const confirmed = confirm('Are you sure you want to delete this Affected Area?')
-            if (confirmed) {
-              try {
-                console.log(`Deleting Affected Area with ID: ${area.id}`)
-                await mapService.deleteAffectedArea(area.id)
-                alert('Affected Area deleted successfully!')
-
-                locationData.value.affectedAreas = locationData.value.affectedAreas.filter(
-                  (a) => a.id !== area.id,
-                )
-              } catch (error) {
-                console.error('Error deleting Affected Area:', error)
-                alert('Failed to delete Affected Area. Please try again.')
-              }
-            }
-          })
-        } else {
-          console.error('Delete button not found in popup')
         }
       }
     })

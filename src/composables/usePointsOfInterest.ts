@@ -38,6 +38,7 @@ export function useMarkerManagement(
   filters: Ref<Filters>,
   isAdminPage: Ref<boolean>,
   router: ReturnType<typeof useRouter>,
+  emit: (event: 'map-click' | 'edit-poi', ...args: any[]) => void,
 ) {
   const markers = ref<MarkerWithApp[]>([])
   const markerApps: MarkerApp[] = []
@@ -107,30 +108,13 @@ export function useMarkerManagement(
         return
       }
 
-      const handler = async () => {
-        console.log(`Navigating to Update POI View for ID: ${poi.id}`)
-
-        if (!locationData.value.pointsOfInterest.length) {
-          try {
-            console.log('Fetching POI data before navigation...')
-            const response = await mapService.getAllPointsOfInterest()
-            locationData.value.pointsOfInterest = response
-          } catch (error) {
-            console.error('Failed to fetch POIs:', error)
-            alert('Failed to load POI data. Please try again.')
-            return
-          }
-        }
-
-        router.push({
-          name: 'updatePOI',
-          query: { id: poi.id.toString() },
-        })
+      const handler = () => {
+        console.log(`Edit button clicked for POI ID: ${poi.id}`)
+        emit('edit-poi', poi.id)
       }
 
       editButton.addEventListener('click', handler)
 
-      // Cleanup
       popup.on('close', () => {
         editButton.removeEventListener('click', handler)
       })
@@ -168,7 +152,6 @@ export function useMarkerManagement(
 
       deleteButton.addEventListener('click', handler)
 
-      // Cleanup
       popup.on('close', () => {
         deleteButton.removeEventListener('click', handler)
       })

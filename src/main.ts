@@ -1,36 +1,40 @@
-import { createApp } from 'vue';
-import './assets/main.css';
-import App from './App.vue';
-import router from './router';
-import PrimeVue from 'primevue/config';
-import Aura from '@primevue/themes/aura'
-import Lara from '@primevue/themes/lara';
-import InputText from 'primevue/inputtext';
-import Password from 'primevue/password';
-import Checkbox from 'primevue/checkbox';
-import Button from 'primevue/button';
-import ToastService from 'primevue/toastservice';
+import { createApp } from 'vue'
+import './assets/styles/main.css'
+import App from './App.vue'
+import axios from 'axios'
+import router from './router'
+import PrimeVue from 'primevue/config'
+import Material from '@primevue/themes/material'
+import './assets/styles/fonts.css'
+import InputText from 'primevue/inputtext'
+import Password from 'primevue/password'
+import Checkbox from 'primevue/checkbox'
+import Button from 'primevue/button'
+import ToastService from 'primevue/toastservice'
+import { createPinia } from 'pinia'
+import './assets/styles/toast.css'
 
+const app = createApp(App)
+const pinia = createPinia()
 
-
-
-const app = createApp(App);
-
-app.use(router);
-app.use(ToastService);
+app.use(router)
+app.use(ToastService)
 app.use(PrimeVue, {
   theme: {
-    preset: Lara,
+    preset: Material,
     options: {
       darkModeSelector: '.my-app-dark',
-  }
-  }
-}); // no theme config needed here
+    },
+  },
+})
+app.use(pinia)
 
 // Register PrimeVue components
-app.component('InputText', InputText);
-app.component('Password', Password);
-app.component('Checkbox', Checkbox);
-app.component('Button', Button);
+app.component('InputText', InputText)
+app.component('Password', Password)
+app.component('Checkbox', Checkbox)
+app.component('Button', Button)
 
-app.mount('#app');
+app.mount('#app')
+
+axios.defaults.withCredentials = true

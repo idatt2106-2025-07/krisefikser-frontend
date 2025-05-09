@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Jersey+20+Charted&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+  font-family: 'Roboto', sans-serif;
+  --background-color: #dbf5fa;
+  --danger-color: #ff0000;
+}
+
+h1 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 2.5rem;
+  color: black;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+h2 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 2rem;
+  color: black;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+h3 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.5rem;
+  color: black;
+  text-align: left;
+  margin-top: 1rem;
+}
+
+p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.2rem;
+  color: black;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+input::placeholder {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  color: #888;
+  font-style: italic;
+}
+
+label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  color: black;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+span {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  color: black;
+  display: block;
+}
+
+button {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition:
+    box-shadow 0.2s ease,
+    background-color 0.2s;
+}
+
+button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+button:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.p-error {
+  color: red;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+body {
+  background-color: var(--background-color);
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+}

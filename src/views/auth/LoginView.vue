@@ -38,12 +38,15 @@ const adminError = ref<string | null>(null)
 // Validation functions
 function validateEmail(value: string, errorRef: Ref<boolean> | boolean) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const isValid = !emailRegex.test(value)
   if (typeof errorRef === 'boolean') {
-    return !emailRegex.test(value)
+    return isValid
   } else {
-    errorRef.value = !emailRegex.test(value)
+    errorRef.value = isValid
+    return isValid
   }
 }
+
 function validateResetEmail() {
   resetTouched.value = true
   validateEmail(resetEmail.value, resetEmailError)
@@ -51,7 +54,9 @@ function validateResetEmail() {
 }
 
 // Computed properties
-const formValid = computed(() => email.value && password.value && !emailError.value)
+const formValid = computed(() => {
+  return email.value && password.value && !validateEmail(email.value, emailError)
+})
 const resetValid = computed(() => !!resetEmail.value && !resetEmailError.value)
 const adminValid = computed(
   () => !!adminEmail.value && !!adminPassword.value && !adminEmailError.value,
@@ -154,49 +159,6 @@ function getErrorMessage(error: unknown, defaultMsg: string): string {
       {{ loginSuccess }}
     </div>
 
-    <!-- Admin Login Form -->
-    <div v-if="isAdminMode" class="auth-card">
-      <h2 class="auth-title">Admin Login</h2>
-
-      <form @submit.prevent="handleAdminLogin" class="auth-form">
-        <div class="form-group">
-          <label for="admin-email">Email</label>
-          <InputText
-            id="admin-email"
-            v-model="adminEmail"
-            placeholder="admin@example.com"
-            @blur="validateEmail(adminEmail, adminEmailError)"
-            :class="{ 'input-error': adminEmailError }"
-          />
-          <small v-if="adminEmailError" class="error-message">Invalid email format</small>
-        </div>
-
-        <div class="form-group">
-          <label for="admin-password">Password</label>
-          <Password
-            inputId="admin-password"
-            v-model="adminPassword"
-            toggleMask
-            :feedback="false"
-            placeholder="Your password"
-            :class="{ 'input-error': adminTouched && !adminPassword }"
-            @blur="adminTouched = true"
-          />
-          <small v-if="adminTouched && !adminPassword" class="error-message">
-            Password is required
-          </small>
-        </div>
-
-        <button type="submit" :disabled="!adminValid" class="auth-button">Send 2FA Link</button>
-
-        <div class="auth-footer">
-          <a href="#" @click.prevent="isAdminMode = false" class="auth-link">
-            Back to User Login
-          </a>
-        </div>
-      </form>
-    </div>
-
     <!-- Password Reset Form -->
     <div v-else-if="isResetMode" class="auth-card">
       <h2 class="auth-title">Reset Password</h2>
@@ -239,6 +201,7 @@ function getErrorMessage(error: unknown, defaultMsg: string): string {
             v-model="email"
             placeholder="your@email.com"
             @blur="validateEmail(email, emailError)"
+            @input="emailError = validateEmail(email, emailError)"
             :class="{ 'input-error': emailError }"
           />
           <small v-if="emailError" class="error-message">Invalid email format</small>
@@ -435,5 +398,19 @@ function getErrorMessage(error: unknown, defaultMsg: string): string {
   .auth-card {
     padding: 1.5rem;
   }
+}
+
+/* Add this new style for error messages */
+.error-message {
+  color: #e53e3e;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* You might also want to add a style for success messages */
+.success-message {
+  color: #38a169;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
 }
 </style>

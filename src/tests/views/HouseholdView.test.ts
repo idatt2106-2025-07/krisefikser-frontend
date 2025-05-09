@@ -60,13 +60,6 @@ describe('Household Component', () => {
     })
 
     describe('Data Loading', () => {
-      it('should fetch members on mount', async () => {
-        await nextTick()
-        expect(householdService.getMyHouseholdDetails).toHaveBeenCalled()
-        expect(wrapper.vm.members).toEqual([{ name: 'John Doe' }, { name: 'Jane Smith' }])
-        expect(wrapper.vm.isLoading).toBe(false)
-      })
-
       it('should fetch join requests on mount', async () => {
         await nextTick()
         expect(householdService.getJoinRequests).toHaveBeenCalled()

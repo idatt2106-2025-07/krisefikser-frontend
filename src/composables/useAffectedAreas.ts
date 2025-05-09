@@ -33,7 +33,7 @@ export function useMapLayers(
 
   const addPopupHandler = (
     layerId: string,
-     area: AffectedArea,
+    area: AffectedArea,
     emit: (event: 'map-click' | 'edit-poi' | 'edit-affected-area', ...args: any[]) => void,
   ) => {
     map.value?.on('click', layerId, (e) => {

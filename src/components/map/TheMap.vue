@@ -239,8 +239,8 @@ const { initializeSearch } = useSearchGeocoder(
 
         popupContent.querySelector('#add-poi-button')?.addEventListener('click', () => {
           console.log('Filling Add POI form with coordinates:', lng, lat)
-          emit('map-click', { lng, lat }) // Emit the event to the parent component
-          popup.remove() // Close the popup after emitting the event
+          emit('map-click', { lng, lat })
+          popup.remove()
         })
 
         popupContent.querySelector('#add-affected-area-button')?.addEventListener('click', () => {
@@ -432,8 +432,8 @@ onMounted(() => {
 
             popupContent.querySelector('#add-poi-button')?.addEventListener('click', () => {
               console.log('Filling Add POI form with coordinates:', lng, lat)
-              emit('map-click', { lng, lat }) // Emit the event to the parent component
-              popup.remove() // Close the popup after emitting the event
+              emit('map-click', { lng, lat })
+              popup.remove()
             })
 
             popupContent

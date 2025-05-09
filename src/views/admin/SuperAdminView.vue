@@ -54,17 +54,18 @@
         </summary>
         <div class="editor-content">
           <div class="map-container">
-            <TheMap :isAdminPage="true" @marker-click="handleMarkerClick" @edit-poi="handleEditPOI" />
+            <TheMap
+              :isAdminPage="true"
+              @marker-click="handleMarkerClick"
+              @edit-poi="handleEditPOI"
+            />
           </div>
           <div class="form-container">
             <div v-if="selectedPoiId === null" class="placeholder-text">
               <p>Click on a POI and select "Edit" to update.</p>
             </div>
 
-            <UpdatePOIView
-              v-else
-              :poi-id="selectedPoiId"
-            />
+            <UpdatePOIView v-else :poi-id="selectedPoiId" />
           </div>
         </div>
       </details>

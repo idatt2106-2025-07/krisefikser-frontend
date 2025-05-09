@@ -38,7 +38,7 @@ export function useMarkerManagement(
   filters: Ref<Filters>,
   isAdminPage: Ref<boolean>,
   router: ReturnType<typeof useRouter>,
-  emit: (event: 'map-click' | 'edit-poi', ...args: any[]) => void, // Add emit as a parameter
+  emit: (event: 'map-click' | 'edit-poi', ...args: any[]) => void,
 ) {
   const markers = ref<MarkerWithApp[]>([])
   const markerApps: MarkerApp[] = []
@@ -110,12 +110,11 @@ export function useMarkerManagement(
 
       const handler = () => {
         console.log(`Edit button clicked for POI ID: ${poi.id}`)
-        emit('edit-poi', poi.id) // Use the emit function passed as a parameter
+        emit('edit-poi', poi.id)
       }
 
       editButton.addEventListener('click', handler)
 
-      // Cleanup
       popup.on('close', () => {
         editButton.removeEventListener('click', handler)
       })
@@ -153,7 +152,6 @@ export function useMarkerManagement(
 
       deleteButton.addEventListener('click', handler)
 
-      // Cleanup
       popup.on('close', () => {
         deleteButton.removeEventListener('click', handler)
       })

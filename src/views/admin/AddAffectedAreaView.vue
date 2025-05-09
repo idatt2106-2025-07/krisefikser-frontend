@@ -25,7 +25,6 @@ const threatLevel = ref('')
 const description = ref('')
 const timeStarted = ref('')
 
-// Watch for changes in props and update the form fields
 watch(
   () => props.longitude,
   (newLng) => {

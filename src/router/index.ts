@@ -188,7 +188,7 @@ const router = createRouter({
     {
       path: '/profile',
       name: 'UserProfile',
-      component: UserProfile,
+      component: HouseholdView,
       props: true,
     },
   ],

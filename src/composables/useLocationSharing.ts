@@ -78,7 +78,7 @@ export function useLocationSharing(intervalMs = 30000): LocationSharingReturn {
       isSharing.value = true
 
       await sharePosition()
-
+      console.log('Location sharing started')
       intervalId = window.setInterval(sharePosition, intervalMs)
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to start location sharing'

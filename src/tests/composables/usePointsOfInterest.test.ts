@@ -13,6 +13,7 @@ vi.mock('vue', async () => {
     ...actual,
     createApp: vi.fn(() => ({
       mount: vi.fn(),
+      unmount: vi.fn(),
     })),
   }
 })
@@ -20,6 +21,8 @@ vi.mock('vue', async () => {
 vi.mock('mapbox-gl', () => {
   const PopupMock = vi.fn(() => ({
     setHTML: vi.fn().mockReturnThis(),
+    on: vi.fn(),
+    getElement: vi.fn(() => document.createElement('div')),
   }))
 
   const MarkerMock = vi.fn(() => ({
@@ -27,6 +30,7 @@ vi.mock('mapbox-gl', () => {
     setPopup: vi.fn().mockReturnThis(),
     addTo: vi.fn().mockReturnThis(),
     remove: vi.fn(),
+    getPopup: vi.fn(() => PopupMock()),
   }))
 
   return {
@@ -41,11 +45,26 @@ vi.mock('@/utils/mapUtils', () => ({
   getTypeDisplayName: vi.fn((type) => `Mocked ${type} Display Name`),
 }))
 
+vi.mock('vue-router', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+  })),
+}))
+
+vi.mock('@/services/mapService', () => ({
+  default: {
+    getAllPointsOfInterest: vi.fn(),
+    deletePointOfInterest: vi.fn(),
+  },
+}))
+
 describe('useMarkerManagement', () => {
   let map
   let locationData
   let filters
+  let isAdminPage
   let mockMapInstance
+  let router
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -101,13 +120,21 @@ describe('useMarkerManagement', () => {
       meeting_place: true,
     })
 
+    isAdminPage = ref(false)
+    router = {
+      push: vi.fn(),
+    }
+
     document.createElement = vi.fn().mockReturnValue({
       setAttribute: vi.fn(),
+      querySelector: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
     })
   })
 
   it('should return the correct interface', () => {
-    const result = useMarkerManagement(map, locationData, filters)
+    const result = useMarkerManagement(map, locationData, filters, isAdminPage, router)
 
     expect(result).toHaveProperty('markers')
     expect(result).toHaveProperty('initializeMarkers')
@@ -115,7 +142,13 @@ describe('useMarkerManagement', () => {
   })
 
   it('should initialize markers for all points of interest when filters allow', () => {
-    const { initializeMarkers, markers } = useMarkerManagement(map, locationData, filters)
+    const { initializeMarkers, markers } = useMarkerManagement(
+      map,
+      locationData,
+      filters,
+      isAdminPage,
+      router,
+    )
 
     initializeMarkers()
 
@@ -126,7 +159,13 @@ describe('useMarkerManagement', () => {
   it('should filter out markers based on filters', () => {
     filters.value.hospital = false
 
-    const { initializeMarkers, markers } = useMarkerManagement(map, locationData, filters)
+    const { initializeMarkers, markers } = useMarkerManagement(
+      map,
+      locationData,
+      filters,
+      isAdminPage,
+      router,
+    )
 
     initializeMarkers()
 
@@ -135,7 +174,13 @@ describe('useMarkerManagement', () => {
   })
 
   it('should create markers with correct properties', () => {
-    const { initializeMarkers } = useMarkerManagement(map, locationData, filters)
+    const { initializeMarkers } = useMarkerManagement(
+      map,
+      locationData,
+      filters,
+      isAdminPage,
+      router,
+    )
 
     initializeMarkers()
 
@@ -160,7 +205,13 @@ describe('useMarkerManagement', () => {
 
   it('should handle null or undefined map instance', () => {
     const nullMap = ref(null)
-    const { initializeMarkers, updateMarkers } = useMarkerManagement(nullMap, locationData, filters)
+    const { initializeMarkers, updateMarkers } = useMarkerManagement(
+      nullMap,
+      locationData,
+      filters,
+      isAdminPage,
+      router,
+    )
 
     initializeMarkers()
     updateMarkers()
@@ -173,7 +224,7 @@ describe('useMarkerManagement', () => {
       pointsOfInterest: null,
     })
 
-    const { initializeMarkers } = useMarkerManagement(map, emptyData, filters)
+    const { initializeMarkers } = useMarkerManagement(map, emptyData, filters, isAdminPage, router)
 
     initializeMarkers()
 
@@ -181,7 +232,13 @@ describe('useMarkerManagement', () => {
   })
 
   it('should create custom marker elements with correct attributes', () => {
-    const { initializeMarkers } = useMarkerManagement(map, locationData, filters)
+    const { initializeMarkers } = useMarkerManagement(
+      map,
+      locationData,
+      filters,
+      isAdminPage,
+      router,
+    )
 
     initializeMarkers()
 
@@ -190,7 +247,7 @@ describe('useMarkerManagement', () => {
 
     const markerElement = document.createElement.mock.results[0].value
     expect(markerElement.setAttribute).toHaveBeenCalledWith('data-id', '1')
-    expect(markerElement.setAttribute).toHaveBeenCalledWith('data-type', 'HOSPITAL')
+    expect(markerElement.setAttribute).toHaveBeenCalledWith('data-type', 'hospital')
   })
 
   it('should remove all markers when removeAllMarkers is called', () => {
@@ -201,12 +258,18 @@ describe('useMarkerManagement', () => {
       setPopup: vi.fn().mockReturnThis(),
       addTo: vi.fn().mockReturnThis(),
       remove: removeSpy,
+      getPopup: vi.fn(() => ({
+        on: vi.fn(),
+        getElement: vi.fn(),
+      })),
     }))
 
     const { initializeMarkers, markers, updateMarkers } = useMarkerManagement(
       map,
       locationData,
       filters,
+      isAdminPage,
+      router,
     )
 
     initializeMarkers()
@@ -229,9 +292,19 @@ describe('useMarkerManagement', () => {
       setPopup: vi.fn().mockReturnThis(),
       addTo: vi.fn().mockReturnThis(),
       remove: removeSpy,
+      getPopup: vi.fn(() => ({
+        on: vi.fn(),
+        getElement: vi.fn(),
+      })),
     }))
 
-    const { initializeMarkers, markers } = useMarkerManagement(map, locationData, filters)
+    const { initializeMarkers, markers } = useMarkerManagement(
+      map,
+      locationData,
+      filters,
+      isAdminPage,
+      router,
+    )
 
     initializeMarkers()
 
@@ -259,9 +332,19 @@ describe('useMarkerManagement', () => {
       setPopup: vi.fn().mockReturnThis(),
       addTo: vi.fn().mockReturnThis(),
       remove: removeSpy,
+      getPopup: vi.fn(() => ({
+        on: vi.fn(),
+        getElement: vi.fn(),
+      })),
     }))
 
-    const { initializeMarkers, markers } = useMarkerManagement(map, locationData, filters)
+    const { initializeMarkers, markers } = useMarkerManagement(
+      map,
+      locationData,
+      filters,
+      isAdminPage,
+      router,
+    )
 
     initializeMarkers()
 
@@ -296,9 +379,8 @@ describe('useMarkerManagement', () => {
 
     vi.mocked(mapboxgl.Popup).mockImplementation(() => ({
       setHTML: setHTMLSpy,
-      setLngLat: vi.fn().mockReturnThis(),
-      addTo: vi.fn().mockReturnThis(),
-      remove: vi.fn(),
+      on: vi.fn(),
+      getElement: vi.fn(),
     }))
 
     locationData.value = {
@@ -313,7 +395,13 @@ describe('useMarkerManagement', () => {
       ],
     }
 
-    const { initializeMarkers } = useMarkerManagement(map, locationData, filters)
+    const { initializeMarkers } = useMarkerManagement(
+      map,
+      locationData,
+      filters,
+      isAdminPage,
+      router,
+    )
 
     initializeMarkers()
 

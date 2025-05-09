@@ -12,6 +12,8 @@ const mockFunctions = vi.hoisted(() => ({
   tryInitializeLayers: vi.fn(),
   updateLayerVisibility: vi.fn(),
   initializeSearch: vi.fn(),
+  // Add the missing function for useAffectedAreaManagement
+  initializeAffectedAreaPopups: vi.fn(),
   getPointsOfInterest: vi
     .fn()
     .mockResolvedValue([
@@ -51,10 +53,15 @@ vi.mock('@/composables/usePointsOfInterest', () => ({
   }),
 }))
 
+// Update the mock to include both functions from useAffectedAreas
 vi.mock('@/composables/useAffectedAreas', () => ({
   useMapLayers: () => ({
     tryInitializeLayers: mockFunctions.tryInitializeLayers,
     updateLayerVisibility: mockFunctions.updateLayerVisibility,
+  }),
+  // Add the useAffectedAreaManagement function
+  useAffectedAreaManagement: () => ({
+    initializeAffectedAreaPopups: mockFunctions.initializeAffectedAreaPopups,
   }),
 }))
 

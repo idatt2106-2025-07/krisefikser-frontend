@@ -25,10 +25,7 @@ import TwoFactorAuthView from '@/views/2fa/TwoFactorAuthView.vue'
 import TwoFactorNotifyView from '@/views/2fa/TwoFactorNotifyView.vue'
 import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
 import NewsDetailView from '@/views/news/NewsDetailView.vue'
-
-// Components
-import QuizCreator from '@/views/admin/QuizCreator.vue'
-
+import UserProfile from '@/views/user/ProfileView.vue'
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
 import SpecificCrisisTimeView from '@/views/general/SpecificCrisisTimeView.vue'
 import UpdatePOIView from '@/views/admin/UpdatePOIView.vue'
@@ -100,11 +97,6 @@ const router = createRouter({
       meta: { requiresAuth: true, role: 'admin' },
     },
     {
-      path: '/quiz-creator',
-      name: 'quiz-creator',
-      component: QuizCreator,
-    },
-    {
       path: '/general-info',
       name: 'general-info',
       component: GeneralInfo,
@@ -113,11 +105,6 @@ const router = createRouter({
       path: '/news',
       name: 'news',
       component: News,
-    },
-    {
-      path: '/quiz',
-      name: 'quiz',
-      component: QuizCreator,
     },
     {
       path: '/verify-email',

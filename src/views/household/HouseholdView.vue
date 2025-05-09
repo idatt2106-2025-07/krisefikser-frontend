@@ -394,12 +394,13 @@ onBeforeUnmount(() => {
       <div class="sidebar-wrapper">
         <SidebarContent
           :content-title="householdTitle"
-          sidebar-title="household"
+          sidebar-title="householdTitle"
           :sidebar-items="menuItems"
           @item-selected="handleItemSelected"
           class="sidebar-component"
         >
           <template #household>
+            <h3 class="title">{{ householdTitle ?? '' }}</h3>
             <p>Household id: {{ householdId ?? '' }}</p>
             <button class="blue-button" @click="openInviteModal">Invite user</button>
             <br />
@@ -581,6 +582,10 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.title{
+  text-align: center;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -595,6 +600,7 @@ onBeforeUnmount(() => {
   z-index: 2000;
   animation: modal-fade-in 0.25s ease;
 }
+
 
 @keyframes modal-fade-in {
   from {

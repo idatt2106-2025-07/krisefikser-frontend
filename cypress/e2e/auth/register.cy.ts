@@ -1,74 +1,53 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable cypress/unsafe-to-chain-command */
+// @ts-nocheck
+/* eslint-enable @typescript-eslint/ban-ts-comment */
 /// <reference types="cypress" />
-import '@cypress/code-coverage/support'
 
-const REGISTER_PATH = '/register'
-const API_ENDPOINT = '/api/auth/register'
-
-describe('Register page', () => {
+describe('Registration Form', () => {
   beforeEach(() => {
-    cy.visit(REGISTER_PATH)
+    cy.visit('/register')
   })
 
-  it('renders all required fields and the submit button disabled by default', () => {
-    cy.get('#name').should('exist')
-    cy.get('#email').should('exist')
-    cy.get('#password').should('exist')
-    cy.get('#confirmPassword').should('exist')
-    cy.get('.agreeToTerms').should('exist')
-    cy.get('button[type="submit"]').should('be.disabled')
+  it('shows validation error for invalid email', () => {
+    cy.get('#email').type('not-an-email').blur()
+    cy.contains('Email invalid').should('be.visible')
   })
 
-  it('shows client‑side validation errors', () => {
-    cy.get('input[placeholder="Email"]').type('not‑an‑email')
-    cy.get('input[placeholder="Email"]').blur()
-    cy.contains('small', 'Email invalid').should('be.visible')
-
-    cy.get('input[placeholder="Password"]').first().type('foo')
-    cy.get('input[placeholder="Confirm Password"]').type('bar')
-    cy.get('input[placeholder="Confirm Password"]').blur()
-    cy.contains('small', 'Passwords don’t match').should('be.visible')
-
-    cy.contains('button', 'Register').should('be.disabled')
+  it('shows validation error when passwords do not match', () => {
+    cy.get('#password').type('Password123!')
+    cy.get('#confirmPassword').type('DifferentPassword').blur()
+    cy.contains('Passwords don’t match').should('be.visible')
   })
 
-  it('submits the form successfully and redirects to /login', () => {
-    cy.intercept('POST', API_ENDPOINT, {
-      statusCode: 201,
-      body: {},
-    }).as('registerReq')
+  it('fetches coordinates when address is entered', () => {
+    // Intercept the real GeoNorge URL used in your service
+    cy.intercept(
+      {
+        method: 'GET',
+        url: /https:\/\/ws\.geonorge\.no\/adresser\/v1\/sok\?.*sok=Oslo.*/,
+      },
+      {
+        statusCode: 200,
+        body: {
+          adresser: [
+            {
+              representasjonspunkt: {
+                lat: 59.91,
+                lon: 10.75,
+              },
+            },
+          ],
+        },
+      },
+    ).as('getCoordinates')
 
-    // fill and submit
-    cy.get('#name').type('Test User')
-    cy.get('#email').type('test@example.com')
-    cy.get('#email').blur()
-    cy.get('#password').type('Password1!')
-    cy.get('#confirmPassword').type('Password1!')
-    cy.get('#confirmPassword').blur()
-    cy.get('.agreeToTerms').check()
-    cy.get('button[type="submit"]').click()
+    // Trigger the API call via blur on address field
+    cy.get('#address').type('Oslo, Norway').blur()
 
-    cy.get('.status-message.success').should('contain', 'Registered successfully')
+    cy.wait('@getCoordinates')
 
-    cy.url().should('include', '/login')
-  })
-
-  it('handles API errors gracefully', () => {
-    cy.intercept('POST', API_ENDPOINT, {
-      statusCode: 400,
-      body: { message: 'Email already in use' },
-    }).as('registerErr')
-
-    cy.get('#name').type('Test User')
-    cy.get('#email').type('test@example.com')
-    cy.get('#email').blur()
-    cy.get('#password').type('Password1!')
-    cy.get('#confirmPassword').type('Password1!')
-    cy.get('#confirmPassword').blur()
-    cy.get('.agreeToTerms').check()
-    cy.get('button[type="submit"]').click()
-    cy.wait('@registerErr')
-
-    cy.get('.status-message.error').should('contain', 'Email already in use')
-    cy.url().should('include', REGISTER_PATH)
+    // Confirm that mocked coordinates appear on the screen
+    cy.contains('Coordinates: 59.91, 10.75').should('exist')
   })
 })

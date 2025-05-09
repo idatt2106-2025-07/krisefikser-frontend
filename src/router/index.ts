@@ -23,9 +23,6 @@ import SuperAdminView from '@/views/admin/SuperAdminView.vue'
 import TwoFactorAuthView from '@/views/2fa/TwoFactorAuthView.vue'
 import TwoFactorNotifyView from '@/views/2fa/TwoFactorNotifyView.vue'
 import PrivacyPolicyView from '@/views/privacy-policy/PrivacyPolicyView.vue'
-import BeforeCrisisView from '@/views/general/BeforeCrisisView.vue'
-import DuringCrisisView from '@/views/general/DuringCrisisView.vue'
-import AfterCrisisView from '@/views/general/AfterCrisisView.vue'
 import NewsDetailView from '@/views/news/NewsDetailView.vue'
 import UserProfile from '@/views/user/ProfileView.vue'
 
@@ -33,9 +30,9 @@ import UserProfile from '@/views/user/ProfileView.vue'
 import QuizCreator from '@/views/admin/QuizCreator.vue'
 
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
+import SpecificCrisisTimeView from '@/views/general/SpecificCrisisTimeView.vue'
 import UpdatePOIView from '@/views/admin/UpdatePOIView.vue'
 import UpdateAffectedAreaView from '@/views/admin/UpdateAffectedAreaView.vue'
-import SpecificCrisisTimeView from '@/views/general/SpecificCrisisTimeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1746820046052" clover="3.2.0">
-  <project timestamp="1746820046052" name="All files">
-    <metrics statements="8579" coveredstatements="2938" conditionals="550" coveredconditionals="425" methods="298" coveredmethods="137" elements="9427" coveredelements="3500" complexity="0" loc="8579" ncloc="8579" packages="30" files="97" classes="97"/>
+<coverage generated="1746821398066" clover="3.2.0">
+  <project timestamp="1746821398066" name="All files">
+    <metrics statements="8583" coveredstatements="2938" conditionals="550" coveredconditionals="425" methods="298" coveredmethods="137" elements="9431" coveredelements="3500" complexity="0" loc="8583" ncloc="8583" packages="30" files="97" classes="97"/>
     <package name="src">
       <metrics statements="67" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
       <file name="App.vue" path="/home/runner/work/krisefikser-frontend/krisefikser-frontend/src/App.vue">
@@ -1486,9 +1486,9 @@
       </file>
     </package>
     <package name="src.components.navigation">
-      <metrics statements="227" coveredstatements="58" conditionals="12" coveredconditionals="7" methods="6" coveredmethods="1"/>
+      <metrics statements="231" coveredstatements="58" conditionals="12" coveredconditionals="7" methods="6" coveredmethods="1"/>
       <file name="LoggedInNavBar.vue" path="/home/runner/work/krisefikser-frontend/krisefikser-frontend/src/components/navigation/LoggedInNavBar.vue">
-        <metrics statements="91" coveredstatements="0" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <metrics statements="95" coveredstatements="0" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
         <line num="1" count="0" type="cond" truecount="0" falsecount="1"/>
         <line num="2" count="0" type="stmt"/>
         <line num="3" count="0" type="stmt"/>
@@ -1565,21 +1565,25 @@
         <line num="97" count="0" type="stmt"/>
         <line num="99" count="0" type="stmt"/>
         <line num="100" count="0" type="stmt"/>
+        <line num="101" count="0" type="stmt"/>
         <line num="102" count="0" type="stmt"/>
         <line num="103" count="0" type="stmt"/>
         <line num="104" count="0" type="stmt"/>
         <line num="106" count="0" type="stmt"/>
         <line num="107" count="0" type="stmt"/>
         <line num="108" count="0" type="stmt"/>
-        <line num="109" count="0" type="stmt"/>
         <line num="110" count="0" type="stmt"/>
         <line num="111" count="0" type="stmt"/>
+        <line num="112" count="0" type="stmt"/>
         <line num="113" count="0" type="stmt"/>
         <line num="114" count="0" type="stmt"/>
         <line num="115" count="0" type="stmt"/>
-        <line num="116" count="0" type="stmt"/>
         <line num="117" count="0" type="stmt"/>
         <line num="118" count="0" type="stmt"/>
+        <line num="119" count="0" type="stmt"/>
+        <line num="120" count="0" type="stmt"/>
+        <line num="121" count="0" type="stmt"/>
+        <line num="122" count="0" type="stmt"/>
       </file>
       <file name="LoggedOutNavBar.vue" path="/home/runner/work/krisefikser-frontend/krisefikser-frontend/src/components/navigation/LoggedOutNavBar.vue">
         <metrics statements="62" coveredstatements="0" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>

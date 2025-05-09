@@ -205,7 +205,10 @@ async function fetchCoordinates() {
 
       <div class="checkbox-container">
         <input type="checkbox" class="agreeToTerms" v-model="agreeToTerms" :disabled="isLoading" />
-        <label for="agreeToTerms">I agree to the terms and conditions</label>
+        <label for="agreeToTerms"
+          >I agree to the
+          <router-link to="/privacy-policy">terms and conditions</router-link></label
+        >
       </div>
 
       <vue-hcaptcha
@@ -277,6 +280,7 @@ async function fetchCoordinates() {
 .checkbox-container {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   margin: 1rem 0;
 }
@@ -307,5 +311,8 @@ button:disabled {
 p {
   font-size: 16px;
   font-weight: bold;
+}
+.agreeToTerms {
+  align-self: center;
 }
 </style>

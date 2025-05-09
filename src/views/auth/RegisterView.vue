@@ -14,6 +14,7 @@ const password = ref('')
 const confirmpassword = ref('')
 const agreeToTerms = ref(false)
 const emailError = ref(false)
+const passwordError = ref(false)
 const confirmTouched = ref(false)
 const isLoading = ref(false)
 const householdName = ref('')
@@ -22,7 +23,7 @@ const coordinates = ref<{ lat: number; lon: number } | null>(null)
 
 // toast state
 const toastMessage = ref<string | null>(null)
-const toastType = ref<'' | 'success' | 'error'>('')
+const toastType = ref<'' | 'warning' | 'error'>('')
 
 const siteKey = 'a754b964-3852-4810-a35e-c13ad84ce644'
 
@@ -33,22 +34,38 @@ function validateEmail() {
   emailError.value = !emailRegex.test(email.value)
 }
 
+const validatePassword = () => {
+  console.log('Validating password')
+  const pass = password.value
+  if (
+    !pass ||
+    pass.length < 8 ||
+    !/[A-Z]/.test(pass) ||
+    !/[a-z]/.test(pass) ||
+    !/[0-9]/.test(pass) ||
+    !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass)
+  ) {
+    passwordError.value = true
+  } else {
+    passwordError.value = false
+  }
+}
+
 const passwordsMatch = computed(() => password.value === confirmpassword.value)
 
 const formValid = computed(
   () =>
-    !!(
-      name.value &&
-      email.value &&
-      password.value &&
-      confirmpassword.value &&
-      householdName.value &&
-      address.value &&
-      agreeToTerms.value &&
-      passwordsMatch.value &&
-      !emailError.value &&
-      hcaptchaToken.value
-    ),
+    name.value &&
+    email.value &&
+    password.value &&
+    confirmpassword.value &&
+    householdName.value &&
+    address.value &&
+    agreeToTerms.value &&
+    passwordsMatch.value &&
+    !emailError.value &&
+    hcaptchaToken.value &&
+    !passwordError.value,
 )
 
 async function handleSubmit() {
@@ -56,6 +73,7 @@ async function handleSubmit() {
   toastType.value = ''
 
   validateEmail()
+  validatePassword()
   confirmTouched.value = true
   if (!formValid.value) return
 
@@ -90,14 +108,13 @@ async function handleSubmit() {
     )
 
     if (res.status === 201) {
-      toastMessage.value =
-        'Registered successfully. A verification email has been sent. Redirecting to login…'
-      toastType.value = 'success'
+      toastMessage.value = 'A verification email has been sent. Redirecting to login…'
+      toastType.value = 'warning'
       setTimeout(() => {
         toastMessage.value = null
         toastType.value = ''
         router.push('/login')
-      }, 2000)
+      }, 5000)
       return
     }
 
@@ -160,7 +177,12 @@ async function fetchCoordinates() {
           :feedback="false"
           placeholder="Password"
           :disabled="isLoading"
+          @blur="validatePassword"
         />
+        <small v-if="passwordError" class="p-error"
+          >Password must be at least 8 characters long and contain at least one uppercase letter,
+          one lowercase letter, one number, and one special character.</small
+        >
       </div>
 
       <div class="field">
@@ -197,18 +219,17 @@ async function fetchCoordinates() {
       <InputText
         id="address"
         v-model="address"
-        placeholder="Address"
+        placeholder="Karl Johans gate 1"
         :disabled="isLoading"
         @blur="fetchCoordinates"
       />
-      <div v-if="coordinates">Coordinates: {{ coordinates.lat }}, {{ coordinates.lon }}</div>
 
       <div class="checkbox-container">
         <input type="checkbox" id="agreeToTerms" v-model="agreeToTerms" :disabled="isLoading" />
         <label for="agreeToTerms"
           >I agree to the
-          <router-link to="/privacy-policy">terms and conditions</router-link></label
-        >
+          <router-link to="/privacy-policy">terms and conditions</router-link>
+        </label>
       </div>
 
       <vue-hcaptcha
@@ -239,6 +260,7 @@ async function fetchCoordinates() {
   padding: 2rem;
   box-sizing: border-box;
 }
+
 .register-form {
   width: 100%;
   max-width: 400px;
@@ -248,11 +270,13 @@ async function fetchCoordinates() {
   background: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 .field {
   margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
 }
+
 .field :deep(.p-inputtext),
 .field :deep(.p-password-input) {
   width: 100%;
@@ -264,14 +288,17 @@ async function fetchCoordinates() {
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
+
 .status-message {
   margin-bottom: 1rem;
   font-size: 0.95rem;
   text-align: center;
 }
+
 .status-message.success {
   color: #28a745;
 }
+
 .status-message.error {
   color: #dc3545;
 }
@@ -282,6 +309,7 @@ async function fetchCoordinates() {
   gap: 0.5rem;
   margin: 1rem 0;
 }
+
 button {
   width: 100%;
   padding: 0.75rem;
@@ -292,14 +320,17 @@ button {
   font-size: 1rem;
   cursor: pointer;
 }
+
 button:hover:not(:disabled) {
   background: #0056b3;
 }
+
 button:disabled {
   background: #ccc;
   color: #666;
   cursor: not-allowed;
 }
+
 .login-link {
   margin-top: 1rem;
   font-size: 0.9rem;
@@ -310,9 +341,11 @@ p {
   font-size: 16px;
   font-weight: bold;
 }
+
 #agreeToTerms {
   margin: 0;
 }
+
 .checkbox-container label {
   margin: 0;
   line-height: 1;

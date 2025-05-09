@@ -375,12 +375,12 @@ onMounted(() => {
 
       // If household marker exists, center map on it
       if (householdMarker.value && isHouseholdVisible.value) {
-        const coordinates = householdMarker.value.getLngLat();
+        const coordinates = householdMarker.value.getLngLat()
         map.value?.flyTo({
           center: [coordinates.lng, coordinates.lat],
           zoom: 9,
-          essential: true
-        });
+          essential: true,
+        })
       }
 
       setTimeout(() => {

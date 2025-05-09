@@ -94,7 +94,7 @@ export function useHouseholdMarker(
       center: [location.longitude, location.latitude],
       zoom: 14, // Slightly zoomed out compared to navigate
       essential: true,
-      duration: 1500 // Smooth animation
+      duration: 1500, // Smooth animation
     })
   }
 
@@ -126,6 +126,6 @@ export function useHouseholdMarker(
     createHouseholdMarker,
     navigateToHousehold,
     initialize,
-    flyToHome // Export the new function
+    flyToHome, // Export the new function
   }
 }

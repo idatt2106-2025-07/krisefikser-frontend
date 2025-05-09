@@ -228,8 +228,11 @@ const submitJoinRequest = async () => {
   }
 }
 
-const deleteNonUserMember = async (id: number) => {
-  if (!id) return
+const deleteNonUserMember = async (id?: number) => {
+  if (id === undefined) {
+    console.error('Cannot delete member: ID is undefined')
+    return
+  }
 
   try {
     await nonMemberUserService.deleteNonUserMember(id)
@@ -289,15 +292,15 @@ const fetchMembers = async () => {
 
     // Combine regular members with non-user members
     const regularMembers =
-      data.members?.map((member) => ({
+      data.members?.map((member: ApiMember) => ({
         ...member,
-        memberType: 'user',
+        memberType: 'user' as const,
       })) || []
 
     const nonUserMembers =
-      data.nonUserMembers?.map((member) => ({
+      data.nonUserMembers?.map((member: ApiNonUserMember) => ({
         ...member,
-        memberType: 'nonUser',
+        memberType: 'nonUser' as const,
       })) || []
 
     // Combine both arrays into members
@@ -310,6 +313,24 @@ const fetchMembers = async () => {
   } finally {
     isLoading.value = false
   }
+}
+
+/**
+ * Interface representing API response for regular members.
+ */
+interface ApiMember {
+  name: string;
+  id?: number;
+  email?: string;
+}
+
+/**
+ * Interface representing API response for non-user members.
+ */
+interface ApiNonUserMember {
+  name: string;
+  id: number;
+  type: string;
 }
 
 const fetchJoinRequests = async () => {

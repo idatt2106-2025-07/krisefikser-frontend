@@ -924,14 +924,12 @@ input:hover {
   transition: all 0.2s ease;
 }
 
-/* Responsive Styles */
 @media (max-width: 992px) {
   .update-item-title { font-size: 2.25rem; margin-bottom: 1.5rem; }
   .content-wrapper { max-width: 95%; }
   .item-header { background: #f5f5f5; border-radius: 8px 8px 0 0; font-weight: 500; }
   .aggregated-item, .individual-items-container { border-radius: 0 0 8px 8px; }
 
-  /* Medium screens */
   @media (min-width: 577px) and (max-width: 768px) {
     .item-header, .item-row, .item-summary-row {
       display: grid;
@@ -940,7 +938,6 @@ input:hover {
       padding: 0.75rem 1rem;
     }
 
-    /* Instead of hiding columns, we're restructuring the grid */
     .col.item-name, .col.item-name-value { grid-column: 1; text-align: left; }
     .col.item-name-header::after { content: ""; display: block; height: 2px; background: #ddd; margin-top: 0.4rem; }
 
@@ -957,7 +954,6 @@ input:hover {
       align-items: flex-end;
     }
 
-    /* Only hide specific empty placeholder columns */
     .col:empty { display: none; }
     .col:nth-child(2) { display: none; }
     .col:nth-child(5):not(.item-shared-status) { display: none; }
@@ -967,7 +963,6 @@ input:hover {
     .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   }
 
-  /* Small screens */
   @media (max-width: 576px) {
     .update-item-title { font-size: 1.75rem; margin-bottom: 1rem; }
 
@@ -983,7 +978,7 @@ input:hover {
     .item-header .item-name { display: block; width: auto; }
 
     .item-header:first-of-type::after, .item-header:nth-of-type(3)::after {
-      content: "Summary"; /* Will be overridden for the 3rd header */
+      content: "Summary";
       font-size: 0.95rem;
       font-weight: 500;
       background: rgba(255,255,255,0.4);
@@ -1004,7 +999,6 @@ input:hover {
     .col:last-child { border-bottom: none; }
     .col:first-child { padding-top: 0; }
 
-    /* Labels for fields */
     .col.item-name::before, .col.item-quantity::before, .col.item-expiration::before,
     .col.item-shared-status::before, .col.item-actions::before {
       width: 80px; font-weight: 500; color: #666;
@@ -1015,7 +1009,6 @@ input:hover {
     .col.item-shared-status::before { content: "Sharing:"; }
     .col.item-actions::before { content: "Action:"; }
 
-    /* Only hide specific empty placeholder columns */
     .col:empty { display: none; }
     .col:nth-child(2) { display: none; }
     .col:nth-child(5):not(.item-shared-status) { display: none; }

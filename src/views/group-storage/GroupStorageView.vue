@@ -376,9 +376,6 @@ onMounted(async () => {
   color: #ff5c5f;
 }
 
-/* Media Queries for Responsive Design */
-
-/* Large Mobile Devices (up to 768px) */
 @media (max-width: 768px) {
   .storage-title {
     font-size: 2.25rem;
@@ -426,7 +423,6 @@ onMounted(async () => {
   }
 }
 
-/* Small Mobile Devices (up to 480px) */
 @media (max-width: 480px) {
   .storage-container {
     padding: 1rem 0.5rem;
@@ -437,7 +433,7 @@ onMounted(async () => {
   }
 
   .item-header {
-    display: none; /* Hide headers on very small screens */
+    display: none;
   }
 
   .item-card {
@@ -485,7 +481,6 @@ onMounted(async () => {
   }
 }
 
-/* Specific styling for tablets (between 481px and 992px) */
 @media (min-width: 481px) and (max-width: 992px) {
   .storage-container {
     padding: 1.5rem 1rem;
@@ -510,18 +505,16 @@ onMounted(async () => {
   }
 }
 
-/* Adjustments for FilterSidebar on mobile */
 @media (max-width: 768px) {
   :deep(.my-filter-sidebar) {
     width: 100%;
     margin-bottom: 1rem;
-    position: static !important; /* Override any sticky/fixed positioning */
-    top: auto !important; /* Reset top value */
-    height: auto !important; /* Allow height to be determined by content */
-    overflow: visible !important; /* Ensure content isn't cut off */
+    position: static !important;
+    top: auto !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
-  /* Target any sticky container that might be inside the sidebar */
   :deep(.my-filter-sidebar > div),
   :deep(.my-filter-sidebar > aside) {
     position: static !important;

@@ -5,6 +5,12 @@ Features include user registration (with hCaptcha), login, and protected routes.
 
 ---
 
+## Reports
+
+[![Coverage](https://img.shields.io/badge/Test_coverage-green)](https://idatt2106-2025-07.github.io/krisefikser-frontend/)
+
+---
+
 ## Prerequisites
 
 - Node.js ≥ 18

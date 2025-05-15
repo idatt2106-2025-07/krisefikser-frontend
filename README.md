@@ -32,7 +32,7 @@ Features include user registration (with hCaptcha), login, and protected routes.
    ```bash
    npm dev
    ```
-   ➜ Your app is served at https://dev.krisefikser.com:5173
+   ➜ Your app is served at https://dev.krisefikser.localhost:5173
 
 ---
 
